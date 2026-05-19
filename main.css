@@ -1250,3 +1250,210 @@ body.archive .archive-entry {
   background: rgba(255,255,255,0.15) !important;
   color: #ffffff !important;
 }
+
+/* ================================================================
+   2026-05-19 クリスタル風全面リファクタ
+   - 記事カード枠線・角飾り
+   - 引用ボックス
+   - 見出し（h2/h3/h4）
+   - テーブル
+   - サイドバー
+   - 細部装飾
+   ※ サイトタイトル金文字とヘッダー星空グラデは「FF14らしさ」として維持
+   ================================================================ */
+
+/* --- 記事カード：金枠＋金角飾り → クリスタル --- */
+.entry {
+  border-color: var(--crystal-light) !important;
+  box-shadow: var(--shadow-card), 0 0 0 1px rgba(42,138,184,0.06) !important;
+}
+
+.entry::before {
+  background:
+    linear-gradient(to right,  var(--crystal-dark) 8px, transparent 8px) top left    / 16px 1px no-repeat,
+    linear-gradient(to bottom, var(--crystal-dark) 8px, transparent 8px) top left    / 1px 16px no-repeat,
+    linear-gradient(to left,   var(--crystal-dark) 8px, transparent 8px) top right   / 16px 1px no-repeat,
+    linear-gradient(to bottom, var(--crystal-dark) 8px, transparent 8px) top right   / 1px 16px no-repeat,
+    linear-gradient(to right,  var(--crystal-dark) 8px, transparent 8px) bottom left / 16px 1px no-repeat,
+    linear-gradient(to top,    var(--crystal-dark) 8px, transparent 8px) bottom left / 1px 16px no-repeat,
+    linear-gradient(to left,   var(--crystal-dark) 8px, transparent 8px) bottom right/ 16px 1px no-repeat,
+    linear-gradient(to top,    var(--crystal-dark) 8px, transparent 8px) bottom right/ 1px 16px no-repeat !important;
+}
+
+.entry:hover {
+  border-color: var(--crystal-mid) !important;
+  box-shadow: var(--shadow-card), 0 4px 20px rgba(42,138,184,0.18) !important;
+}
+
+.entry-title a:hover { color: var(--crystal-mid) !important; }
+
+/* --- 見出し h2：金左ボーダー＋ベージュグラデ → クリスタル --- */
+.entry-content h2 {
+  background: linear-gradient(90deg, rgba(42,138,184,0.10) 0%, transparent 60%) !important;
+  border-left: 4px solid var(--crystal-mid) !important;
+  border-bottom: 1px solid rgba(42,138,184,0.25) !important;
+  color: var(--crystal-dark) !important;
+}
+
+/* --- 見出し h3：クリスタル系で統一・濃度調整 --- */
+.entry-content h3 {
+  color: var(--crystal-mid) !important;
+  border-bottom: 1px solid rgba(42,138,184,0.35) !important;
+}
+
+/* --- 見出し h4：金 → クリスタル深 --- */
+.entry-content h4 {
+  color: var(--crystal-dark) !important;
+}
+
+/* --- 引用ボックス：ベージュ → 淡クリスタル --- */
+.entry-content blockquote {
+  background: var(--crystal-pale) !important;
+  border-left: 4px solid var(--crystal-mid) !important;
+  color: var(--text-body) !important;
+}
+
+/* --- テーブル：金枠 → クリスタル --- */
+.entry-content table {
+  border: 1px solid rgba(42,138,184,0.3) !important;
+}
+
+.entry-content th {
+  background: linear-gradient(90deg, rgba(42,138,184,0.18) 0%, rgba(42,138,184,0.06) 100%) !important;
+  border: 1px solid rgba(42,138,184,0.4) !important;
+  color: var(--crystal-dark) !important;
+}
+
+.entry-content td {
+  border: 1px solid rgba(42,138,184,0.18) !important;
+}
+
+.entry-content tr:nth-child(even) td { background: rgba(227,243,250,0.4) !important; }
+.entry-content tr:hover td { background: rgba(168,216,232,0.25) !important; }
+
+/* --- インラインコード：金枠 → クリスタル枠 --- */
+.entry-content code {
+  background: var(--crystal-pale) !important;
+  border: 1px solid var(--crystal-light) !important;
+  color: var(--crystal-dark) !important;
+}
+
+/* --- 本文内リンク：金下線 → クリスタル下線 --- */
+.entry-content a {
+  border-bottom-color: rgba(42,138,184,0.3) !important;
+}
+.entry-content a:hover {
+  color: var(--crystal-mid) !important;
+  border-bottom-color: var(--crystal-mid) !important;
+}
+
+/* --- リストマーカー：金 → クリスタル --- */
+.entry-content ul li::marker,
+.entry-content ol li::marker { color: var(--crystal-mid) !important; }
+
+/* --- hr の ✦ 装飾：金 → クリスタル --- */
+.entry-content hr {
+  border-top: 1px solid rgba(42,138,184,0.3) !important;
+}
+.entry-content hr::after {
+  color: var(--crystal-mid) !important;
+}
+
+/* --- 記事内画像のシャドウ：金リング → クリスタル --- */
+.entry-content img {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px rgba(42,138,184,0.18) !important;
+}
+
+/* --- サイドバーモジュール：金枠＋金角飾り → クリスタル --- */
+.hatena-module, .widget, .module {
+  border-color: var(--crystal-light) !important;
+}
+
+.hatena-module::before, .widget::before {
+  background:
+    linear-gradient(to right,  var(--crystal-dark) 6px, transparent 6px) top left    / 10px 1px no-repeat,
+    linear-gradient(to bottom, var(--crystal-dark) 6px, transparent 6px) top left    / 1px 10px no-repeat,
+    linear-gradient(to left,   var(--crystal-dark) 6px, transparent 6px) top right   / 10px 1px no-repeat,
+    linear-gradient(to bottom, var(--crystal-dark) 6px, transparent 6px) top right   / 1px 10px no-repeat,
+    linear-gradient(to right,  var(--crystal-dark) 6px, transparent 6px) bottom left / 10px 1px no-repeat,
+    linear-gradient(to top,    var(--crystal-dark) 6px, transparent 6px) bottom left / 1px 10px no-repeat,
+    linear-gradient(to left,   var(--crystal-dark) 6px, transparent 6px) bottom right/ 10px 1px no-repeat,
+    linear-gradient(to top,    var(--crystal-dark) 6px, transparent 6px) bottom right/ 1px 10px no-repeat !important;
+}
+
+.hatena-module-title, .widget-title, .module-title {
+  background: linear-gradient(90deg, rgba(42,138,184,0.15) 0%, transparent 100%) !important;
+  border-bottom: 1px solid var(--crystal-light) !important;
+  color: var(--crystal-dark) !important;
+}
+
+.hatena-module a:hover, .widget a:hover, .module a:hover {
+  color: var(--crystal-mid) !important;
+}
+
+/* --- ページネーション：金 → クリスタル --- */
+.pager a, .pagination a, .pager span {
+  border-color: var(--crystal-light) !important;
+  color: var(--crystal-mid) !important;
+}
+
+.pager a:hover, .pagination a:hover {
+  background: rgba(42,138,184,0.08) !important;
+  border-color: var(--crystal-mid) !important;
+}
+
+/* --- スクロールバー・選択色：金 → クリスタル --- */
+::-webkit-scrollbar-thumb { background: rgba(42,138,184,0.4) !important; }
+::-webkit-scrollbar-thumb:hover { background: var(--crystal-mid) !important; }
+::selection { background: rgba(42,138,184,0.2) !important; color: #1a1408 !important; }
+
+/* --- 著者プロフィールカード（サイドバー）：金 → クリスタル --- */
+.author-card {
+  border-color: var(--crystal-light) !important;
+}
+.author-card::before {
+  background: linear-gradient(90deg, var(--crystal-dark), var(--crystal-mid), var(--crystal-dark)) !important;
+}
+.author-card .author-icon {
+  border-color: var(--crystal-mid) !important;
+}
+.author-card .author-label {
+  color: var(--crystal-dark) !important;
+}
+.author-card .author-message {
+  border-top-color: var(--crystal-light) !important;
+}
+
+/* --- 記事冒頭著者バー：金 → クリスタル --- */
+.article-author-bar {
+  background: var(--crystal-pale) !important;
+  border-left-color: var(--crystal-mid) !important;
+}
+.article-author-bar .author-mini-icon {
+  border-color: var(--crystal-mid) !important;
+}
+.article-author-bar .author-info strong {
+  color: var(--crystal-dark) !important;
+}
+
+/* --- スクショキャプション：金 → クリスタル --- */
+.screenshot-block {
+  border-color: var(--crystal-light) !important;
+}
+.screenshot-caption {
+  background: linear-gradient(180deg, var(--crystal-pale) 0%, var(--crystal-bg) 100%) !important;
+  border-top-color: var(--crystal-light) !important;
+}
+.screenshot-caption .caption-meta {
+  background: var(--crystal-mid) !important;
+  color: #ffffff !important;
+}
+
+/* --- フッターリンクホバー：金 → クリスタル明色 --- */
+#footer a:hover, .site-footer a:hover { color: var(--crystal-light) !important; }
+
+/* --- ヘッダー下部の輝線：金 → クリスタル混合 --- */
+#blog-title::after, .site-header::after {
+  background: linear-gradient(90deg, transparent 0%, var(--crystal-mid) 50%, transparent 100%) !important;
+  box-shadow: 0 0 16px rgba(42,138,184,0.5) !important;
+}
