@@ -6,7 +6,7 @@
    最終更新: 2026-05-19
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Noto+Serif+JP:wght@400;500;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
 
 :root {
   --bg-page:       #f5f2eb;
@@ -1256,6 +1256,105 @@ body.archive .archive-entry {
 #eorzea-globalnav .nav-inner a.nav-index:hover {
   background: rgba(255,255,255,0.15) !important;
   color: #ffffff !important;
+}
+
+/* ================================================================
+   2026-05-19 FF14フォントテイスト強化
+   - 本文・見出しを Shippori Mincho（重厚な明朝）へ
+   - 英字見出し・タイトルを Cinzel + Cormorant Garamond
+   - AI感のある「整いすぎた標準セリフ」から脱却
+   ================================================================ */
+
+/* 本文：Shippori Mincho（重みのある古典明朝） */
+body {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important;
+}
+
+.entry-content,
+.entry-content p,
+.entry-content li,
+.entry-content dt,
+.entry-content dd,
+.entry-content span,
+.entry-body,
+.entry-body p {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', 'Hiragino Mincho ProN', serif !important;
+}
+
+/* 記事タイトル：Shippori Mincho 700 */
+.entry-title,
+.entry-title a,
+.archive-entry-title,
+.archive-entry-title a {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* h2：Shippori Mincho 700＋字間少し広め */
+.entry-content h2 {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* h3：Shippori Mincho 600 */
+.entry-content h3 {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* h4：Cinzel + Shippori（英日混合） */
+.entry-content h4 {
+  font-family: 'Cinzel', 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* サイトタイトル：Cinzel + Cormorant Garamond（クラシックローマン） */
+#blog-title a,
+#blog-title h1,
+#blog-title h1 a,
+.site-header h1,
+.site-header h1 a,
+.site-title a {
+  font-family: 'Cinzel', 'Cormorant Garamond', 'Shippori Mincho', serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.18em !important;
+}
+
+/* テーマ装飾コピー類（◆ TABLE OF CONTENTS ◆等の見出し）：Cinzel Decorative */
+.table-of-contents::before,
+.official-links::before,
+.next-reads::before {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  font-weight: 700 !important;
+}
+
+/* グロナビ：日本語は Shippori、項目名感を出す */
+#eorzea-globalnav .nav-inner a {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+}
+
+/* サイドバーモジュールタイトル：Cinzel Decorative */
+.hatena-module-title,
+.widget-title,
+.module-title {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+}
+
+/* テーブルヘッダー・引用：Shippori Mincho で統一 */
+.entry-content th,
+.entry-content blockquote {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+}
+
+/* READ MOREボタン：Cinzel Decorative で装飾感 */
+.read-more-link a,
+.read-more a {
+  font-family: 'Cinzel Decorative', 'Cinzel', 'Shippori Mincho', serif !important;
+  font-weight: 700 !important;
 }
 
 /* スマホ：グロナビを折り返し表示で全項目を画面内に収める（切れ問題対応） */
