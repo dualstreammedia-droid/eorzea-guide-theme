@@ -29,10 +29,16 @@
   --shadow-card:   0 2px 16px rgba(0, 0, 0, 0.1);
 }
 
-html { background-color: var(--bg-page); }
+html {
+  background-color: #0a1230;
+}
 
 body {
-  background-color: var(--bg-page) !important;
+  background:
+    linear-gradient(180deg, rgba(10,18,48,0.35) 0%, rgba(10,18,48,0.15) 30%, rgba(10,18,48,0.45) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / cover no-repeat fixed,
+    #0a1230 !important;
+  background-attachment: fixed, fixed, scroll !important;
   color: var(--text-body) !important;
   font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important;
   font-size: 16px !important;
@@ -2024,6 +2030,53 @@ body {
 
 /* 日付・time */
 .entry-date, .date, time { color: #6a4020 !important; }
+
+/* ================================================================
+   Phase5: メインカラムに羊皮紙＋魔法陣背景
+   - ページ背景（body）は本棚ホール画像（固定）
+   - #main / .main-inner に羊皮紙テクスチャ
+   ================================================================ */
+#main, .main-inner, #content-inner {
+  background-image:
+    linear-gradient(180deg, rgba(253,246,227,0.35) 0%, transparent 30%, rgba(253,246,227,0.35) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233059.jpg') !important;
+  background-repeat: no-repeat, repeat-y !important;
+  background-position: center top !important;
+  background-size: cover, 100% auto !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4) !important;
+  border: 1px solid rgba(240,214,142,0.4) !important;
+}
+
+/* ヘッダー画像を新バナーに差し替え＋ヘッダー周辺の調整 */
+#blog-title.with-bg-image, .site-header.with-bg-image {
+  background:
+    linear-gradient(180deg, rgba(13,21,64,0.30) 0%, rgba(7,13,40,0.15) 50%, rgba(13,21,64,0.45) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233052.jpg') center center / cover no-repeat,
+    linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
+  background-color: #0a1230 !important;
+  min-height: 240px;
+}
+
+/* スマホ：ヘッダー画像 contain */
+@media (max-width: 768px) {
+  #blog-title.with-bg-image, .site-header.with-bg-image {
+    background:
+      linear-gradient(180deg, rgba(13,21,64,0.30) 0%, rgba(7,13,40,0.10) 50%, rgba(13,21,64,0.50) 100%),
+      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233052.jpg') center center / cover no-repeat,
+      #0a1230 !important;
+    background-color: #0a1230 !important;
+    min-height: 180px;
+  }
+}
+
+/* 記事カード：羊皮紙テクスチャをすこし半透明に（背景の魔法陣が透ける） */
+.entry {
+  background:
+    radial-gradient(ellipse at top left, rgba(255,242,210,0.5) 0%, transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(255,242,210,0.5) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(253,246,227,0.92) 0%, rgba(245,232,200,0.92) 50%, rgba(239,221,178,0.92) 100%) !important;
+}
 
 /* ================================================================
    Phase4: サイドバーを紺背景＋金枠化（Eorzea Chronicle 風）
