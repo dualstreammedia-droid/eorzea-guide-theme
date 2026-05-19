@@ -1212,18 +1212,24 @@ body.archive .archive-entry {
   grid-template-columns: none !important;
 }
 
-/* ヘッダーのサイトタイトル：暖かいゴールド＋強い影（暖色系画像に合わせる） */
+/* ヘッダーのサイトタイトル：金→水色のグラデーション（FF14ロゴ風） */
 #blog-title a,
 #blog-title h1,
 #blog-title h1 a,
 .site-header h1,
 .site-header h1 a,
 .site-header .site-name-content,
-#blog-title .site-name-content {
-  color: #f0d68e !important;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 6px rgba(0,0,0,0.75), 0 1px 2px rgba(0,0,0,0.85) !important;
+#blog-title .site-name-content,
+.site-title a {
+  background: linear-gradient(135deg, #f5d878 0%, #f0d68e 25%, #e8c478 45%, #b8d0e8 70%, #7eb8d4 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.85)) drop-shadow(0 0 4px rgba(0,0,0,0.6)) !important;
+  text-shadow: none !important;
   font-weight: 700 !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 0.16em !important;
 }
 
 #blog-title .header-description,
