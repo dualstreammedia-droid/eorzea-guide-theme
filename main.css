@@ -105,26 +105,66 @@ a:hover { color: var(--link-hover) !important; }
   margin-top: 10px !important;
 }
 
-/* ヘッダー背景：自前画像対応（2026-05-19 v3: ぬいぐるみ部屋＋ララフェル2人） */
-#blog-title.with-bg-image, .site-header.with-bg-image {
+/* ヘッダー：Phase1 Eorzea Chronicle 風（紺背景＋金枠＋クリスタル装飾） */
+#blog-title.with-bg-image, .site-header.with-bg-image,
+#blog-title, .site-header {
   background:
-    linear-gradient(180deg, rgba(20,12,8,0.40) 0%, rgba(20,12,8,0.25) 40%, rgba(20,12,8,0.55) 100%),
+    linear-gradient(180deg, rgba(13,21,64,0.88) 0%, rgba(7,13,40,0.78) 50%, rgba(13,21,64,0.92) 100%),
+    radial-gradient(ellipse at 10% 50%, rgba(126,184,212,0.18) 0%, transparent 45%),
+    radial-gradient(ellipse at 90% 50%, rgba(126,184,212,0.18) 0%, transparent 45%),
+    radial-gradient(circle, rgba(255,255,255,0.4) 0.5px, transparent 0.5px) 30px 35px / 160px 160px,
+    radial-gradient(circle, rgba(255,235,180,0.35) 1px, transparent 1px) 80px 100px / 320px 320px,
     url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519220013.jpg') center 35% / cover no-repeat,
-    linear-gradient(180deg, #2a1f15 0%, #1a1208 100%) !important;
-  background-color: #2a1f15;
-  min-height: 240px;
+    linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
+  background-color: #0a1230 !important;
+  min-height: 280px;
+  border-top: 1px solid rgba(240,214,142,0.5) !important;
+  border-bottom: 2px solid rgba(240,214,142,0.65) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,235,180,0.4),
+    inset 0 -1px 0 rgba(255,235,180,0.4),
+    0 4px 16px rgba(0,0,0,0.5) !important;
+  padding: 36px 24px 30px !important;
+  position: relative !important;
 }
 
-/* スマホ：画像全体が見えるよう contain 表示・暖色背景で埋める */
+/* ヘッダー上部：細い金線＋クリスタル端飾り */
+#blog-title::before, .site-header::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 12px !important;
+  left: 24px !important;
+  right: 24px !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(245,216,120,0.6) 20%, rgba(255,235,180,0.9) 50%, rgba(126,184,212,0.6) 80%, transparent 100%) !important;
+  z-index: 2 !important;
+  box-shadow: 0 0 8px rgba(240,214,142,0.3) !important;
+}
+
+#blog-title::after, .site-header::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 24px !important;
+  right: 24px !important;
+  height: 1px !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(245,216,120,0.6) 20%, rgba(255,235,180,0.9) 50%, rgba(126,184,212,0.6) 80%, transparent 100%) !important;
+  z-index: 2 !important;
+  box-shadow: 0 0 12px rgba(240,214,142,0.4) !important;
+}
+
+/* スマホ：背景画像を contain で全体表示 */
 @media (max-width: 768px) {
-  #blog-title.with-bg-image, .site-header.with-bg-image {
+  #blog-title.with-bg-image, .site-header.with-bg-image,
+  #blog-title, .site-header {
     background:
-      linear-gradient(180deg, rgba(20,12,8,0.35) 0%, rgba(20,12,8,0.20) 40%, rgba(20,12,8,0.60) 100%),
+      linear-gradient(180deg, rgba(13,21,64,0.85) 0%, rgba(7,13,40,0.70) 50%, rgba(13,21,64,0.92) 100%),
+      radial-gradient(circle, rgba(255,255,255,0.4) 0.5px, transparent 0.5px) 20px 25px / 140px 140px,
       url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519220013.jpg') center top / contain no-repeat,
-      #1a1208 !important;
-    background-color: #1a1208 !important;
+      #0a1230 !important;
+    background-color: #0a1230 !important;
     min-height: 220px;
-    padding: 16px 12px 20px !important;
+    padding: 20px 14px 24px !important;
   }
 }
 
@@ -1212,7 +1252,7 @@ body.archive .archive-entry {
   grid-template-columns: none !important;
 }
 
-/* ヘッダーのサイトタイトル：SVGロゴで置換（テキストはSEOのため残す） */
+/* ヘッダーのサイトタイトル：拡張版SVGロゴで置換（剣＋盾＋クリスタル装飾入り） */
 #blog-title h1,
 .site-header h1,
 .site-title h1,
@@ -1222,12 +1262,14 @@ body.archive .archive-entry {
   background-position: center !important;
   background-size: contain !important;
   width: 100% !important;
-  max-width: 720px !important;
-  height: 130px !important;
+  max-width: 900px !important;
+  height: 200px !important;
   margin: 0 auto !important;
   text-indent: -9999em !important;
   overflow: hidden !important;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.7)) !important;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8)) !important;
+  position: relative;
+  z-index: 3;
 }
 
 #blog-title h1 a,
@@ -1250,8 +1292,8 @@ body.archive .archive-entry {
   .site-header h1,
   .site-title h1,
   #title {
-    max-width: 360px !important;
-    height: 80px !important;
+    max-width: 380px !important;
+    height: 110px !important;
   }
 }
 @media (max-width: 380px) {
@@ -1259,8 +1301,8 @@ body.archive .archive-entry {
   .site-header h1,
   .site-title h1,
   #title {
-    max-width: 300px !important;
-    height: 65px !important;
+    max-width: 320px !important;
+    height: 90px !important;
   }
 }
 

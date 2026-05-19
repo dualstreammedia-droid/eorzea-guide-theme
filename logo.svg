@@ -1,27 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="エオルゼア攻略ガイド">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="エオルゼア攻略ガイド">
   <defs>
     <style type="text/css"><![CDATA[
-      @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Shippori+Mincho:wght@500;700&display=swap');
-      .title { font-family: 'Cinzel Decorative', 'Cinzel', serif; font-weight: 900; font-size: 68px; }
-      .sub   { font-family: 'Shippori Mincho', 'Noto Serif JP', serif; font-weight: 600; font-size: 22px; letter-spacing: 0.42em; }
+      @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@500;700&family=Shippori+Mincho:wght@500;700&display=swap');
+      .title    { font-family: 'Cinzel Decorative', 'Cinzel', serif; font-weight: 900; font-size: 78px; }
+      .sub-ja   { font-family: 'Shippori Mincho', 'Noto Serif JP', serif; font-weight: 600; font-size: 24px; letter-spacing: 0.55em; }
+      .sub-en   { font-family: 'Cinzel', serif; font-weight: 500; font-size: 16px; letter-spacing: 0.25em; }
     ]]></style>
-    <linearGradient id="g-gold-crystal" x1="0%" y1="20%" x2="100%" y2="80%">
-      <stop offset="0%"   stop-color="#f5d878"/>
-      <stop offset="35%"  stop-color="#f0d68e"/>
-      <stop offset="55%"  stop-color="#d8c5a0"/>
-      <stop offset="75%"  stop-color="#a8c8dc"/>
+    <linearGradient id="g-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fff5d1"/>
+      <stop offset="35%"  stop-color="#f5d878"/>
+      <stop offset="65%"  stop-color="#d8a040"/>
+      <stop offset="100%" stop-color="#8a6010"/>
+    </linearGradient>
+    <linearGradient id="g-crystal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#d8eef8"/>
+      <stop offset="40%"  stop-color="#7eb8d4"/>
+      <stop offset="100%" stop-color="#2a6a98"/>
+    </linearGradient>
+    <linearGradient id="g-text" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#fff5d1"/>
+      <stop offset="35%"  stop-color="#f5d878"/>
+      <stop offset="55%"  stop-color="#e8c478"/>
+      <stop offset="75%"  stop-color="#b8d0e8"/>
       <stop offset="100%" stop-color="#7eb8d4"/>
     </linearGradient>
     <linearGradient id="g-line" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%"   stop-color="rgba(245,216,120,0)"/>
-      <stop offset="20%"  stop-color="rgba(240,214,142,0.8)"/>
-      <stop offset="50%"  stop-color="rgba(216,197,160,1)"/>
-      <stop offset="80%"  stop-color="rgba(126,184,212,0.8)"/>
+      <stop offset="15%"  stop-color="rgba(245,216,120,0.7)"/>
+      <stop offset="50%"  stop-color="rgba(255,235,180,1)"/>
+      <stop offset="85%"  stop-color="rgba(126,184,212,0.7)"/>
       <stop offset="100%" stop-color="rgba(126,184,212,0)"/>
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -29,34 +48,56 @@
     </filter>
   </defs>
 
-  <!-- 上下ライン -->
-  <line x1="80" y1="36" x2="820" y2="36" stroke="url(#g-line)" stroke-width="1.5"/>
-  <line x1="80" y1="178" x2="820" y2="178" stroke="url(#g-line)" stroke-width="1.5"/>
+  <!-- 上下のロング装飾ライン -->
+  <line x1="60" y1="38" x2="1140" y2="38" stroke="url(#g-line)" stroke-width="1.5"/>
+  <line x1="60" y1="232" x2="1140" y2="232" stroke="url(#g-line)" stroke-width="1.5"/>
 
-  <!-- 端の装飾点 -->
-  <circle cx="80" cy="36" r="2" fill="#f5d878"/>
-  <circle cx="820" cy="36" r="2" fill="#7eb8d4"/>
-  <circle cx="80" cy="178" r="2" fill="#f5d878"/>
-  <circle cx="820" cy="178" r="2" fill="#7eb8d4"/>
+  <!-- 端の装飾ダイヤ -->
+  <g transform="translate(60, 38)" fill="#f5d878"><polygon points="0,-4 4,0 0,4 -4,0"/></g>
+  <g transform="translate(1140, 38)" fill="#7eb8d4"><polygon points="0,-4 4,0 0,4 -4,0"/></g>
+  <g transform="translate(60, 232)" fill="#f5d878"><polygon points="0,-4 4,0 0,4 -4,0"/></g>
+  <g transform="translate(1140, 232)" fill="#7eb8d4"><polygon points="0,-4 4,0 0,4 -4,0"/></g>
 
-  <!-- 上の中央クリスタル装飾 -->
-  <g transform="translate(450, 28)" fill="url(#g-gold-crystal)" filter="url(#glow)">
-    <polygon points="0,-10 7,-2 5,8 -5,8 -7,-2"/>
-    <polygon points="0,-10 7,-2 0,0" fill="#ffe9b5" opacity="0.6"/>
+  <!-- 左側：剣と盾のエンブレム -->
+  <g transform="translate(200, 130)" filter="url(#soft-glow)">
+    <!-- 盾本体 -->
+    <path d="M -36,-40 L 36,-40 L 36,15 Q 36,40 0,55 Q -36,40 -36,15 Z"
+          fill="url(#g-gold)" stroke="#8a6010" stroke-width="1.5" opacity="0.95"/>
+    <!-- 盾の中央クリスタル -->
+    <polygon points="0,-25 14,-5 7,15 -7,15 -14,-5" fill="url(#g-crystal)" stroke="#2a6a98" stroke-width="1"/>
+    <!-- 盾のハイライト -->
+    <path d="M -28,-35 L 28,-35" stroke="#fff5d1" stroke-width="1" opacity="0.6"/>
+    <!-- 剣（盾の後ろ・縦） -->
+    <line x1="0" y1="-65" x2="0" y2="65" stroke="url(#g-gold)" stroke-width="3"/>
+    <line x1="-18" y1="-50" x2="18" y2="-50" stroke="url(#g-gold)" stroke-width="3"/>
+    <polygon points="0,-70 -4,-62 4,-62" fill="#f5d878"/>
+    <polygon points="0,67 -3,72 3,72" fill="#8a6010"/>
   </g>
 
-  <!-- 下の中央クリスタル装飾（小） -->
-  <g transform="translate(450, 186)" fill="url(#g-gold-crystal)">
-    <polygon points="0,-6 4,-1 3,5 -3,5 -4,-1"/>
+  <!-- 右側：クリスタル装飾 -->
+  <g transform="translate(1000, 130)" filter="url(#soft-glow)">
+    <!-- 大クリスタル -->
+    <polygon points="0,-55 22,-15 14,40 -14,40 -22,-15" fill="url(#g-crystal)" stroke="#2a6a98" stroke-width="1.5"/>
+    <polygon points="0,-55 22,-15 0,-10" fill="#d8eef8" opacity="0.7"/>
+    <!-- 小クリスタル左 -->
+    <polygon points="-40,30 -28,5 -22,30 -28,50" fill="url(#g-crystal)" opacity="0.85"/>
+    <!-- 小クリスタル右 -->
+    <polygon points="38,15 26,-8 22,15 30,35" fill="url(#g-crystal)" opacity="0.85"/>
   </g>
 
-  <!-- メインタイトル EORZEA -->
-  <text x="450" y="118" text-anchor="middle" class="title" fill="url(#g-gold-crystal)" letter-spacing="0.12em" filter="url(#glow)">EORZEA</text>
+  <!-- 中央メインタイトル EORZEA -->
+  <text x="600" y="125" text-anchor="middle" class="title"
+        fill="url(#g-text)" letter-spacing="0.14em" filter="url(#glow)">EORZEA</text>
 
-  <!-- 装飾セパレータ ✦ -->
-  <text x="320" y="155" text-anchor="middle" font-size="14" fill="#d8c5a0" opacity="0.7">✦</text>
-  <text x="580" y="155" text-anchor="middle" font-size="14" fill="#d8c5a0" opacity="0.7">✦</text>
+  <!-- セパレータ ✦ ✦ -->
+  <text x="430" y="175" text-anchor="middle" font-size="16" fill="#e8c478" opacity="0.75">✦</text>
+  <text x="770" y="175" text-anchor="middle" font-size="16" fill="#e8c478" opacity="0.75">✦</text>
 
-  <!-- サブタイトル日本語 -->
-  <text x="450" y="158" text-anchor="middle" class="sub" fill="#e8d4a0">攻 略 ガ イ ド</text>
+  <!-- 日本語サブタイトル -->
+  <text x="600" y="178" text-anchor="middle" class="sub-ja" fill="#f0d68e">攻 略 ガ イ ド</text>
+
+  <!-- 英語サブコピー -->
+  <text x="600" y="210" text-anchor="middle" class="sub-en" fill="#b8c8d8" opacity="0.85">
+    — Adventures and Discoveries in Eorzea —
+  </text>
 </svg>
