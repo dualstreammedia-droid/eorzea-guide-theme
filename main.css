@@ -105,19 +105,26 @@ a:hover { color: var(--link-hover) !important; }
   margin-top: 10px !important;
 }
 
-/* ヘッダー背景：自前画像対応 */
+/* ヘッダー背景：自前画像対応（2026-05-19 v3: ぬいぐるみ部屋＋ララフェル2人） */
 #blog-title.with-bg-image, .site-header.with-bg-image {
   background:
-    linear-gradient(180deg, rgba(3,6,16,0.55) 0%, rgba(7,13,30,0.35) 50%, rgba(13,21,48,0.75) 100%),
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519063550.jpg') center center / cover no-repeat,
-    linear-gradient(180deg, #030610 0%, #070d1e 65%, #0d1530 100%) !important;
-  min-height: 200px;
+    linear-gradient(180deg, rgba(20,12,8,0.40) 0%, rgba(20,12,8,0.25) 40%, rgba(20,12,8,0.55) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519220013.jpg') center 35% / cover no-repeat,
+    linear-gradient(180deg, #2a1f15 0%, #1a1208 100%) !important;
+  background-color: #2a1f15;
+  min-height: 240px;
 }
 
+/* スマホ：画像全体が見えるよう contain 表示・暖色背景で埋める */
 @media (max-width: 768px) {
   #blog-title.with-bg-image, .site-header.with-bg-image {
-    background-position: center center, center center, center !important;
-    min-height: 140px;
+    background:
+      linear-gradient(180deg, rgba(20,12,8,0.35) 0%, rgba(20,12,8,0.20) 40%, rgba(20,12,8,0.60) 100%),
+      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519220013.jpg') center top / contain no-repeat,
+      #1a1208 !important;
+    background-color: #1a1208 !important;
+    min-height: 220px;
+    padding: 16px 12px 20px !important;
   }
 }
 
@@ -1205,7 +1212,7 @@ body.archive .archive-entry {
   grid-template-columns: none !important;
 }
 
-/* ヘッダーのサイトタイトル：金→白＋強い影 */
+/* ヘッダーのサイトタイトル：暖かいゴールド＋強い影（暖色系画像に合わせる） */
 #blog-title a,
 #blog-title h1,
 #blog-title h1 a,
@@ -1213,8 +1220,8 @@ body.archive .archive-entry {
 .site-header h1 a,
 .site-header .site-name-content,
 #blog-title .site-name-content {
-  color: #ffffff !important;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.7) !important;
+  color: #f0d68e !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 6px rgba(0,0,0,0.75), 0 1px 2px rgba(0,0,0,0.85) !important;
   font-weight: 700 !important;
   letter-spacing: 1px !important;
 }
@@ -1223,14 +1230,14 @@ body.archive .archive-entry {
 .site-header .header-description,
 #blog-title .site-sub-copy,
 .site-header .site-sub-copy {
-  color: rgba(255,255,255,0.92) !important;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.5) !important;
+  color: rgba(255,238,200,0.95) !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.6) !important;
   font-weight: 500 !important;
 }
 
 #blog-title a:hover,
 .site-header a:hover {
-  color: #cfecf4 !important;
+  color: #ffe9b5 !important;
 }
 
 /* グロナビ：藍色→クリスタル */
@@ -1249,6 +1256,30 @@ body.archive .archive-entry {
 #eorzea-globalnav .nav-inner a.nav-index:hover {
   background: rgba(255,255,255,0.15) !important;
   color: #ffffff !important;
+}
+
+/* スマホ：グロナビが画面に収まるよう小型化 */
+@media (max-width: 768px) {
+  #eorzea-globalnav .nav-inner {
+    padding: 0 6px !important;
+    gap: 0 !important;
+  }
+  #eorzea-globalnav .nav-inner a {
+    font-size: 0.72rem !important;
+    padding: 8px 8px !important;
+    letter-spacing: 0 !important;
+  }
+  #eorzea-globalnav .nav-inner a.nav-index {
+    font-size: 0.72rem !important;
+    margin: 4px 4px !important;
+    padding: 4px 10px !important;
+  }
+}
+@media (max-width: 380px) {
+  #eorzea-globalnav .nav-inner a {
+    font-size: 0.66rem !important;
+    padding: 8px 6px !important;
+  }
 }
 
 /* ================================================================
