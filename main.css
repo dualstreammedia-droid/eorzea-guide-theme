@@ -1878,6 +1878,111 @@ body {
   --img-crystal-small: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233508.png');
 }
 
+/* ================================================================
+   重要修正：.archive-entry（トップページの記事カード）にも全装飾を適用
+   2026-05-19 HARで判明：トップは .entry ではなく .archive-entry を使う
+   ================================================================ */
+
+/* 羊皮紙背景 */
+.archive-entry {
+  background:
+    radial-gradient(ellipse at top left, rgba(255,242,210,0.55) 0%, transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(255,242,210,0.55) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(253,246,227,0.94) 0%, rgba(245,232,200,0.94) 50%, rgba(239,221,178,0.94) 100%) !important;
+  border: 1px solid rgba(180, 130, 40, 0.55) !important;
+  border-radius: 4px !important;
+  box-shadow:
+    inset 0 0 50px rgba(180, 130, 40, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 4px 18px rgba(0, 0, 0, 0.18) !important;
+  position: relative !important;
+  margin-bottom: 28px !important;
+  padding: 30px 38px !important;
+  overflow: hidden !important;
+}
+
+/* 4コーナー装飾を archive-entry にも */
+.archive-entry::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background:
+    var(--img-corner-tl) top left / 80px auto no-repeat,
+    var(--img-corner-tr) top right / 80px auto no-repeat,
+    var(--img-corner-bl) bottom left / 80px auto no-repeat,
+    var(--img-corner-br) bottom right / 80px auto no-repeat !important;
+  pointer-events: none !important;
+  opacity: 0.85 !important;
+  z-index: 1 !important;
+  border-radius: 4px !important;
+}
+
+.archive-entry:hover {
+  border-color: rgba(180, 130, 40, 0.85) !important;
+  box-shadow:
+    inset 0 0 50px rgba(180, 130, 40, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 6px 24px rgba(0, 0, 0, 0.22),
+    0 0 24px rgba(240, 214, 142, 0.3) !important;
+}
+.archive-entry:hover::before { opacity: 1 !important; }
+
+/* archive-entry 内の要素を z-index 上に */
+.archive-entry > * { position: relative !important; z-index: 2 !important; }
+
+/* archive-entry タイトル：羊皮紙にコントラスト */
+.archive-entry-title,
+.archive-entry-title a,
+.archive-entry-header h1,
+.archive-entry-header h1 a {
+  color: #3a2a18 !important;
+  font-family: 'Shippori Mincho', 'Cinzel', 'Noto Serif JP', serif !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.45 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5) !important;
+  background: none !important;
+  -webkit-text-fill-color: #3a2a18 !important;
+  filter: none !important;
+}
+.archive-entry-title a:hover,
+.archive-entry-header h1 a:hover {
+  color: #8a6010 !important;
+  -webkit-text-fill-color: #8a6010 !important;
+}
+
+/* archive-entry のメタ情報・本文 */
+.archive-entry .entry-description,
+.archive-entry .archive-entry-body,
+.archive-entry-body p {
+  color: #2a1f10 !important;
+}
+
+/* archive-entry のカテゴリ・日付 */
+.archive-entry .categories,
+.archive-entry .entry-tags,
+.archive-entry time {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* スマホでもコーナー対応 */
+@media (max-width: 768px) {
+  .archive-entry {
+    padding: 18px 18px !important;
+  }
+  .archive-entry::before {
+    background-size: 50px auto, 50px auto, 50px auto, 50px auto !important;
+  }
+  .archive-entry-title,
+  .archive-entry-title a,
+  .archive-entry-header h1,
+  .archive-entry-header h1 a {
+    font-size: 1.15rem !important;
+  }
+}
+
 /* 記事カードに4コーナー装飾（既存::beforeを上書き） */
 .entry::before {
   background:
@@ -2125,9 +2230,10 @@ footer::before {
    - ページ背景（body）は本棚ホール画像（固定）
    - #main / .main-inner に羊皮紙テクスチャ
    ================================================================ */
+/* メインカラム：羊皮紙＋魔法陣（body本棚は左右余白で見える） */
 #main, .main-inner, #content-inner {
   background-image:
-    linear-gradient(180deg, rgba(253,246,227,0.35) 0%, transparent 30%, rgba(253,246,227,0.35) 100%),
+    linear-gradient(180deg, rgba(253,246,227,0.30) 0%, transparent 30%, rgba(253,246,227,0.35) 100%),
     url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233059.jpg') !important;
   background-repeat: no-repeat, repeat-y !important;
   background-position: center top !important;
@@ -2135,6 +2241,17 @@ footer::before {
   border-radius: 4px !important;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4) !important;
   border: 1px solid rgba(240,214,142,0.4) !important;
+  padding: 20px !important;
+}
+
+/* container類は透明にして body の本棚背景を見せる */
+#wrapper, #container, #content {
+  background: transparent !important;
+}
+
+/* サイドバー（#box2）も透明に（その中のhatena-moduleが個別に紺装飾を持つ） */
+#box2, #box2-inner {
+  background: transparent !important;
 }
 
 /* ヘッダー画像を新バナーに差し替え＋ヘッダー周辺の調整 */
