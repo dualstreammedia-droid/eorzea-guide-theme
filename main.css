@@ -1397,6 +1397,90 @@ body {
 }
 
 /* ================================================================
+   2026-05-19 オーナーフィードバック反映（追加修正）
+   - サブコピーが背景キャラと被って読めない → 半透明ボックス＋強影
+   - スマホ関連記事の右側がはみ出る → 1カラム強制
+   - スマホ本文の改行が多すぎる → line-break: loose に緩和
+   ================================================================ */
+
+/* ----- ヘッダーサブコピー（"FF14を楽しむためのガイドをお届けします"等） ----- */
+#blog-description,
+.site-description,
+.site-header .site-sub-copy,
+#blog-title .header-description,
+.site-header .header-description {
+  display: inline-block !important;
+  background: rgba(20,12,8,0.55) !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  padding: 5px 16px !important;
+  border-radius: 3px !important;
+  border: 1px solid rgba(240,214,142,0.3) !important;
+  color: #ffeac8 !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 2px rgba(0,0,0,0.8) !important;
+  font-size: 0.88rem !important;
+  letter-spacing: 0.08em !important;
+  margin-top: 14px !important;
+  font-weight: 500 !important;
+}
+
+@media (max-width: 768px) {
+  #blog-description,
+  .site-description,
+  .site-header .site-sub-copy,
+  #blog-title .header-description,
+  .site-header .header-description {
+    font-size: 0.78rem !important;
+    padding: 4px 12px !important;
+    margin-top: 10px !important;
+    letter-spacing: 0.04em !important;
+  }
+}
+
+/* ----- スマホ関連記事：1カラム強制（右側はみ出し対策） ----- */
+@media (max-width: 768px) {
+  .hatena-module-related-entries .hatena-urllist,
+  .entry-footer-section .urllist,
+  .related-entries ul,
+  .entry-footer-related ul {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .hatena-module-related-entries .urllist-item,
+  .entry-footer-section .urllist-item,
+  .related-entries li {
+    width: 100% !important;
+    margin: 0 0 10px 0 !important;
+    box-sizing: border-box !important;
+  }
+  /* こちらも読まれています も1カラム */
+  .next-reads ul {
+    grid-template-columns: 1fr !important;
+  }
+  /* 公式リンクも1カラム（既に対応済みだが念のため） */
+  .official-links ul {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ----- スマホ本文の改行を緩める（"2027年1月..." のような長文の改行過剰対策） ----- */
+@media (max-width: 768px) {
+  .entry-content p,
+  .entry-content li,
+  .entry-content dd,
+  .entry-content dt {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    line-break: loose !important;
+    hanging-punctuation: none !important;
+  }
+}
+
+/* ----- フォント表示安定化（読み込み中の文字化け防止） ----- */
+@font-face { font-display: swap; }
+
+/* ================================================================
    2026-05-19 クリスタル風全面リファクタ
    - 記事カード枠線・角飾り
    - 引用ボックス
