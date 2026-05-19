@@ -1864,6 +1864,95 @@ body {
 }
 
 /* ================================================================
+   Phase6: Gemini素材で四隅装飾＋フッターロールアイコン＋クリスタル
+   ================================================================ */
+
+/* CSS変数：装飾画像URL */
+:root {
+  --img-corner-tl: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234703.png');
+  --img-corner-tr: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234708.png');
+  --img-corner-bl: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234714.png');
+  --img-corner-br: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234720.png');
+  --img-role-strip: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233450.png');
+  --img-crystal-big: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233456.png');
+  --img-crystal-small: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233508.png');
+}
+
+/* 記事カードに4コーナー装飾（既存::beforeを上書き） */
+.entry::before {
+  background:
+    var(--img-corner-tl) top left / 80px auto no-repeat,
+    var(--img-corner-tr) top right / 80px auto no-repeat,
+    var(--img-corner-bl) bottom left / 80px auto no-repeat,
+    var(--img-corner-br) bottom right / 80px auto no-repeat !important;
+  opacity: 0.85 !important;
+  z-index: 1 !important;
+}
+
+.entry:hover::before {
+  opacity: 1 !important;
+}
+
+/* サイドバーモジュールに4コーナー装飾（既存::beforeを上書き） */
+.hatena-module::before, .widget::before, .module::before {
+  background:
+    var(--img-corner-tl) top left / 50px auto no-repeat,
+    var(--img-corner-tr) top right / 50px auto no-repeat,
+    var(--img-corner-bl) bottom left / 50px auto no-repeat,
+    var(--img-corner-br) bottom right / 50px auto no-repeat !important;
+  opacity: 0.9 !important;
+}
+
+/* サイドバーモジュールタイトルの◆を小クリスタル画像に */
+.hatena-module-title::before,
+.widget-title::before,
+.module-title::before {
+  content: '' !important;
+  width: 14px !important;
+  height: 18px !important;
+  background-image: var(--img-crystal-small) !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  filter: drop-shadow(0 0 4px rgba(126,184,212,0.6)) !important;
+}
+
+/* フッターにロールアイコン群 */
+#footer::before,
+.site-footer::before,
+footer::before {
+  content: '' !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 420px !important;
+  height: 56px !important;
+  margin: 0 auto 18px !important;
+  background-image: var(--img-role-strip) !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)) !important;
+}
+
+@media (max-width: 768px) {
+  #footer::before,
+  .site-footer::before,
+  footer::before {
+    max-width: 320px !important;
+    height: 44px !important;
+  }
+  /* スマホでコーナーフレーム少し小さく */
+  .entry::before {
+    background-size: 50px auto, 50px auto, 50px auto, 50px auto !important;
+  }
+  .hatena-module::before, .widget::before, .module::before {
+    background-size: 38px auto, 38px auto, 38px auto, 38px auto !important;
+  }
+}
+
+/* ================================================================
    Phase3: 記事カードを羊皮紙化＋金装飾（Eorzea Chronicle 準拠）
    - クリスタル化リファクタの記事カード部分を上書き
    ================================================================ */
