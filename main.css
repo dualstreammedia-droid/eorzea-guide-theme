@@ -2285,12 +2285,13 @@ footer::before {
     box-shadow: none !important;
     padding: 8px !important;
   }
-  /* スマホでは本棚画像も多少薄く（コンテンツ集中のため） */
+  /* スマホでも本棚画像を画面に表示（fixed は iOS で挙動不安定なので scroll + cover） */
   body {
     background:
-      linear-gradient(180deg, rgba(10,18,48,0.25) 0%, rgba(10,18,48,0.40) 40%, rgba(10,18,48,0.85) 90%, rgba(10,18,48,1) 100%),
-      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto no-repeat,
+      linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.10) 40%, rgba(10,18,48,0.30) 100%),
+      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center center / cover no-repeat scroll,
       linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
+    background-attachment: scroll, scroll, scroll !important;
   }
 }
 
