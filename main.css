@@ -35,8 +35,10 @@ html {
 
 body {
   background:
-    linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.08) 25%, rgba(10,18,48,0.35) 100%),
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto repeat-y,
+    /* 下に行くほど紺に溶け込むフェード（繰り返し継ぎ目を隠す） */
+    linear-gradient(180deg, rgba(10,18,48,0.08) 0%, rgba(10,18,48,0.20) 50%, rgba(10,18,48,0.85) 95%, rgba(10,18,48,1) 100%),
+    /* 本棚は1回だけ表示（繰り返さない） */
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto no-repeat,
     linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
   background-attachment: scroll, scroll, scroll !important;
   color: var(--text-body) !important;
@@ -1905,12 +1907,12 @@ body {
    Phase6: Gemini素材で四隅装飾＋フッターロールアイコン＋クリスタル
    ================================================================ */
 
-/* CSS変数：装飾画像URL */
+/* CSS変数：装飾画像URL（コーナーは透明化版） */
 :root {
-  --img-corner-tl: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234703.png');
-  --img-corner-tr: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234708.png');
-  --img-corner-bl: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234714.png');
-  --img-corner-br: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519234720.png');
+  --img-corner-tl: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260520/20260520122645.png');
+  --img-corner-tr: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260520/20260520122651.png');
+  --img-corner-bl: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260520/20260520122657.png');
+  --img-corner-br: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260520/20260520122703.png');
   --img-role-strip: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233450.png');
   --img-crystal-big: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233456.png');
   --img-crystal-small: url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233508.png');
@@ -2290,6 +2292,26 @@ footer::before {
 /* サイドバー（#box2）も透明に（その中のhatena-moduleが個別に紺装飾を持つ） */
 #box2, #box2-inner {
   background: transparent !important;
+}
+
+/* スマホ：#main の羊皮紙背景を弱める（記事カード羊皮紙との2重感解消） */
+@media (max-width: 768px) {
+  #main, .main-inner, #content-inner {
+    background-image: linear-gradient(180deg, rgba(253,246,227,0.10) 0%, transparent 30%, rgba(253,246,227,0.10) 100%) !important;
+    background-repeat: no-repeat !important;
+    background-position: center top !important;
+    background-size: 100% 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 8px !important;
+  }
+  /* スマホでは本棚画像も多少薄く（コンテンツ集中のため） */
+  body {
+    background:
+      linear-gradient(180deg, rgba(10,18,48,0.25) 0%, rgba(10,18,48,0.40) 40%, rgba(10,18,48,0.85) 90%, rgba(10,18,48,1) 100%),
+      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto no-repeat,
+      linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
+  }
 }
 
 /* ヘッダー画像を新バナーに差し替え＋ヘッダー周辺の調整 */
