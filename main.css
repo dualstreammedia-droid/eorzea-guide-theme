@@ -2077,6 +2077,26 @@ footer::before {
   background-image: none !important;
 }
 
+/* ============= 2026-05-20 ヘッダー画像をぬいぐるみ部屋に上書き ============= */
+#blog-title.with-bg-image, .site-header.with-bg-image,
+#blog-title, .site-header {
+  background-image:
+    linear-gradient(180deg, rgba(13,21,64,0.55) 0%, rgba(7,13,40,0.35) 50%, rgba(13,21,64,0.70) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519220013.jpg'),
+    linear-gradient(180deg, #2a1f15 0%, #1a1208 100%) !important;
+  background-size: auto, cover, auto !important;
+  background-position: center top, center 35%, center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat !important;
+}
+
+@media (max-width: 768px) {
+  #blog-title.with-bg-image, .site-header.with-bg-image,
+  #blog-title, .site-header {
+    background-size: auto, contain, auto !important;
+    background-position: center top, center top, center !important;
+  }
+}
+
 /* ================================================================
    Phase3: 記事カードを羊皮紙化＋金装飾（Eorzea Chronicle 準拠）
    - クリスタル化リファクタの記事カード部分を上書き
