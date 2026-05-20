@@ -1345,46 +1345,63 @@ body.archive .archive-entry {
 }
 
 /* ================================================================
-   Phase2: グロナビを金縁ボタン化（Eorzea Chronicle 風）
+   Phase2: グロナビをタブ風（Eorzea Chronicle 準拠）
+   - 上が角丸の選択タブ
+   - 下は紺色背景に溶け込む
+   - ホバーで上に浮く
    ================================================================ */
 
-/* グロナビ全体：紺グラデ＋金枠 */
+/* グロナビ全体：紺グラデ＋金枠（下に厚みのある金線） */
 #eorzea-globalnav {
   background: linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
   border-top: 1px solid rgba(240,214,142,0.4) !important;
-  border-bottom: 1px solid rgba(240,214,142,0.7) !important;
+  border-bottom: 2px solid rgba(240,214,142,0.75) !important;
   box-shadow:
     inset 0 1px 0 rgba(255,235,180,0.3),
-    0 2px 12px rgba(0,0,0,0.5) !important;
-  padding: 8px 0 !important;
+    0 2px 12px rgba(0,0,0,0.55) !important;
+  padding: 6px 0 0 !important;
+  min-height: 54px !important;
 }
 
 #eorzea-globalnav .nav-inner {
-  padding: 0 12px !important;
-  gap: 6px !important;
+  padding: 0 8px !important;
+  gap: 2px !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
 }
 
-/* 各ナビボタン：金縁＋暗紺グラデ＋金文字 */
+/* 各タブ：上だけ角丸・下は枠なし */
 #eorzea-globalnav .nav-inner a {
-  display: inline-block !important;
-  background: linear-gradient(180deg, rgba(20,32,68,0.85) 0%, rgba(10,18,48,0.95) 100%) !important;
-  border: 1px solid rgba(240,214,142,0.55) !important;
-  border-radius: 4px !important;
-  padding: 7px 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(180deg, rgba(30,45,90,0.75) 0%, rgba(15,25,60,0.95) 100%) !important;
+  border: 1px solid rgba(240,214,142,0.6) !important;
+  border-bottom: none !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 10px 16px 14px !important;
   color: #f0d68e !important;
   font-family: 'Cinzel', 'Shippori Mincho', 'Noto Serif JP', serif !important;
   font-weight: 600 !important;
-  font-size: 0.84rem !important;
+  font-size: 0.82rem !important;
   letter-spacing: 0.06em !important;
   text-decoration: none !important;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.7) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.85) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,235,180,0.25),
-    inset 0 -1px 0 rgba(0,0,0,0.3),
-    0 1px 4px rgba(0,0,0,0.4) !important;
+    inset 0 1px 0 rgba(255,235,180,0.35),
+    inset 1px 0 0 rgba(240,214,142,0.2),
+    inset -1px 0 0 rgba(240,214,142,0.2),
+    0 -3px 8px rgba(0,0,0,0.3) !important;
   transition: all 0.25s !important;
   position: relative !important;
   white-space: nowrap !important;
+  min-height: 44px !important;
+}
+
+/* 絵文字を大きく表示（::first-letter で先頭の絵文字を大きく） */
+#eorzea-globalnav .nav-inner a::first-letter {
+  font-size: 1.25em !important;
+  margin-right: 4px !important;
 }
 
 /* ::after の下線エフェクトは無効化（ボタン化のため） */
@@ -1397,41 +1414,57 @@ body.archive .archive-entry {
   content: '' !important;
   position: absolute !important;
   inset: 1px !important;
-  border-radius: 3px !important;
-  background: linear-gradient(180deg, rgba(255,235,180,0.06) 0%, transparent 50%, rgba(126,184,212,0.08) 100%) !important;
+  border-radius: 11px 11px 0 0 !important;
+  background: linear-gradient(180deg, rgba(255,235,180,0.10) 0%, transparent 60%, rgba(126,184,212,0.10) 100%) !important;
   pointer-events: none !important;
-  opacity: 0 !important;
+  opacity: 0.7 !important;
   transition: opacity 0.25s !important;
 }
 
-/* ホバー：明るく光る */
+/* ホバー：上に浮く・光る */
 #eorzea-globalnav .nav-inner a:hover {
-  background: linear-gradient(180deg, rgba(40,60,120,0.9) 0%, rgba(20,32,68,1) 100%) !important;
-  border-color: rgba(255,235,180,0.95) !important;
+  background: linear-gradient(180deg, rgba(50,75,140,0.95) 0%, rgba(25,40,90,1) 100%) !important;
+  border-color: rgba(255,235,180,1) !important;
   color: #ffeac8 !important;
+  transform: translateY(-3px) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,235,180,0.5),
-    0 0 14px rgba(240,214,142,0.45),
-    0 1px 4px rgba(0,0,0,0.4) !important;
+    inset 0 1px 0 rgba(255,235,180,0.55),
+    inset 1px 0 0 rgba(240,214,142,0.4),
+    inset -1px 0 0 rgba(240,214,142,0.4),
+    0 -2px 16px rgba(240,214,142,0.5),
+    0 0 24px rgba(240,214,142,0.3) !important;
 }
 #eorzea-globalnav .nav-inner a:hover::before { opacity: 1 !important; }
 
-/* 「全記事一覧」ボタンは特別にグラデで目立たせる */
+/* 「全記事一覧」は金グラデで強調 */
 #eorzea-globalnav .nav-inner a.nav-index {
-  background: linear-gradient(180deg, rgba(245,216,120,0.22) 0%, rgba(216,160,64,0.32) 100%) !important;
-  border: 1px solid rgba(255,235,180,0.85) !important;
+  background: linear-gradient(180deg, rgba(245,216,120,0.32) 0%, rgba(216,160,64,0.42) 100%) !important;
+  border: 1px solid rgba(255,235,180,0.95) !important;
   color: #fff5d1 !important;
   font-weight: 700 !important;
-  margin: 0 6px !important;
-  padding: 7px 18px !important;
+  margin: 0 4px !important;
+  padding: 10px 20px 14px !important;
 }
 #eorzea-globalnav .nav-inner a.nav-index:hover {
-  background: linear-gradient(180deg, rgba(245,216,120,0.38) 0%, rgba(216,160,64,0.48) 100%) !important;
+  background: linear-gradient(180deg, rgba(245,216,120,0.48) 0%, rgba(216,160,64,0.58) 100%) !important;
   color: #ffffff !important;
+  transform: translateY(-3px) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,235,180,0.6),
-    0 0 18px rgba(240,214,142,0.65),
-    0 1px 4px rgba(0,0,0,0.4) !important;
+    inset 0 1px 0 rgba(255,235,180,0.65),
+    0 -2px 20px rgba(240,214,142,0.7),
+    0 0 28px rgba(240,214,142,0.4) !important;
+}
+
+/* タブ間の小クリスタル装飾セパレータ（隣接タブ間） */
+#eorzea-globalnav .nav-inner a + a::after {
+  content: '✦' !important;
+  position: absolute !important;
+  left: -10px !important;
+  bottom: 14px !important;
+  color: rgba(240,214,142,0.6) !important;
+  font-size: 0.6rem !important;
+  pointer-events: none !important;
+  display: block !important;
 }
 
 /* ================================================================
@@ -1536,28 +1569,33 @@ body {
 /* スマホ：グロナビを折り返し表示で全項目を画面内に収める（切れ問題対応） */
 @media (max-width: 768px) {
   #eorzea-globalnav .nav-inner {
-    padding: 4px 6px !important;
+    padding: 2px 4px 0 !important;
     gap: 2px !important;
     flex-wrap: wrap !important;
     overflow-x: visible !important;
     overflow-y: visible !important;
     justify-content: center !important;
-    -webkit-overflow-scrolling: auto !important;
+    align-items: flex-end !important;
   }
   #eorzea-globalnav .nav-inner a {
-    font-size: 0.7rem !important;
-    padding: 6px 9px !important;
+    font-size: 0.66rem !important;
+    padding: 5px 8px 8px !important;
     letter-spacing: 0 !important;
     flex: 0 0 auto !important;
     white-space: nowrap !important;
+    border-radius: 8px 8px 0 0 !important;
+    min-height: 32px !important;
   }
   #eorzea-globalnav .nav-inner a.nav-index {
-    font-size: 0.7rem !important;
-    margin: 3px 3px !important;
-    padding: 4px 10px !important;
+    font-size: 0.66rem !important;
+    margin: 0 2px !important;
+    padding: 5px 10px 8px !important;
   }
-  /* 下線エフェクトはスマホでは無効（折り返し時に位置がずれるため） */
-  #eorzea-globalnav .nav-inner a::after {
+  #eorzea-globalnav .nav-inner a::first-letter {
+    font-size: 1.1em !important;
+  }
+  /* スマホでは ✦ セパレータ非表示 */
+  #eorzea-globalnav .nav-inner a + a::after {
     display: none !important;
   }
 }
