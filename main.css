@@ -35,12 +35,10 @@ html {
 
 body {
   background:
-    /* 下に行くほど紺に溶け込むフェード（繰り返し継ぎ目を隠す） */
-    linear-gradient(180deg, rgba(10,18,48,0.08) 0%, rgba(10,18,48,0.20) 50%, rgba(10,18,48,0.85) 95%, rgba(10,18,48,1) 100%),
-    /* 本棚は1回だけ表示（繰り返さない） */
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto no-repeat,
+    linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.10) 40%, rgba(10,18,48,0.35) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center center / cover no-repeat fixed,
     linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
-  background-attachment: scroll, scroll, scroll !important;
+  background-attachment: scroll, fixed, scroll !important;
   color: var(--text-body) !important;
   font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important;
   font-size: 16px !important;
@@ -2023,79 +2021,60 @@ body {
   }
 }
 
-/* 記事カードに4コーナー装飾（既存::beforeを上書き・拡大版） */
-.entry::before {
+/* 装飾画像を全部外す：元の金線・◆に戻す */
+
+/* 記事カードのコーナーを金線に戻す（Phase3の金角飾りに） */
+.entry::before, .archive-entry::before {
   background:
-    var(--img-corner-tl) top left / 140px auto no-repeat,
-    var(--img-corner-tr) top right / 140px auto no-repeat,
-    var(--img-corner-bl) bottom left / 140px auto no-repeat,
-    var(--img-corner-br) bottom right / 140px auto no-repeat !important;
-  opacity: 1 !important;
+    linear-gradient(to right,  #8a6010 8px, transparent 8px) top left    / 16px 1px no-repeat,
+    linear-gradient(to bottom, #8a6010 8px, transparent 8px) top left    / 1px 16px no-repeat,
+    linear-gradient(to left,   #8a6010 8px, transparent 8px) top right   / 16px 1px no-repeat,
+    linear-gradient(to bottom, #8a6010 8px, transparent 8px) top right   / 1px 16px no-repeat,
+    linear-gradient(to right,  #8a6010 8px, transparent 8px) bottom left / 16px 1px no-repeat,
+    linear-gradient(to top,    #8a6010 8px, transparent 8px) bottom left / 1px 16px no-repeat,
+    linear-gradient(to left,   #8a6010 8px, transparent 8px) bottom right/ 16px 1px no-repeat,
+    linear-gradient(to top,    #8a6010 8px, transparent 8px) bottom right/ 1px 16px no-repeat !important;
+  opacity: 0.75 !important;
   z-index: 1 !important;
 }
+.entry:hover::before, .archive-entry:hover::before { opacity: 1 !important; }
 
-.entry:hover::before {
-  opacity: 1 !important;
-}
-
-/* サイドバーモジュールに4コーナー装飾（拡大版） */
+/* サイドバーモジュールも金線角飾りに戻す */
 .hatena-module::before, .widget::before, .module::before {
   background:
-    var(--img-corner-tl) top left / 80px auto no-repeat,
-    var(--img-corner-tr) top right / 80px auto no-repeat,
-    var(--img-corner-bl) bottom left / 80px auto no-repeat,
-    var(--img-corner-br) bottom right / 80px auto no-repeat !important;
-  opacity: 1 !important;
+    linear-gradient(to right,  #f5d878 6px, transparent 6px) top left    / 10px 1px no-repeat,
+    linear-gradient(to bottom, #f5d878 6px, transparent 6px) top left    / 1px 10px no-repeat,
+    linear-gradient(to left,   #7eb8d4 6px, transparent 6px) top right   / 10px 1px no-repeat,
+    linear-gradient(to bottom, #7eb8d4 6px, transparent 6px) top right   / 1px 10px no-repeat,
+    linear-gradient(to right,  #7eb8d4 6px, transparent 6px) bottom left / 10px 1px no-repeat,
+    linear-gradient(to top,    #7eb8d4 6px, transparent 6px) bottom left / 1px 10px no-repeat,
+    linear-gradient(to left,   #f5d878 6px, transparent 6px) bottom right/ 10px 1px no-repeat,
+    linear-gradient(to top,    #f5d878 6px, transparent 6px) bottom right/ 1px 10px no-repeat !important;
+  opacity: 0.9 !important;
 }
 
-/* サイドバーモジュールタイトルの◆を小クリスタル画像に */
+/* サイドバータイトルの◆を文字に戻す */
 .hatena-module-title::before,
 .widget-title::before,
 .module-title::before {
-  content: '' !important;
-  width: 14px !important;
-  height: 18px !important;
-  background-image: var(--img-crystal-small) !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
+  content: '◆' !important;
+  background-image: none !important;
+  width: auto !important;
+  height: auto !important;
   display: inline-block !important;
-  vertical-align: middle !important;
-  filter: drop-shadow(0 0 4px rgba(126,184,212,0.6)) !important;
+  color: #7eb8d4 !important;
+  font-size: 0.7rem !important;
+  text-shadow: 0 0 6px rgba(126,184,212,0.6) !important;
+  filter: none !important;
 }
 
-/* フッターにロールアイコン群 */
+/* フッターのロールアイコンを表示しない */
 #footer::before,
 .site-footer::before,
 footer::before {
-  content: '' !important;
-  display: block !important;
-  width: 100% !important;
-  max-width: 420px !important;
-  height: 56px !important;
-  margin: 0 auto 18px !important;
-  background-image: var(--img-role-strip) !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)) !important;
-}
-
-@media (max-width: 768px) {
-  #footer::before,
-  .site-footer::before,
-  footer::before {
-    max-width: 320px !important;
-    height: 44px !important;
-  }
-  /* スマホでコーナーフレーム少し小さく */
-  .entry::before,
-  .archive-entry::before {
-    background-size: 80px auto, 80px auto, 80px auto, 80px auto !important;
-  }
-  .hatena-module::before, .widget::before, .module::before {
-    background-size: 55px auto, 55px auto, 55px auto, 55px auto !important;
-  }
+  content: none !important;
+  display: none !important;
+  background-image: none !important;
 }
 
 /* ================================================================
