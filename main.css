@@ -35,10 +35,14 @@ html {
 
 body {
   background:
-    linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.10) 40%, rgba(10,18,48,0.35) 100%),
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center center / cover no-repeat fixed,
+    /* 中央のオーバーレイ（薄め） */
+    linear-gradient(180deg, rgba(10,18,48,0.10) 0%, rgba(10,18,48,0.05) 50%, rgba(10,18,48,0.20) 100%),
+    /* 左本棚：左端固定・縦に伸ばす */
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073212.jpg') left top / auto 100vh repeat-y,
+    /* 右本棚：右端固定・縦に伸ばす */
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073219.jpg') right top / auto 100vh repeat-y,
     linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
-  background-attachment: scroll, fixed, scroll !important;
+  background-attachment: scroll, fixed, fixed, scroll !important;
   color: var(--text-body) !important;
   font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important;
   font-size: 16px !important;
@@ -2305,13 +2309,14 @@ footer::before {
     box-shadow: none !important;
     padding: 8px !important;
   }
-  /* スマホ：本棚画像を画面幅にフィット（縦長スマホで両端本棚が見える） */
+  /* スマホ：左右の本棚を細めに配置（縦長画面でも両端に見える） */
   body {
     background:
-      linear-gradient(180deg, rgba(10,18,48,0.15) 0%, transparent 35%, rgba(10,18,48,0.50) 75%, rgba(10,18,48,1) 100%),
-      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto no-repeat scroll,
+      linear-gradient(180deg, rgba(10,18,48,0.15) 0%, rgba(10,18,48,0.10) 50%, rgba(10,18,48,0.25) 100%),
+      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073212.jpg') left top / 60px 100vh repeat-y,
+      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073219.jpg') right top / 60px 100vh repeat-y,
       linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
-    background-attachment: scroll, scroll, scroll !important;
+    background-attachment: scroll, fixed, fixed, scroll !important;
   }
 }
 
