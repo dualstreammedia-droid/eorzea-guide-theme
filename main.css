@@ -35,10 +35,10 @@ html {
 
 body {
   background:
-    linear-gradient(180deg, rgba(10,18,48,0.35) 0%, rgba(10,18,48,0.15) 30%, rgba(10,18,48,0.45) 100%),
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / cover no-repeat fixed,
-    #0a1230 !important;
-  background-attachment: fixed, fixed, scroll !important;
+    linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.08) 25%, rgba(10,18,48,0.35) 100%),
+    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260519/20260519233034.png') center top / 100% auto repeat-y,
+    linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
+  background-attachment: scroll, scroll, scroll !important;
   color: var(--text-body) !important;
   font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important;
   font-size: 16px !important;
