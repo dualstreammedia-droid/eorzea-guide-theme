@@ -1941,18 +1941,18 @@ body {
   overflow: hidden !important;
 }
 
-/* 4コーナー装飾を archive-entry にも */
+/* 4コーナー装飾を archive-entry にも（拡大版） */
 .archive-entry::before {
   content: '' !important;
   position: absolute !important;
   inset: 0 !important;
   background:
-    var(--img-corner-tl) top left / 80px auto no-repeat,
-    var(--img-corner-tr) top right / 80px auto no-repeat,
-    var(--img-corner-bl) bottom left / 80px auto no-repeat,
-    var(--img-corner-br) bottom right / 80px auto no-repeat !important;
+    var(--img-corner-tl) top left / 140px auto no-repeat,
+    var(--img-corner-tr) top right / 140px auto no-repeat,
+    var(--img-corner-bl) bottom left / 140px auto no-repeat,
+    var(--img-corner-br) bottom right / 140px auto no-repeat !important;
   pointer-events: none !important;
-  opacity: 0.85 !important;
+  opacity: 1 !important;
   z-index: 1 !important;
   border-radius: 4px !important;
 }
@@ -2023,14 +2023,14 @@ body {
   }
 }
 
-/* 記事カードに4コーナー装飾（既存::beforeを上書き） */
+/* 記事カードに4コーナー装飾（既存::beforeを上書き・拡大版） */
 .entry::before {
   background:
-    var(--img-corner-tl) top left / 80px auto no-repeat,
-    var(--img-corner-tr) top right / 80px auto no-repeat,
-    var(--img-corner-bl) bottom left / 80px auto no-repeat,
-    var(--img-corner-br) bottom right / 80px auto no-repeat !important;
-  opacity: 0.85 !important;
+    var(--img-corner-tl) top left / 140px auto no-repeat,
+    var(--img-corner-tr) top right / 140px auto no-repeat,
+    var(--img-corner-bl) bottom left / 140px auto no-repeat,
+    var(--img-corner-br) bottom right / 140px auto no-repeat !important;
+  opacity: 1 !important;
   z-index: 1 !important;
 }
 
@@ -2038,14 +2038,14 @@ body {
   opacity: 1 !important;
 }
 
-/* サイドバーモジュールに4コーナー装飾（既存::beforeを上書き） */
+/* サイドバーモジュールに4コーナー装飾（拡大版） */
 .hatena-module::before, .widget::before, .module::before {
   background:
-    var(--img-corner-tl) top left / 50px auto no-repeat,
-    var(--img-corner-tr) top right / 50px auto no-repeat,
-    var(--img-corner-bl) bottom left / 50px auto no-repeat,
-    var(--img-corner-br) bottom right / 50px auto no-repeat !important;
-  opacity: 0.9 !important;
+    var(--img-corner-tl) top left / 80px auto no-repeat,
+    var(--img-corner-tr) top right / 80px auto no-repeat,
+    var(--img-corner-bl) bottom left / 80px auto no-repeat,
+    var(--img-corner-br) bottom right / 80px auto no-repeat !important;
+  opacity: 1 !important;
 }
 
 /* サイドバーモジュールタイトルの◆を小クリスタル画像に */
@@ -2089,11 +2089,12 @@ footer::before {
     height: 44px !important;
   }
   /* スマホでコーナーフレーム少し小さく */
-  .entry::before {
-    background-size: 50px auto, 50px auto, 50px auto, 50px auto !important;
+  .entry::before,
+  .archive-entry::before {
+    background-size: 80px auto, 80px auto, 80px auto, 80px auto !important;
   }
   .hatena-module::before, .widget::before, .module::before {
-    background-size: 38px auto, 38px auto, 38px auto, 38px auto !important;
+    background-size: 55px auto, 55px auto, 55px auto, 55px auto !important;
   }
 }
 
