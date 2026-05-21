@@ -6,7 +6,7 @@
    最終更新: 2026-05-19
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Noto+Serif+JP:wght@400;500;700&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Cormorant+SC:wght@400;500;600;700&family=Marcellus&family=Noto+Serif+JP:wght@400;500;700&family=Shippori+Mincho:wght@400;500;600;700;800&family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap');
 
 :root {
   --bg-page:       #f5f2eb;
@@ -2164,17 +2164,17 @@ footer::before {
 /* 記事内コンテンツが背景テクスチャの上に来るようz-index */
 .entry > * { position: relative !important; z-index: 2 !important; }
 
-/* 記事タイトル：濃褐色＋古文書フォント（羊皮紙にコントラスト） */
+/* 記事タイトル：FF14ジョブガイド見出し風（Marcellus英字＋Zen Old Mincho日本語） */
 .entry-title,
 .entry-title a,
 .archive-entry-title,
 .archive-entry-title a {
   color: #3a2a18 !important;
-  font-family: 'Shippori Mincho', 'Cinzel', 'Noto Serif JP', serif !important;
+  font-family: 'Marcellus', 'Cormorant SC', 'Zen Old Mincho', 'Shippori Mincho', 'Noto Serif JP', serif !important;
   font-size: 1.5rem !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.02em !important;
-  line-height: 1.45 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.5 !important;
   text-shadow: 0 1px 0 rgba(255,255,255,0.5) !important;
   background: none !important;
   -webkit-text-fill-color: #3a2a18 !important;
@@ -2187,12 +2187,16 @@ footer::before {
   -webkit-text-fill-color: #8a6010 !important;
 }
 
-/* 記事内 h2：金線左ボーダー＋濃褐色 */
+/* 記事内 h2：FF14コンテンツ詳細風（Marcellus英字＋Zen Old Mincho日本語） */
 .entry-content h2 {
   color: #3a2a18 !important;
   background: linear-gradient(90deg, rgba(180,130,40,0.12) 0%, transparent 60%) !important;
   border-left: 4px solid #8a6010 !important;
   border-bottom: 1px solid rgba(180,130,40,0.30) !important;
+  font-family: 'Marcellus', 'Cormorant SC', 'Zen Old Mincho', 'Shippori Mincho', serif !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  font-size: 1.28rem !important;
 }
 
 /* 記事内 h3：褐色・落ち着いた金 */
