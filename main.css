@@ -1925,21 +1925,15 @@ body {
    2026-05-19 HARで判明：トップは .entry ではなく .archive-entry を使う
    ================================================================ */
 
-/* 羊皮紙背景 */
+/* archive-entry：シンプル白基調 */
 .archive-entry {
-  background:
-    radial-gradient(ellipse at top left, rgba(255,242,210,0.55) 0%, transparent 60%),
-    radial-gradient(ellipse at bottom right, rgba(255,242,210,0.55) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(253,246,227,0.94) 0%, rgba(245,232,200,0.94) 50%, rgba(239,221,178,0.94) 100%) !important;
-  border: 1px solid rgba(180, 130, 40, 0.55) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(180, 130, 40, 0.35) !important;
   border-radius: 4px !important;
-  box-shadow:
-    inset 0 0 50px rgba(180, 130, 40, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 4px 18px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12) !important;
   position: relative !important;
-  margin-bottom: 28px !important;
-  padding: 30px 38px !important;
+  margin-bottom: 24px !important;
+  padding: 24px 28px !important;
   overflow: hidden !important;
 }
 
@@ -2106,34 +2100,18 @@ footer::before {
    - クリスタル化リファクタの記事カード部分を上書き
    ================================================================ */
 
-/* 記事カード本体：羊皮紙背景 */
+/* 記事カード本体：シンプルな白基調 */
 .entry {
-  background:
-    radial-gradient(ellipse at top left, rgba(255,242,210,0.55) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom right, rgba(255,242,210,0.55) 0%, transparent 55%),
-    linear-gradient(180deg, #fdf6e3 0%, #f5e8c8 50%, #efddb2 100%) !important;
-  border: 1px solid rgba(180, 130, 40, 0.55) !important;
-  box-shadow:
-    inset 0 0 50px rgba(180, 130, 40, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 4px 18px rgba(0, 0, 0, 0.18) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(180, 130, 40, 0.35) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12) !important;
   position: relative !important;
 }
 
-/* 羊皮紙テクスチャ（ノイズ風オーバーレイ）：::after を利用 */
+/* 羊皮紙テクスチャは無効化 */
 .entry::after {
-  content: '' !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(140,100,40,0.04) 0.5px, transparent 1px),
-    radial-gradient(circle at 70% 60%, rgba(140,100,40,0.04) 0.5px, transparent 1px),
-    radial-gradient(circle at 40% 80%, rgba(140,100,40,0.03) 1px, transparent 2px) !important;
-  background-size: 7px 7px, 9px 9px, 13px 13px !important;
-  pointer-events: none !important;
-  border-radius: 4px !important;
-  opacity: 0.7 !important;
-  z-index: 0 !important;
+  content: none !important;
+  display: none !important;
 }
 
 /* 四隅角飾り：クリスタル→金色に戻す */
@@ -2207,44 +2185,45 @@ footer::before {
 
 .entry-content h4 { color: #8a6010 !important; }
 
-/* 記事内本文：暗褐色（羊皮紙に映える） */
+/* 記事内本文：標準的な濃グレー（白背景にコントラスト） */
 .entry-content,
 .entry-content p,
 .entry-content li,
 .entry-content dt,
 .entry-content dd,
 .entry-content span {
-  color: #2a1f10 !important;
+  color: #2a2418 !important;
 }
 
-/* 引用：羊皮紙×金 */
+/* 引用：シンプル */
 .entry-content blockquote {
-  background: rgba(255,235,180,0.4) !important;
-  border-left: 4px solid #8a6010 !important;
-  color: #3a2a18 !important;
+  background: #f8f6f0 !important;
+  border-left: 4px solid #c8900a !important;
+  color: #3a3228 !important;
 }
 
-/* テーブル：羊皮紙×金 */
+/* テーブル：シンプル */
 .entry-content table {
-  border: 1px solid rgba(180,130,40,0.4) !important;
+  border: 1px solid rgba(180,130,40,0.3) !important;
 }
 .entry-content th {
-  background: linear-gradient(90deg, rgba(180,130,40,0.22) 0%, rgba(180,130,40,0.08) 100%) !important;
-  border: 1px solid rgba(180,130,40,0.5) !important;
+  background: #f5e8c8 !important;
+  border: 1px solid rgba(180,130,40,0.4) !important;
   color: #3a2a18 !important;
 }
 .entry-content td {
-  border: 1px solid rgba(180,130,40,0.22) !important;
-  color: #2a1f10 !important;
+  border: 1px solid rgba(180,130,40,0.18) !important;
+  color: #2a2418 !important;
+  background: #ffffff !important;
 }
-.entry-content tr:nth-child(even) td { background: rgba(245,232,200,0.5) !important; }
-.entry-content tr:hover td { background: rgba(255,235,180,0.5) !important; }
+.entry-content tr:nth-child(even) td { background: #fdfaf4 !important; }
+.entry-content tr:hover td { background: #fff8e8 !important; }
 
 /* インラインコード */
 .entry-content code {
-  background: rgba(255,235,180,0.5) !important;
-  border: 1px solid rgba(180,130,40,0.3) !important;
-  color: #6a4020 !important;
+  background: #f5f2eb !important;
+  border: 1px solid rgba(180,130,40,0.25) !important;
+  color: #8a3a10 !important;
 }
 
 /* 本文内リンク */
@@ -2344,12 +2323,9 @@ footer::before {
   }
 }
 
-/* 記事カード：羊皮紙テクスチャをすこし半透明に（背景の魔法陣が透ける） */
+/* 記事カード：シンプル白（羊皮紙オーバーライド） */
 .entry {
-  background:
-    radial-gradient(ellipse at top left, rgba(255,242,210,0.5) 0%, transparent 60%),
-    radial-gradient(ellipse at bottom right, rgba(255,242,210,0.5) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(253,246,227,0.92) 0%, rgba(245,232,200,0.92) 50%, rgba(239,221,178,0.92) 100%) !important;
+  background: #ffffff !important;
 }
 
 /* ================================================================
