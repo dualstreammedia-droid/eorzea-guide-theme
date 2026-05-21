@@ -869,14 +869,18 @@ a:hover { color: var(--link-hover) !important; }
   background: linear-gradient(180deg, var(--crystal-pale) 0%, var(--crystal-bg) 100%) !important;
   border: 1px solid var(--crystal-light) !important;
   border-radius: 4px !important;
-  padding: 18px 22px 14px !important;
+  padding: 50px 22px 14px !important;
   margin: 28px 0 !important;
   position: relative !important;
   font-family: 'Noto Serif JP', serif !important;
 }
 .table-of-contents::before {
-  content: '◆ TABLE OF CONTENTS ◆';
+  content: '◆ TABLE OF CONTENTS ◆' !important;
   display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
   font-family: 'Noto Sans JP', serif !important;
   letter-spacing: 2px !important;
   color: var(--crystal-dark) !important;
@@ -884,8 +888,10 @@ a:hover { color: var(--link-hover) !important; }
   font-weight: 700 !important;
   text-align: center !important;
   border-bottom: 1px solid var(--crystal-light) !important;
-  padding-bottom: 8px !important;
-  margin-bottom: 12px !important;
+  padding: 14px 22px 10px !important;
+  margin: 0 !important;
+  background: linear-gradient(180deg, var(--crystal-bg) 0%, var(--crystal-pale) 100%) !important;
+  border-radius: 4px 4px 0 0 !important;
 }
 .table-of-contents ul { list-style: none !important; padding-left: 0 !important; margin: 0 !important; }
 .table-of-contents li { margin: 4px 0 !important; line-height: 1.6 !important; padding-left: 18px !important; position: relative !important; color: var(--text-body) !important; }
