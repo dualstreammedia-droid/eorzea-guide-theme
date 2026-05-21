@@ -2076,6 +2076,113 @@ footer::before {
   background-image: none !important;
 }
 
+/* ================================================================
+   会話バブル（kusuponアイコン＋吹き出し）— プレイヤー感を出す
+   記事内で <div class="chat-bubble"> として使う
+   ================================================================ */
+.chat-bubble {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  margin: 20px 0 !important;
+  padding: 0 !important;
+}
+
+.chat-bubble .chat-icon {
+  width: 56px !important;
+  height: 56px !important;
+  flex-shrink: 0 !important;
+  border-radius: 50% !important;
+  border: 2px solid #c8900a !important;
+  margin-top: 4px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+}
+
+.chat-bubble .chat-body {
+  position: relative !important;
+  flex: 1 !important;
+  background: #fdfaf4 !important;
+  border: 1px solid rgba(180,130,40,0.4) !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+  color: #2a2418 !important;
+  line-height: 1.75 !important;
+  font-size: 0.95rem !important;
+}
+
+/* 吹き出しのしっぽ */
+.chat-bubble .chat-body::before {
+  content: '' !important;
+  position: absolute !important;
+  left: -10px !important;
+  top: 18px !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid !important;
+  border-width: 8px 10px 8px 0 !important;
+  border-color: transparent #fdfaf4 transparent transparent !important;
+}
+.chat-bubble .chat-body::after {
+  content: '' !important;
+  position: absolute !important;
+  left: -11px !important;
+  top: 17px !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid !important;
+  border-width: 9px 11px 9px 0 !important;
+  border-color: transparent rgba(180,130,40,0.4) transparent transparent !important;
+  z-index: -1 !important;
+}
+
+.chat-bubble .chat-name {
+  font-weight: 700 !important;
+  color: #8a6010 !important;
+  font-size: 0.85rem !important;
+  margin-bottom: 4px !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* 読者代弁・初心者役（右寄せ・水色背景） */
+.chat-bubble.guest {
+  flex-direction: row-reverse !important;
+}
+.chat-bubble.guest .chat-body {
+  background: #f0f8fc !important;
+  border-color: rgba(42,138,184,0.45) !important;
+  color: #1a3a4e !important;
+}
+.chat-bubble.guest .chat-body::before {
+  left: auto !important;
+  right: -10px !important;
+  border-width: 8px 0 8px 10px !important;
+  border-color: transparent transparent transparent #f0f8fc !important;
+}
+.chat-bubble.guest .chat-body::after {
+  left: auto !important;
+  right: -11px !important;
+  border-width: 9px 0 9px 11px !important;
+  border-color: transparent transparent transparent rgba(42,138,184,0.45) !important;
+}
+.chat-bubble.guest .chat-name {
+  color: #2a6a98 !important;
+  text-align: right !important;
+}
+.chat-bubble.guest .chat-icon {
+  border-color: #2a6a98 !important;
+}
+
+@media (max-width: 768px) {
+  .chat-bubble .chat-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .chat-bubble .chat-body {
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
 /* ============= 2026-05-20 ヘッダー画像をぬいぐるみ部屋に上書き ============= */
 #blog-title.with-bg-image, .site-header.with-bg-image,
 #blog-title, .site-header {
