@@ -95,7 +95,7 @@ a:hover { color: var(--link-hover) !important; }
 
 #blog-title a, .site-title a {
   color: #f5d878 !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
   font-size: 2.3rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.18em !important;
@@ -488,7 +488,7 @@ a:hover { color: var(--link-hover) !important; }
   background: linear-gradient(90deg, rgba(200,144,10,0.12) 0%, transparent 100%) !important;
   border-bottom: 1px solid var(--border-gold) !important;
   color: var(--gold) !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
   font-size: 0.78rem !important;
   font-weight: 600 !important;
   letter-spacing: 0.12em !important;
@@ -606,7 +606,7 @@ a:hover { color: var(--link-hover) !important; }
 
 .author-card .author-label {
   text-align: center;
-  font-family: 'Cinzel', serif;
+  font-family: 'Noto Sans JP', serif;
   font-size: 11px;
   color: var(--gold-dark);
   letter-spacing: 2px;
@@ -795,7 +795,7 @@ a:hover { color: var(--link-hover) !important; }
 .archive-entry-categories a,
 .categories a {
   display: inline-block !important;
-  font-family: 'Cinzel', 'Noto Sans JP', sans-serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', sans-serif !important;
   font-size: 0.72rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.5px !important;
@@ -877,7 +877,7 @@ a:hover { color: var(--link-hover) !important; }
 .table-of-contents::before {
   content: '◆ TABLE OF CONTENTS ◆';
   display: block !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
   letter-spacing: 2px !important;
   color: var(--crystal-dark) !important;
   font-size: 0.78rem !important;
@@ -909,7 +909,7 @@ a:hover { color: var(--link-hover) !important; }
 .official-links::before {
   content: '◆ OFFICIAL LINKS ◆';
   display: block !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
   letter-spacing: 2px !important;
   color: var(--crystal-dark) !important;
   font-size: 0.78rem !important;
@@ -977,7 +977,7 @@ a:hover { color: var(--link-hover) !important; }
 .entry-footer-section h3,
 .related-entries h3,
 .entry-footer-related h3 {
-  font-family: 'Cinzel', 'Noto Serif JP', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Serif JP', serif !important;
   letter-spacing: 2px !important;
   color: var(--crystal-dark) !important;
   font-size: 0.95rem !important;
@@ -1054,7 +1054,7 @@ a:hover { color: var(--link-hover) !important; }
   border: 1px solid #4ba0cc !important;
   border-radius: 4px !important;
   padding: 11px 36px !important;
-  font-family: 'Cinzel', 'Noto Serif JP', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Serif JP', serif !important;
   font-size: 0.92rem !important;
   font-weight: 600 !important;
   letter-spacing: 2px !important;
@@ -1130,7 +1130,7 @@ a:hover { color: var(--link-hover) !important; }
 .next-reads::before {
   content: '◆ こちらも読まれています ◆';
   display: block !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
   letter-spacing: 2px !important;
   color: var(--crystal-dark) !important;
   font-size: 0.85rem !important;
@@ -1217,7 +1217,7 @@ a:hover { color: var(--link-hover) !important; }
   color: var(--crystal-dark) !important;
   letter-spacing: 1px !important;
   margin-bottom: 2px !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
 }
 .series-nav .next { text-align: right !important; margin-left: auto !important; }
 .series-nav .next::before {
@@ -1227,7 +1227,7 @@ a:hover { color: var(--link-hover) !important; }
   color: var(--crystal-dark) !important;
   letter-spacing: 1px !important;
   margin-bottom: 2px !important;
-  font-family: 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', serif !important;
 }
 .series-nav a:hover {
   background: linear-gradient(180deg, var(--crystal-pale) 0%, var(--crystal-bg) 100%) !important;
@@ -1385,7 +1385,7 @@ body.archive .archive-entry {
   border-radius: 12px 12px 0 0 !important;
   padding: 10px 16px 14px !important;
   color: #f0d68e !important;
-  font-family: 'Cinzel', 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', 'Noto Serif JP', serif !important;
   font-weight: 600 !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.06em !important;
@@ -1521,7 +1521,7 @@ body {
 
 /* h4：Cinzel + Noto Sans JP */
 .entry-content h4 {
-  font-family: 'Cinzel', 'Noto Sans JP', sans-serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', sans-serif !important;
   font-weight: 600 !important;
   letter-spacing: 0.05em !important;
 }
@@ -1533,7 +1533,7 @@ body {
 .site-header h1,
 .site-header h1 a,
 .site-title a {
-  font-family: 'Cinzel', 'Cormorant Garamond', 'Shippori Mincho', serif !important;
+  font-family: 'Noto Sans JP', 'Cormorant Garamond', 'Noto Sans JP', serif !important;
   font-weight: 700 !important;
   letter-spacing: 0.18em !important;
 }
@@ -1542,32 +1542,32 @@ body {
 .table-of-contents::before,
 .official-links::before,
 .next-reads::before {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', serif !important;
   font-weight: 700 !important;
 }
 
 /* グロナビ：日本語は Shippori、項目名感を出す */
 #eorzea-globalnav .nav-inner a {
-  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Serif JP', serif !important;
 }
 
 /* サイドバーモジュールタイトル：Cinzel Decorative */
 .hatena-module-title,
 .widget-title,
 .module-title {
-  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', serif !important;
 }
 
 /* テーブルヘッダー・引用：Shippori Mincho で統一 */
 .entry-content th,
 .entry-content blockquote {
-  font-family: 'Shippori Mincho', 'Noto Serif JP', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Serif JP', serif !important;
 }
 
 /* READ MOREボタン：Cinzel Decorative で装飾感 */
 .read-more-link a,
 .read-more a {
-  font-family: 'Cinzel Decorative', 'Cinzel', 'Shippori Mincho', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', 'Noto Sans JP', serif !important;
   font-weight: 700 !important;
 }
 
@@ -1973,7 +1973,7 @@ body {
 .archive-entry-header h1,
 .archive-entry-header h1 a {
   color: #3a2a18 !important;
-  font-family: 'Shippori Mincho', 'Cinzel', 'Noto Serif JP', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', 'Noto Serif JP', serif !important;
   font-size: 1.5rem !important;
   font-weight: 800 !important;
   letter-spacing: 0.02em !important;
@@ -2368,7 +2368,7 @@ footer::before {
   background: linear-gradient(180deg, rgba(245,216,120,0.18) 0%, rgba(245,216,120,0.05) 100%) !important;
   border-bottom: 1px solid rgba(240,214,142,0.55) !important;
   color: #f0d68e !important;
-  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  font-family: 'Noto Sans JP', 'Noto Sans JP', serif !important;
   font-weight: 700 !important;
   font-size: 0.82rem !important;
   letter-spacing: 0.15em !important;
