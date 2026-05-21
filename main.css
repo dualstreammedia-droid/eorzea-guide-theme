@@ -2309,31 +2309,12 @@ footer::before {
     box-shadow: none !important;
     padding: 8px !important;
   }
-  /* スマホ：左右の本棚を細めに配置＋コンテンツ幅を縮めて本棚が見える */
+  /* スマホ：本棚画像なし・紺色背景のみ（読みやすさ優先） */
   body {
     background:
-      linear-gradient(180deg, rgba(10,18,48,0.10) 0%, rgba(10,18,48,0.05) 50%, rgba(10,18,48,0.20) 100%),
-      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073212.jpg') left top / 36px 100vh repeat-y,
-      url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073219.jpg') right top / 36px 100vh repeat-y,
+      linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.30) 100%),
       linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
-    background-attachment: scroll, fixed, fixed, scroll !important;
-  }
-
-  /* メインコンテンツとフッターに左右36pxマージンで本棚を見せる */
-  #wrapper, #container, #content, #footer, .site-footer, footer {
-    margin-left: 36px !important;
-    margin-right: 36px !important;
-  }
-
-  #content-inner, .main-inner {
-    padding-left: 4px !important;
-    padding-right: 4px !important;
-  }
-
-  /* ヘッダーは全幅で */
-  #globalheader-container, #blog-title, .site-header, #eorzea-globalnav {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    background-attachment: scroll, scroll !important;
   }
 }
 
