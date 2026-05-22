@@ -1335,6 +1335,48 @@ body.archive .archive-entry {
   background: linear-gradient(180deg, #2a7aa8 0%, #1a5a88 100%) !important;
 }
 
+/* ============= 2026-05-22 シンプル白基調・最終仕上げ ============= */
+
+/* グローバルヘッダー（はてな上部）を白に */
+#globalheader-container,
+.globalheader,
+header.globalHeader,
+#globalheader {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+/* メインコンテンツコンテナを完全透明＋装飾削除 */
+#main, .main-inner, #content-inner, #content {
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 記事カードを完全シンプル白に */
+.entry, .archive-entry {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+  padding: 28px 32px !important;
+}
+.entry:hover, .archive-entry:hover {
+  border-color: #c8900a !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+/* 記事カード四隅角飾り削除 */
+.entry::before, .archive-entry::before,
+.entry::after, .archive-entry::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  background-image: none !important;
+}
+
 #eorzea-globalnav .nav-inner a,
 #eorzea-globalnav .nav-inner a.nav-index {
   color: #ffffff !important;
