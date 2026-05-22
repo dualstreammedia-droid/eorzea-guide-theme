@@ -2691,3 +2691,18 @@ header.globalHeader,
   background-image: none !important;
   opacity: 0 !important;
 }
+
+/* ジョブガイドボタン：紺背景＋金文字を強制（リンク色上書きを防ぐ） */
+.entry-content a[href*="jp.finalfantasyxiv.com/jobguide"],
+.entry-content a[href*="/jobguide/"] {
+  color: #f0d68e !important;
+  -webkit-text-fill-color: #f0d68e !important;
+  border-bottom: none !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+}
+.entry-content a[href*="jp.finalfantasyxiv.com/jobguide"]:hover,
+.entry-content a[href*="/jobguide/"]:hover {
+  color: #ffeac8 !important;
+  -webkit-text-fill-color: #ffeac8 !important;
+}
