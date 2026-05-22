@@ -2406,12 +2406,10 @@ footer::before {
     box-shadow: none !important;
     padding: 8px !important;
   }
-  /* スマホ：本棚画像なし・紺色背景のみ（読みやすさ優先） */
+  /* スマホ：白基調 */
   body {
-    background:
-      linear-gradient(180deg, rgba(10,18,48,0.20) 0%, rgba(10,18,48,0.30) 100%),
-      linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
-    background-attachment: scroll, scroll !important;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f2eb 100%) !important;
+    background-attachment: scroll !important;
   }
 }
 
