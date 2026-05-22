@@ -34,17 +34,10 @@ html {
 }
 
 body {
-  background:
-    /* 中央のオーバーレイ（薄め） */
-    linear-gradient(180deg, rgba(10,18,48,0.10) 0%, rgba(10,18,48,0.05) 50%, rgba(10,18,48,0.20) 100%),
-    /* 左本棚：左端固定・縦に伸ばす */
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073212.jpg') left center / auto 100vh no-repeat fixed,
-    /* 右本棚：右端固定・縦に伸ばす */
-    url('https://cdn-ak.f.st-hatena.com/images/fotolife/E/EorzeaLog/20260521/20260521073219.jpg') right center / auto 100vh no-repeat fixed,
-    linear-gradient(180deg, #0a1230 0%, #060916 100%) !important;
-  background-attachment: scroll, fixed, fixed, scroll !important;
+  background: linear-gradient(180deg, #fafafa 0%, #f5f2eb 100%) !important;
+  background-attachment: scroll !important;
   color: var(--text-body) !important;
-  font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif !important;
+  font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif !important;
   font-size: 16px !important;
   line-height: 1.9 !important;
 }
