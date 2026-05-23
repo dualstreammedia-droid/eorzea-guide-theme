@@ -3,7 +3,7 @@
    ----------------------------------------------------------
    このファイル1つを「はてなブログ→デザイン→カスタマイズ→デザインCSS」に
    全部上書き貼り付けすればOK。
-   最終更新: 2026-05-23（記事カードv2追加・アイキャッチ再表示・Lodestone風レイアウト）
+   最終更新: 2026-05-23（記事カードv3：FF14公式Lodestone Topics準拠・Figma MCP抽出設計反映）
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Marcellus&family=Noto+Sans+JP:wght@400;500;600;700;900&family=Noto+Serif+JP:wght@400;500;700&display=swap');
@@ -2707,15 +2707,22 @@ header.globalHeader,
   -webkit-text-fill-color: #ffeac8 !important;
 }
 
+
 /* ================================================================
-   2026-05-23 記事カードv2（FF14 Lodestone風モダンカード）
+   2026-05-23 記事カードv3（FF14公式 Lodestone Topics 準拠）
    ----------------------------------------------------------------
-   AdSense独自性向上のため、画像非表示の素朴カードを刷新。
-   ※ これより前の .entry / .archive-entry / thumbnail 関連の
-     全上書きを統合・最終決定として末尾に配置（カスケードで勝つ）
+   v2のグリッド画像左/本文右レイアウトを廃止。
+   Figma MCP 経由で FF14 公式（jp.finalfantasyxiv.com）の
+   実カードを抽出し設計に反映:
+   - 薄グレー #eee 背景・上部クリーム#f8f5ed ストリップ
+   - ヒーロー画像16:9 フル幅
+   - 下部に抜粋＋『記事を読む』リンク
+   - ホバー: 金リボン左端6px＋暖色背景＋金枠
+   - 角丸なし・シャドウなし（FF14 公式準拠）
+   ※ このセクションは末尾に置いてカスケードで全先行ルールに勝つ
    ================================================================ */
 
-/* --- アイキャッチを再表示（旧 display:none を解除） --- */
+/* --- アイキャッチ表示（旧display:none上書き解除） --- */
 .entry-thumb-link,
 .archive-entry-image-link,
 .entry .entry-thumb,
@@ -2725,33 +2732,242 @@ header.globalHeader,
   display: block !important;
 }
 
-/* --- カードコンテナ：グリッドレイアウト（画像左／本文右） --- */
+/* --- カードコンテナ：縦flex（FF14公式準拠） --- */
 body.page-index .entry,
 body.page-archive .archive-entry,
 body.archive .archive-entry,
 .archive-entries .archive-entry,
 .entries .entry {
-  background: #ffffff !important;
+  background: #eeeeee !important;
   background-image: none !important;
-  border: 1px solid rgba(200, 144, 10, 0.25) !important;
-  border-radius: 6px !important;
-  margin-bottom: 24px !important;
-  padding: 22px !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  border-radius: 0 !important;
+  margin-bottom: 16px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 
-  display: grid !important;
-  grid-template-columns: 260px 1fr !important;
-  grid-template-rows: auto auto 1fr auto !important;
-  column-gap: 24px !important;
-  row-gap: 6px !important;
-  align-items: start !important;
+  display: flex !important;
+  flex-direction: column !important;
 
   position: relative !important;
   overflow: hidden !important;
-  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease !important;
+  transition: background-color .25s ease, border-color .25s ease !important;
 }
 
-/* --- ホバー時の金リボン（左端アクセント） --- */
+/* --- 上部ストリップ（タイトル＋日付＋◆装飾） --- */
+.archive-entry-header,
+body.page-index .entry > .entry-header {
+  background: #f8f5ed !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  position: relative !important;
+  min-height: 36px !important;
+}
+
+/* ストリップ左端の◆クリスタル装飾 */
+.archive-entry-header::before,
+body.page-index .entry > .entry-header::before {
+  content: '◆' !important;
+  color: #c8900a !important;
+  font-size: 13px !important;
+  flex-shrink: 0 !important;
+  margin-right: 2px !important;
+  line-height: 1 !important;
+}
+
+/* ストリップ内のタイトル（1行省略） */
+.archive-entry-title,
+body.page-index .entry .entry-title {
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+  color: #2a2418 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.archive-entry-title a,
+body.page-index .entry .entry-title a {
+  color: inherit !important;
+  text-decoration: none !important;
+  background: transparent !important;
+}
+.archive-entry-title a:hover,
+body.page-index .entry .entry-title a:hover {
+  color: #c8900a !important;
+}
+
+/* ストリップ内の日付 */
+.archive-entry .archive-date,
+.archive-entry time,
+body.page-index .entry .date,
+body.page-index .entry time {
+  font-size: 0.72rem !important;
+  color: #999 !important;
+  font-family: Arial, 'Noto Sans JP', sans-serif !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+/* --- ヒーロー画像：16:9フル幅 --- */
+.archive-entry-image-link,
+.entry-thumb-link {
+  display: block !important;
+  width: 100% !important;
+  aspect-ratio: 16 / 9 !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(200, 144, 10, 0.22) 0%, transparent 55%),
+    radial-gradient(circle at 75% 70%, rgba(42, 138, 184, 0.25) 0%, transparent 55%),
+    linear-gradient(135deg, #1a3a5c 0%, #0a1230 100%) !important;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* 画像なし時のプレースホルダー◆クリスタル */
+.archive-entry-image-link::before,
+.entry-thumb-link::before {
+  content: '◆' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: rgba(240, 184, 48, 0.4) !important;
+  font-size: 64px !important;
+  text-shadow: 0 0 20px rgba(240, 184, 48, 0.5) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+.archive-entry-image-link::after,
+.entry-thumb-link::after {
+  content: '画像準備中' !important;
+  position: absolute !important;
+  top: calc(50% + 38px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 12px !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  font-family: 'Noto Sans JP', sans-serif !important;
+}
+
+/* 実画像がある場合はプレースホルダーを隠す */
+.archive-entry-image-link:has(.archive-entry-image[style*="background-image"])::before,
+.archive-entry-image-link:has(.archive-entry-image[style*="background-image"])::after,
+.archive-entry-image-link:has(img)::before,
+.archive-entry-image-link:has(img)::after,
+.entry-thumb-link:has(.entry-thumb[style*="background-image"])::before,
+.entry-thumb-link:has(.entry-thumb[style*="background-image"])::after,
+.entry-thumb-link:has(img)::before,
+.entry-thumb-link:has(img)::after {
+  display: none !important;
+}
+
+.archive-entry-image,
+.entry-thumb {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  border-radius: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.archive-entry-image-link img,
+.entry-thumb-link img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* --- 本文抜粋（2行クランプ） --- */
+.archive-entry-body,
+.archive-entry > .archive-entry-body,
+body.page-index .entry .entry-description {
+  font-size: 0.82rem !important;
+  line-height: 1.65 !important;
+  color: #3a3228 !important;
+  margin: 0 !important;
+  padding: 12px 16px 6px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  background: transparent !important;
+}
+
+/* --- カテゴリチップ（本文下） --- */
+.archive-entry .categories,
+body.page-index .entry .categories {
+  margin: 0 !important;
+  padding: 2px 16px 8px !important;
+  background: transparent !important;
+}
+
+/* --- フッター：「記事を読む」リンク --- */
+.archive-entry-footer {
+  padding: 8px 16px 12px !important;
+  background: transparent !important;
+  border-top: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+.archive-entry-link {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: #2556b8 !important;
+  text-decoration: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+.archive-entry-link::before {
+  content: '詳しくは『' !important;
+  color: #3a3228 !important;
+  font-weight: 400 !important;
+}
+.archive-entry-link::after {
+  content: '』をご覧ください ▸' !important;
+  color: #3a3228 !important;
+  font-weight: 400 !important;
+}
+.archive-entry-link:hover {
+  color: #c8900a !important;
+}
+
+/* --- ホバー: 暖色背景＋金枠＋左端金リボン --- */
+body.page-index .entry:hover,
+body.page-archive .archive-entry:hover,
+body.archive .archive-entry:hover,
+.archive-entries .archive-entry:hover,
+.entries .entry:hover {
+  background: #faf6ec !important;
+  border-color: #c8900a !important;
+}
+
+/* 左端の金リボン（通常時は非表示・ホバー時に出る） */
 body.page-index .entry::before,
 body.page-archive .archive-entry::before,
 body.archive .archive-entry::before,
@@ -2764,17 +2980,16 @@ body.archive .archive-entry::before,
   top: 0 !important;
   bottom: 0 !important;
   right: auto !important;
-  inset: 0 auto 0 0 !important;
-  width: 4px !important;
+  width: 6px !important;
   height: auto !important;
   background: linear-gradient(180deg, #f0b830 0%, #c8900a 50%, #8a6010 100%) !important;
   opacity: 0 !important;
   transition: opacity .25s ease !important;
-  z-index: 3 !important;
+  z-index: 20 !important;
   pointer-events: none !important;
+  inset: 0 auto 0 0 !important;
   border-radius: 0 !important;
 }
-
 body.page-index .entry::after,
 body.page-archive .archive-entry::after,
 body.archive .archive-entry::after,
@@ -2782,16 +2997,6 @@ body.archive .archive-entry::after,
 .entries .entry::after {
   display: none !important;
   content: none !important;
-}
-
-body.page-index .entry:hover,
-body.page-archive .archive-entry:hover,
-body.archive .archive-entry:hover,
-.archive-entries .archive-entry:hover,
-.entries .entry:hover {
-  transform: translateY(-2px) !important;
-  border-color: var(--gold) !important;
-  box-shadow: 0 6px 20px rgba(200, 144, 10, 0.18) !important;
 }
 
 body.page-index .entry:hover::before,
@@ -2802,226 +3007,55 @@ body.archive .archive-entry:hover::before,
   opacity: 1 !important;
 }
 
-/* --- サムネイル：左カラム全行スパン＋プレースホルダー --- */
-.archive-entry-image-link,
-.entry-thumb-link {
-  grid-column: 1 !important;
-  grid-row: 1 / -1 !important;
-  display: block !important;
-  width: 100% !important;
-  aspect-ratio: 16 / 9 !important;
-  overflow: hidden !important;
-  border-radius: 4px !important;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(200, 144, 10, 0.22) 0%, transparent 55%),
-    radial-gradient(circle at 75% 70%, rgba(42, 138, 184, 0.25) 0%, transparent 55%),
-    linear-gradient(135deg, #1a3a5c 0%, #0a1230 100%) !important;
-  position: relative !important;
-  align-self: stretch !important;
-  border: 1px solid rgba(200, 144, 10, 0.2) !important;
-  margin: 0 !important;
-  padding: 0 !important;
+/* ホバー時はヘッダーストリップも warm */
+body.page-index .entry:hover > .entry-header,
+body.page-archive .archive-entry:hover .archive-entry-header,
+body.archive .archive-entry:hover .archive-entry-header,
+.archive-entries .archive-entry:hover .archive-entry-header,
+.entries .entry:hover > .entry-header {
+  background: #fef3d8 !important;
 }
 
-/* プレースホルダー時の「FF14」風アクセント（◆クリスタル風） */
-.archive-entry-image-link::before,
-.entry-thumb-link::before {
-  content: '◆' !important;
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  color: rgba(240, 184, 48, 0.35) !important;
-  font-size: 48px !important;
-  text-shadow: 0 0 20px rgba(240, 184, 48, 0.5) !important;
-  pointer-events: none !important;
-  z-index: 1 !important;
-}
-
-/* 実画像がある場合はプレースホルダー◆を隠す */
-.archive-entry-image-link:has(.archive-entry-image[style*="background-image"])::before,
-.archive-entry-image-link:has(img)::before,
-.entry-thumb-link:has(.entry-thumb[style*="background-image"])::before,
-.entry-thumb-link:has(img)::before {
-  display: none !important;
-}
-
-.archive-entry-image,
-.entry-thumb {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  border-radius: 4px !important;
-  transition: transform .35s ease !important;
-  position: relative !important;
-  z-index: 2 !important;
-}
-
-.archive-entry-image-link img,
-.entry-thumb-link img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center !important;
-  border-radius: 4px !important;
-  display: block !important;
-  position: relative !important;
-  z-index: 2 !important;
-  transition: transform .35s ease !important;
-}
-
-.archive-entry:hover .archive-entry-image,
-.entry:hover .entry-thumb,
-.archive-entry:hover .archive-entry-image-link img,
-.entry:hover .entry-thumb-link img {
-  transform: scale(1.04) !important;
-}
-
-/* --- 右カラム要素 --- */
-.archive-entry > .archive-entry-header,
-.archive-entry > .archive-entry-body,
-.archive-entry > .archive-entry-footer,
-.archive-entry > .categories,
-.archive-entry > .archive-date,
-body.page-index .entry > .entry-header,
-body.page-index .entry > .entry-content,
-body.page-index .entry > .entry-footer,
-body.page-index .entry > .categories {
-  grid-column: 2 !important;
-  background: transparent !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  min-width: 0 !important;
-}
-
-/* --- 画像のないカード：1カラムにフォールバック --- */
-body.page-index .entry:not(:has(.entry-thumb-link)),
-body.page-archive .archive-entry:not(:has(.archive-entry-image-link)),
-body.archive .archive-entry:not(:has(.archive-entry-image-link)),
-.archive-entries .archive-entry:not(:has(.archive-entry-image-link)),
-.entries .entry:not(:has(.entry-thumb-link)) {
-  grid-template-columns: 1fr !important;
-}
-body.page-index .entry:not(:has(.entry-thumb-link)) > *,
-body.page-archive .archive-entry:not(:has(.archive-entry-image-link)) > *,
-body.archive .archive-entry:not(:has(.archive-entry-image-link)) > *,
-.archive-entries .archive-entry:not(:has(.archive-entry-image-link)) > *,
-.entries .entry:not(:has(.entry-thumb-link)) > * {
-  grid-column: 1 !important;
-}
-
-/* --- タイトル：力強く --- */
-.archive-entry-title,
-.archive-entry-title a,
-body.page-index .entry .entry-title,
-body.page-index .entry .entry-title a,
-body.page-archive .archive-entry .archive-entry-title,
-body.archive .archive-entry .archive-entry-title {
-  font-size: 1.2rem !important;
-  font-weight: 700 !important;
-  line-height: 1.5 !important;
-  color: #1a1408 !important;
-  margin: 4px 0 6px !important;
-  letter-spacing: 0.01em !important;
-}
-.archive-entry-title a:hover,
-body.page-index .entry .entry-title a:hover {
-  color: var(--gold) !important;
-}
-
-/* --- 抜粋：2行クランプ --- */
-.archive-entry-body,
-.archive-entry .entry-description,
-body.page-index .entry .entry-description {
-  font-size: 0.92rem !important;
-  line-height: 1.7 !important;
-  color: var(--text-body) !important;
-  margin: 4px 0 8px !important;
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-}
-
-/* --- フッター（日付＋続きを読む） --- */
-.archive-entry-footer {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-top: auto !important;
-  padding-top: 8px !important;
-  border-top: 1px dashed rgba(200, 144, 10, 0.15) !important;
-}
-.archive-date,
-.archive-entry time {
-  font-size: 0.78rem !important;
-  color: var(--text-muted) !important;
-}
-.archive-entry-link {
-  color: var(--gold) !important;
-  font-weight: 600 !important;
-  font-size: 0.85rem !important;
-  text-decoration: none !important;
-  border: none !important;
-}
-.archive-entry-link::after {
-  content: ' ▸' !important;
-  margin-left: 4px !important;
-}
-.archive-entry-link:hover {
-  color: var(--gold-light) !important;
-}
-
-/* --- カテゴリラベルは既存定義を流用、マージン微調整のみ --- */
-.archive-entry .categories,
-body.page-index .entry .categories,
-body.page-archive .archive-entry .categories {
-  margin: 0 0 4px !important;
-}
-
-/* --- モバイル（<768px）：縦並びに切替 --- */
+/* --- モバイル（<768px） --- */
 @media (max-width: 768px) {
-  body.page-index .entry,
-  body.page-archive .archive-entry,
-  body.archive .archive-entry,
-  .archive-entries .archive-entry,
-  .entries .entry {
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto auto auto auto !important;
-    column-gap: 0 !important;
-    row-gap: 10px !important;
-    padding: 16px !important;
-  }
-  .archive-entry-image-link,
-  .entry-thumb-link {
-    grid-column: 1 !important;
-    grid-row: auto !important;
-    margin-bottom: 4px !important;
-  }
-  .archive-entry > .archive-entry-header,
-  .archive-entry > .archive-entry-body,
-  .archive-entry > .archive-entry-footer,
-  .archive-entry > .categories,
-  body.page-index .entry > .entry-header,
-  body.page-index .entry > .entry-content,
-  body.page-index .entry > .entry-footer,
-  body.page-index .entry > .categories {
-    grid-column: 1 !important;
+  .archive-entry-header,
+  body.page-index .entry > .entry-header {
+    padding: 8px 12px !important;
+    gap: 6px !important;
   }
   .archive-entry-title,
   body.page-index .entry .entry-title {
-    font-size: 1.08rem !important;
-    line-height: 1.45 !important;
+    font-size: 0.88rem !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+    line-height: 1.4 !important;
   }
   .archive-entry-body,
   body.page-index .entry .entry-description {
-    font-size: 0.88rem !important;
+    font-size: 0.8rem !important;
+    padding: 10px 12px 6px !important;
     -webkit-line-clamp: 3 !important;
     line-clamp: 3 !important;
   }
+  .archive-entry .categories,
+  body.page-index .entry .categories {
+    padding: 2px 12px 8px !important;
+  }
+  .archive-entry-footer {
+    padding: 6px 12px 10px !important;
+  }
+  .archive-entry .archive-date,
+  body.page-index .entry time {
+    font-size: 0.7rem !important;
+  }
+  .archive-entry-image-link::before,
+  .entry-thumb-link::before {
+    font-size: 48px !important;
+  }
+  .archive-entry-image-link::after,
+  .entry-thumb-link::after {
+    top: calc(50% + 30px) !important;
+    font-size: 11px !important;
+  }
 }
-/* ================ 記事カードv2 ここまで ================ */
+/* ================ 記事カードv3 ここまで ================ */
