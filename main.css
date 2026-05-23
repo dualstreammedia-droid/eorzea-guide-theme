@@ -3078,7 +3078,7 @@ body.archive .archive-entry > *,
   background: transparent !important;
 }
 
-/* --- タイトル（.entry-title に修正） --- */
+/* --- タイトル（.entry-title に修正・2行折返し許可） --- */
 body.page-archive .archive-entry .entry-title,
 body.archive .archive-entry .entry-title,
 .archive-entries .archive-entry .entry-title {
@@ -3090,9 +3090,24 @@ body.archive .archive-entry .entry-title,
   padding: 0 !important;
   flex: 1 1 auto !important;
   min-width: 0 !important;
-  white-space: nowrap !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
   overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+  word-break: break-word !important;
+}
+
+/* ヘッダー：タイトル2行折返し時に日付を上端固定 */
+.archive-entry-header,
+body.page-index .entry > .entry-header {
+  align-items: flex-start !important;
+}
+.archive-entry .archive-date,
+.archive-entry time {
+  margin-top: 2px !important;
 }
 body.page-archive .archive-entry .entry-title a,
 body.archive .archive-entry .entry-title a,
