@@ -3178,24 +3178,39 @@ body.archive .archive-entry .archive-entry-body,
   width: auto !important;
 }
 
-/* --- カテゴリ（DOM順で image より上にくるが、視覚的にはストリップ直下） --- */
+/* --- カテゴリ（控えめ・ラベル程度の主張に） --- */
 body.page-archive .archive-entry > .categories,
 body.archive .archive-entry > .categories,
 .archive-entries .archive-entry > .categories {
-  padding: 8px 16px !important;
+  padding: 4px 14px 2px !important;
   margin: 0 !important;
-  background: #f8f5ed !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background: transparent !important;
+  border-bottom: none !important;
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 4px !important;
+  gap: 3px !important;
 }
 
-/* ホバー時はカテゴリ帯も warm */
-body.page-archive .archive-entry:hover > .categories,
-body.archive .archive-entry:hover > .categories,
-.archive-entries .archive-entry:hover > .categories {
-  background: #fef3d8 !important;
+/* チップ自体を弱める（既存の .categories a を強制上書き） */
+body.page-archive .archive-entry .categories a,
+body.archive .archive-entry .categories a,
+.archive-entries .archive-entry .categories a {
+  font-size: 0.66rem !important;
+  font-weight: 500 !important;
+  padding: 1px 6px !important;
+  margin: 0 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  border-radius: 2px !important;
+  line-height: 1.5 !important;
+  opacity: 0.85 !important;
+}
+body.page-archive .archive-entry .categories a:hover,
+body.archive .archive-entry .categories a:hover,
+.archive-entries .archive-entry .categories a:hover {
+  opacity: 1 !important;
 }
 
 /* --- モバイル（<768px）— タイトル折返し許可・抜粋3行 --- */
