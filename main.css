@@ -3,7 +3,7 @@
    ----------------------------------------------------------
    このファイル1つを「はてなブログ→デザイン→カスタマイズ→デザインCSS」に
    全部上書き貼り付けすればOK。
-   最終更新: 2026-05-23（記事カードv3＋ホットフィックス：実DOM不一致セレクタ修正・スマホ崩れ対応）
+   最終更新: 2026-05-24（D2 monica風ベージュ＋D4 紺色h2バナー＋hr金細工＋blockquote羊皮紙）
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&family=Marcellus&family=Noto+Sans+JP:wght@400;500;600;700;900&family=Noto+Serif+JP:wght@400;500;700&display=swap');
@@ -3250,3 +3250,163 @@ body.archive .archive-entry .categories a:hover,
   }
 }
 /* ================ v3 ホットフィックス ここまで ================ */
+
+/* ================================================================
+   2026-05-24 D2: monica141030.com 風ベージュテイスト
+   ----------------------------------------------------------------
+   個人運営者の温度感を出すための warm beige サイトトーン。
+   AdSense独自性シグナル強化用。
+   ================================================================ */
+
+/* body 背景：白→薄ベージュ（紙の質感） */
+html { background-color: #2a2418 !important; }
+body {
+  background:
+    radial-gradient(circle at 50% 0%, #faf6ed 0%, #f5efe0 100%) !important;
+  background-attachment: scroll !important;
+}
+
+/* 個別記事ページの本文エリア背景を更にベージュ寄りに */
+body.page-entry #main,
+body.page-entry .main-inner {
+  background-color: #fdfaf2 !important;
+}
+
+/* 段落の line-height を 2.0 に（読書感UP） */
+.entry-content p,
+.entry-content li {
+  line-height: 2.0 !important;
+}
+
+/* blockquote：羊皮紙風（薄ベージュ＋金細工二重枠） */
+.entry-content blockquote {
+  background:
+    linear-gradient(135deg, #fdfaf2 0%, #f5edda 100%) !important;
+  border-left: 4px solid #c8900a !important;
+  border-right: 1px solid rgba(200, 144, 10, 0.25) !important;
+  border-top: 1px solid rgba(200, 144, 10, 0.18) !important;
+  border-bottom: 1px solid rgba(200, 144, 10, 0.25) !important;
+  padding: 16px 20px 14px !important;
+  margin: 18px 0 !important;
+  border-radius: 0 3px 3px 0 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 248, 220, 0.5),
+    0 1px 4px rgba(200, 144, 10, 0.08) !important;
+  position: relative !important;
+}
+/* blockquote 左上に小さな◆装飾 */
+.entry-content blockquote::before {
+  content: '◆' !important;
+  position: absolute !important;
+  top: -8px !important;
+  left: -8px !important;
+  background: #faf6ed !important;
+  color: #c8900a !important;
+  font-size: 12px !important;
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  text-align: center !important;
+  border: 1px solid rgba(200, 144, 10, 0.5) !important;
+}
+
+/* hr：金色細工＋中央◆ */
+.entry-content hr {
+  border: none !important;
+  height: 18px !important;
+  margin: 32px auto !important;
+  position: relative !important;
+  background: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+.entry-content hr::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 10% !important;
+  right: 10% !important;
+  top: 50% !important;
+  height: 1px !important;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(200, 144, 10, 0.5) 30%,
+    rgba(200, 144, 10, 0.7) 50%,
+    rgba(200, 144, 10, 0.5) 70%,
+    transparent 100%) !important;
+}
+.entry-content hr::after {
+  content: '◆' !important;
+  position: relative !important;
+  display: inline-block !important;
+  background: #faf6ed !important;
+  color: #c8900a !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  line-height: 1 !important;
+  z-index: 2 !important;
+}
+
+/* ================================================================
+   2026-05-24 D4: コンテンツサポーター風 紺色見出しバナー（h2）
+   ----------------------------------------------------------------
+   FF14公式ゲームマニュアルの紺色グラデ見出しを記事内 h2 に適用。
+   ゲームUI感を強めて独自性UP。
+   ================================================================ */
+.entry-content h2 {
+  background: linear-gradient(180deg, #1a3a5c 0%, #0a1230 100%) !important;
+  color: #ffffff !important;
+  border-left: 4px solid #c8900a !important;
+  border-bottom: 1px solid #c8900a !important;
+  border-top: none !important;
+  border-right: none !important;
+  padding: 12px 18px 12px 16px !important;
+  margin: 36px 0 18px !important;
+  font-size: 1.22rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  position: relative !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 180, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 0 3px 3px 0 !important;
+}
+
+/* h2 左端の◆クリスタル装飾 */
+.entry-content h2::before {
+  content: '◆' !important;
+  display: inline-block !important;
+  color: #f0b830 !important;
+  margin-right: 10px !important;
+  font-size: 0.85em !important;
+  text-shadow: 0 0 8px rgba(240, 184, 48, 0.5) !important;
+  vertical-align: 1px !important;
+}
+
+/* h2 リンク色（紺バナー内のリンク）— 金色に */
+.entry-content h2 a,
+.entry-content h2 a:link,
+.entry-content h2 a:visited {
+  color: #f0b830 !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+.entry-content h2 a:hover { color: #ffe9b5 !important; }
+
+/* モバイル h2 調整 */
+@media (max-width: 768px) {
+  .entry-content h2 {
+    font-size: 1.08rem !important;
+    padding: 10px 14px 10px 12px !important;
+    margin: 28px 0 14px !important;
+  }
+  .entry-content blockquote {
+    padding: 12px 14px 10px !important;
+    margin: 14px 0 !important;
+  }
+  .entry-content hr { margin: 24px auto !important; }
+}
+/* ================ D2/D4 ここまで ================ */
