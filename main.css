@@ -202,7 +202,8 @@ a:hover { color: var(--link-hover) !important; }
   box-shadow: 0 2px 12px rgba(0,0,0,0.45);
   position: sticky;
   top: 0;
-  z-index: 9999;
+  /* はてなのアカウントメニュー等のオーバーレイより下に置く（9999だとタブが幕の上に浮くバグ） */
+  z-index: 100;
 }
 
 #eorzea-globalnav .nav-inner {
