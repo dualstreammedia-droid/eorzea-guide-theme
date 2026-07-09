@@ -750,19 +750,22 @@ a:hover { color: var(--link-hover) !important; }
     line-height: 1.45 !important;
     letter-spacing: -0.01em !important;
   }
+  /* 見出しは自然な日本語折返しにする。
+     keep-all だと句読点のないタイトルが「分割不可の1語」になり、
+     ::before の◆だけ1行目に残って全文が次行へ落ちるバグが起きる */
   .entry-content h2 {
     font-size: 1.02rem !important;
     line-height: 1.4 !important;
     padding: 8px 12px !important;
-    word-break: keep-all !important;
-    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
   .entry-content h3 {
     font-size: 0.95rem !important;
     line-height: 1.4 !important;
     padding: 6px 10px !important;
-    word-break: keep-all !important;
-    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
   .entry-content span[style*="border-radius"][style*="background"],
   .entry-content span[style*="display:inline-block"][style*="background"] {
@@ -779,6 +782,25 @@ a:hover { color: var(--link-hover) !important; }
   .entry-content table th:first-child,
   .entry-content table td:first-child {
     width: 36% !important;
+  }
+}
+
+/* ================================================================
+   スマホの表：潰して縦読みにさせず、横スクロールで読める幅を確保
+   （4列以上→620px・3列→480px。2列は自然幅のまま。
+     テーブルは overflow-x:auto のラッパー内にあるためスクロール可能）
+   ================================================================ */
+@media (max-width: 640px) {
+  .entry-content table:has(tr > *:nth-child(4)) {
+    min-width: 620px !important;
+  }
+  .entry-content table:has(tr > *:nth-child(3):last-child) {
+    min-width: 480px !important;
+  }
+  .entry-content table th,
+  .entry-content table td {
+    font-size: 0.86rem !important;
+    padding: 7px 10px !important;
   }
 }
 
