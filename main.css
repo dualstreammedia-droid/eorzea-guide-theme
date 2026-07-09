@@ -669,18 +669,20 @@ a:hover { color: var(--link-hover) !important; }
     hanging-punctuation: allow-end !important;
   }
 
+  /* 表のラッパーは横スクロールを生かす（2026-07-10修正）。
+     旧: overflow visible + table-layout fixed の「セル内折返し」方式は
+     4列表でセルが縦読みに潰れるため廃止 → min-width＋横スワイプ方式へ */
   .entry-content > div[style*="overflow-x"],
   .entry-content .table-scroll {
-    overflow-x: visible !important;
-    overflow-y: visible !important;
-    touch-action: pan-y !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
   }
 
   .entry-content table {
     display: table !important;
     width: 100% !important;
-    table-layout: fixed !important;
-    overflow-x: visible !important;
+    table-layout: auto !important;
     white-space: normal !important;
     border-collapse: collapse !important;
     margin: 12px 0 !important;
@@ -702,7 +704,6 @@ a:hover { color: var(--link-hover) !important; }
 
   .entry-content table th:first-child,
   .entry-content table td:first-child {
-    width: 32% !important;
     min-width: 70px !important;
     background: rgba(26,47,78,0.03) !important;
     font-weight: 600 !important;
