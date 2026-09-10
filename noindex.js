@@ -52,7 +52,16 @@
   var SLOT_END = '1607154698';   // 記事下（フェーズ1）… AdSense広告ユニット「スクエア2」 2026-09-11設定
   var SLOT_MID = '';   // 目次直後（フェーズ2）… フェーズ1の数値確認後に設定する
 
-  if (!document.body || document.body.className.indexOf('page-entry') === -1) return;
+  // このスクリプトははてなの「ヘッダHTML」から読み込まれるため、
+  // 実行時点では .entry-content がまだパースされていない。
+  // DOMの構築完了を待ってから挿入すること（待たないと常に何も挿入されない）。
+  function ready(fn) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fn);
+    } else {
+      fn();
+    }
+  }
 
   function makeUnit(slot) {
     var box = document.createElement('div');
@@ -79,23 +88,29 @@
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }
 
-  var content = document.querySelector('.entry-content');
-  if (!content) return;
+  ready(function () {
+    // 記事ページ以外（トップ・アーカイブ等）には入れない
+    if (!document.body || document.body.className.indexOf('page-entry') === -1) return;
 
-  // --- 記事下（本文の直後・関連記事より前） ---
-  if (SLOT_END) {
-    content.parentNode.insertBefore(makeUnit(SLOT_END), content.nextSibling);
-    push();
-  }
+    var content = document.querySelector('.entry-content');
+    if (!content) return;
+    if (document.querySelector('.eg-ad')) return;  // 二重挿入の防止
 
-  // --- 目次直後（最初のh2の直前）---
-  // ポリシー上、ファーストビューには置かない。目次が無い記事ではスキップする。
-  if (SLOT_MID) {
-    // 目次は class 無しの <details>。その直後にある h2#toc-1 が最初の見出し。
-    var anchor = content.querySelector('h2#toc-1') || content.querySelector('h2');
-    if (anchor) {
-      content.insertBefore(makeUnit(SLOT_MID), anchor);
+    // --- 記事下（本文の直後・関連記事より前） ---
+    if (SLOT_END) {
+      content.parentNode.insertBefore(makeUnit(SLOT_END), content.nextSibling);
       push();
     }
-  }
+
+    // --- 目次直後（最初のh2の直前）---
+    // ポリシー上、ファーストビューには置かない。目次が無い記事ではスキップする。
+    if (SLOT_MID) {
+      // 目次は class 無しの <details>。その直後にある h2#toc-1 が最初の見出し。
+      var anchor = content.querySelector('h2#toc-1') || content.querySelector('h2');
+      if (anchor) {
+        content.insertBefore(makeUnit(SLOT_MID), anchor);
+        push();
+      }
+    }
+  });
 })();
