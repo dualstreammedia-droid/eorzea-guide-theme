@@ -49,7 +49,7 @@
    ============================================================ */
 (function () {
   var CLIENT   = 'ca-pub-5780763794800838';
-  var SLOT_END = '';   // 記事下（フェーズ1）… ここに data-ad-slot の数字を入れる
+  var SLOT_END = '1607154698';   // 記事下（フェーズ1）… AdSense広告ユニット「スクエア2」 2026-09-11設定
   var SLOT_MID = '';   // 目次直後（フェーズ2）… フェーズ1の数値確認後に設定する
 
   if (!document.body || document.body.className.indexOf('page-entry') === -1) return;
