@@ -3600,3 +3600,33 @@ body[class*="page-index"] .featured-tiles {
   .featured-tile::after { font-size: 60px !important; bottom: -12px !important; right: -6px !important; }
 }
 /* ================ D3 ここまで ================ */
+/* ================================================================
+   2026-09-16 スマホの本文幅を広げる（オーナー承認）
+   390px画面で本文285px → 約356pxへ。
+   内訳: #content-inner 8px×2 / #main 8px×2＋margin3.7px×2 / .entry 32px×2 を削る。
+   ================================================================ */
+@media (max-width: 768px) {
+  body.page-entry #content-inner,
+  body.page-archive #content-inner,
+  body.page-index #content-inner {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  body.page-entry #main,
+  body.page-archive #main,
+  body.page-index #main {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: auto !important;
+  }
+
+  body.page-entry .entry,
+  body.page-archive .entry,
+  body.page-index .entry {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
