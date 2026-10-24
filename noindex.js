@@ -52,6 +52,7 @@
   var SLOT_END = '1607154698';   // 記事下（フェーズ1）… AdSense広告ユニット「スクエア2」 2026-09-11設定
   var SLOT_MID = '';   // 目次直後（フェーズ2）… フェーズ1の数値確認後に設定する
   var SLOT_IN  = '';   // 「まとめ」見出しの直前（フェーズ3）… h2が6個以上の長い記事だけ
+  var SLOT_SIDE = '';  // サイドバー（PCのみ）… プロフィールの直下。スマホではサイドバーが記事の下に落ちるので入れない
 
   // 固定ページ（プライバシーポリシー・お問い合わせ・運営者情報）には広告を入れない。
   // URLが記事扱いで判別できないため、タイトルで除外する。
@@ -131,6 +132,17 @@
       var anchor = content.querySelector('h2#toc-1');
       if (anchor) {
         anchor.parentNode.insertBefore(makeUnit(SLOT_MID), anchor);
+        push();
+      }
+    }
+
+    // --- サイドバー（PCのみ・アフィリエイト記事も対象＝本文から離れていて商品カードと隣接しない） ---
+    if (SLOT_SIDE && window.matchMedia('(min-width: 769px)').matches) {
+      var profile = document.querySelector('#box2-inner .hatena-module-profile');
+      if (profile) {
+        var side = makeUnit(SLOT_SIDE);
+        side.style.margin = '0 0 24px';
+        profile.parentNode.insertBefore(side, profile.nextSibling);
         push();
       }
     }
