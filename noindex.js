@@ -51,6 +51,12 @@
   var CLIENT   = 'ca-pub-5780763794800838';
   var SLOT_END = '1607154698';   // 記事下（フェーズ1）… AdSense広告ユニット「スクエア2」 2026-09-11設定
   var SLOT_MID = '';   // 目次直後（フェーズ2）… フェーズ1の数値確認後に設定する
+  var SLOT_IN  = '';   // 「まとめ」見出しの直前（フェーズ3）… h2が6個以上の長い記事だけ
+
+  // 固定ページ（プライバシーポリシー・お問い合わせ・運営者情報）には広告を入れない。
+  // URLが記事扱いで判別できないため、タイトルで除外する。
+  var NO_AD_TITLES = ['プライバシーポリシー', 'お問い合わせ', '運営者情報'];
+  var LONG_ARTICLE_H2 = 6;
 
   // このスクリプトははてなの「ヘッダHTML」から読み込まれるため、
   // 実行時点では .entry-content がまだパースされていない。
@@ -96,6 +102,21 @@
     if (!content) return;
     if (document.querySelector('.eg-ad')) return;  // 二重挿入の防止
 
+    var titleEl = document.querySelector('.entry-title');
+    var title = titleEl ? titleEl.textContent : '';
+    for (var i = 0; i < NO_AD_TITLES.length; i++) {
+      if (title.indexOf(NO_AD_TITLES[i]) !== -1) return;
+    }
+
+    // アフィリエイト表記のある記事（デバイス・買い物記事）は記事下1枠だけ（ポリシーR1）
+    var isAffiliate = content.textContent.indexOf('アフィリエイト広告') !== -1;
+
+    // 広告が配信されなかった枠（data-ad-status="unfilled"）は、ラベルごと隠す。
+    // 隠さないと「スポンサーリンク」の文字と280px前後の空白だけが残る（2026-09-13 本番で確認）
+    var style = document.createElement('style');
+    style.textContent = '.eg-ad:has(ins.adsbygoogle[data-ad-status="unfilled"]){display:none!important}';
+    document.head.appendChild(style);
+
     // --- 記事下（本文の直後・関連記事より前） ---
     if (SLOT_END) {
       content.parentNode.insertBefore(makeUnit(SLOT_END), content.nextSibling);
@@ -104,12 +125,25 @@
 
     // --- 目次直後（最初のh2の直前）---
     // ポリシー上、ファーストビューには置かない。目次が無い記事ではスキップする。
-    if (SLOT_MID) {
+    if (SLOT_MID && !isAffiliate) {
       // 目次は class 無しの <details>。その直後にある h2#toc-1 が最初の見出し。
-      var anchor = content.querySelector('h2#toc-1') || content.querySelector('h2');
+      // 最初のh2へのフォールバックはしない（短い記事で広告が上に来すぎるため）
+      var anchor = content.querySelector('h2#toc-1');
       if (anchor) {
-        content.insertBefore(makeUnit(SLOT_MID), anchor);
+        anchor.parentNode.insertBefore(makeUnit(SLOT_MID), anchor);
         push();
+      }
+    }
+
+    // --- 長い記事の「まとめ」直前 ---
+    if (SLOT_IN && !isAffiliate) {
+      var h2s = content.querySelectorAll('h2');
+      if (h2s.length >= LONG_ARTICLE_H2) {
+        var last = h2s[h2s.length - 1];
+        if (last.textContent.indexOf('まとめ') !== -1) {
+          last.parentNode.insertBefore(makeUnit(SLOT_IN), last);
+          push();
+        }
       }
     }
   });
