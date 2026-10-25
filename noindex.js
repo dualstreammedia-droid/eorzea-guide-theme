@@ -54,7 +54,7 @@
   var CLIENT   = 'ca-pub-5780763794800838';
   var SLOT_END = '1607154698';   // 記事下（フェーズ1）… AdSense広告ユニット「スクエア2」 2026-09-11設定
   var SLOT_MID = '2484022019';   // 目次直後（フェーズ2）… AdSense広告ユニット「目次直後」 2026-10-26設定
-  var SLOT_IN  = '';   // 「まとめ」見出しの直前（フェーズ3）… h2が6個以上の長い記事だけ
+  var SLOT_IN  = '9572088829';   // 「まとめ」見出しの直前（フェーズ3）… h2が6個以上の長い記事だけ。AdSense「記事内広告」ユニット 2026-10-26設定
   var SLOT_SIDE = '5121406602';  // サイドバー（PCのみ）… AdSense広告ユニット「サイドバー_PC」 2026-10-26設定。… プロフィールの直下。スマホではサイドバーが記事の下に落ちるので入れない
 
   // 固定ページ（プライバシーポリシー・お問い合わせ・運営者情報）には広告を入れない。
@@ -73,7 +73,8 @@
     }
   }
 
-  function makeUnit(slot) {
+  // inArticle=true は AdSenseの「記事内広告」ユニット用（layout=in-article / format=fluid）
+  function makeUnit(slot, inArticle) {
     var box = document.createElement('div');
     box.className = 'eg-ad';
     box.style.cssText = 'margin:28px 0;text-align:center;clear:both';
@@ -85,11 +86,17 @@
 
     var ins = document.createElement('ins');
     ins.className = 'adsbygoogle';
-    ins.style.cssText = 'display:block';
     ins.setAttribute('data-ad-client', CLIENT);
     ins.setAttribute('data-ad-slot', slot);
-    ins.setAttribute('data-ad-format', 'auto');
-    ins.setAttribute('data-full-width-responsive', 'true');
+    if (inArticle) {
+      ins.style.cssText = 'display:block;text-align:center';
+      ins.setAttribute('data-ad-layout', 'in-article');
+      ins.setAttribute('data-ad-format', 'fluid');
+    } else {
+      ins.style.cssText = 'display:block';
+      ins.setAttribute('data-ad-format', 'auto');
+      ins.setAttribute('data-full-width-responsive', 'true');
+    }
     box.appendChild(ins);
     return box;
   }
@@ -156,7 +163,7 @@
       if (h2s.length >= LONG_ARTICLE_H2) {
         var last = h2s[h2s.length - 1];
         if (last.textContent.indexOf('まとめ') !== -1) {
-          last.parentNode.insertBefore(makeUnit(SLOT_IN), last);
+          last.parentNode.insertBefore(makeUnit(SLOT_IN, true), last);
           push();
         }
       }
