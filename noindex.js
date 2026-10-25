@@ -1,9 +1,10 @@
 // エオルゼア攻略ガイド サイト共通スクリプト
-// はてなブログのヘッダHTMLから読み込まれる唯一のJS。中身は4つ。
+// はてなブログのヘッダHTMLから読み込まれる唯一のJS。中身は5つ。
 //   (1) noindex制御  … 対象記事のheadにrobotsメタを挿入
 //   (2) AdSense広告枠 … 記事下（＋任意で目次直後）に手動配置の広告ユニットを挿入
 //   (3) 日本語の改行位置の調整 … BudouXで文節の切れ目だけで改行させる
 //   (4) マップ画像をタップで拡大 … altに「マップ」を含む画像を元画像へのリンクで包む
+//   (5) 記事内ツールの読み込み … ファンフェス当日ナビ（ff26navi.js）
 // 編集したら git push するだけで全記事に反映される（GitHub Pages配信）。
 
 /* ============================================================
@@ -246,6 +247,22 @@
       hint.style.cssText = 'display:block;text-align:right;font-size:0.78rem;color:#8a6d1f;margin-top:4px';
       a.appendChild(hint);
     }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+
+/* ============================================================
+   (5) 記事内ツールの読み込み
+   記事に <div id="eg-ff26-navi"></div> がある時だけ、ファンフェス当日ナビ（ff26navi.js）を読み込む
+   ============================================================ */
+(function () {
+  function run() {
+    if (!document.getElementById('eg-ff26-navi')) return;
+    var s = document.createElement('script');
+    s.src = 'https://dualstreammedia-droid.github.io/eorzea-guide-theme/ff26navi.js?v=1';
+    s.async = true;
+    document.body.appendChild(s);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
   else run();
