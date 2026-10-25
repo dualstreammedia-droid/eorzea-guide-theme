@@ -161,10 +161,13 @@
     if (SLOT_IN && !isAffiliate) {
       var h2s = content.querySelectorAll('h2');
       if (h2s.length >= LONG_ARTICLE_H2) {
-        var last = h2s[h2s.length - 1];
-        if (last.textContent.indexOf('まとめ') !== -1) {
-          last.parentNode.insertBefore(makeUnit(SLOT_IN, true), last);
-          push();
+        // 「まとめ」の後ろに「関連記事」「参考」のh2が続く記事が多いので、後ろから探す
+        for (var k = h2s.length - 1; k >= 0; k--) {
+          if (h2s[k].textContent.indexOf('まとめ') !== -1) {
+            h2s[k].parentNode.insertBefore(makeUnit(SLOT_IN, true), h2s[k]);
+            push();
+            break;
+          }
         }
       }
     }
