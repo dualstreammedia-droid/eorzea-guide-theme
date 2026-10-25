@@ -798,6 +798,18 @@ a:hover { color: var(--link-hover) !important; }
   .entry-content table:has(tr > *:nth-child(3):last-child) {
     min-width: 480px !important;
   }
+  /* 先頭列が「番号」の表（記事生成スクリプトが class="eg-num" を付ける）は画面幅に収める */
+  .entry-content table.eg-num {
+    min-width: 0 !important;
+  }
+  .entry-content table.eg-num th:first-child,
+  .entry-content table.eg-num td:first-child {
+    width: 2.6em !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
   .entry-content table th,
   .entry-content table td {
     font-size: 0.86rem !important;
