@@ -202,6 +202,16 @@
    新しいタブで開くので、スマホでもピンチで拡大して読める。
    ============================================================ */
 (function () {
+  var BASE = 'https://dualstreammedia-droid.github.io/eorzea-guide-theme/img/';
+  // フォトライフの画像ID → 高解像度版のパス
+  var HIRES = {
+    '20261025001105': 'ff26/map_aeon.jpg',
+    '20261025001112': 'ff26/map_messe_entire.jpg',
+    '20261025001118': 'ff26/map_messe_hall1-3.jpg',
+    '20261025001124': 'ff26/map_messe_hall4-6.jpg',
+    '20261025001130': 'ff26/map_messe_hall7.jpg',
+    '20261025001136': 'ff26/map_toyosuna.jpg'
+  };
   function run() {
     var root = document.querySelector('.entry-content');
     if (!root) return;
@@ -211,7 +221,10 @@
       if ((img.getAttribute('alt') || '').indexOf('マップ') === -1) continue;
       if (img.closest('a')) continue;
       var a = document.createElement('a');
-      a.href = img.currentSrc || img.src;
+      // はてなフォトライフは800px幅に縮小されるため、高解像度版（img/ に置いたもの）があればそちらを開く
+      var src = img.currentSrc || img.src;
+      var key = (src.match(/(\d{14})\.\w+$/) || [])[1];
+      a.href = HIRES[key] ? BASE + HIRES[key] : src;
       a.target = '_blank';
       a.rel = 'noopener';
       a.className = 'eg-zoom';
