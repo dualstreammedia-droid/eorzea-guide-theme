@@ -9,20 +9,21 @@
   // ---------------- データ ----------------
   var DAYS = { 1: '2026-10-31', 2: '2026-11-01' };
 
+  // [開始, 終了, 内容, 写真（img/ff26/stage_*.jpg・公式サイトの画像）]
   var STAGE = {
     1: [
-      ['11:00', '13:00', '基調講演'],
-      ['15:00', '16:30', 'CC大会 セミファイナル'],
+      ['11:00', '13:00', '基調講演', 'keynote'],
+      ['15:00', '16:30', 'CC大会 セミファイナル', 'ccrc'],
       ['16:30', '17:00', '吉田Pの一問一答タイムアタック'],
-      ['17:00', '18:30', 'CC大会 ファイナル'],
-      ['19:30', '20:30', 'ピアノコンサート']
+      ['17:00', '18:30', 'CC大会 ファイナル', 'ccrc'],
+      ['19:30', '20:30', 'ピアノコンサート', 'piano']
     ],
     2: [
       ['10:30', '12:00', '開発パネル（サウンド）'],
       ['12:30', '13:30', 'LIVE Q&A'],
-      ['13:50', '15:00', 'ミラプリコレクション'],
+      ['13:50', '15:00', 'ミラプリコレクション', 'glamour'],
       ['15:30', '17:30', '直樹の部屋'],
-      ['19:00', '20:30', 'THE PRIMALS ライブ']
+      ['19:00', '20:30', 'THE PRIMALS ライブ', 'primals']
     ]
   };
 
@@ -82,6 +83,8 @@
   var css = document.createElement('style');
   css.textContent = [
     '#eg-ff26-navi{margin:12px 0 24px}',
+    '#eg-ff26-navi img.nv-ph{display:block;width:100%;max-width:280px;height:auto;aspect-ratio:16/9;border-radius:4px;margin:2px 0 6px}',
+    '#eg-ff26-navi tr.nv-off img.nv-ph{opacity:.5}',
     '#eg-ff26-navi .nv-day{margin:0 0 8px;font-size:14px}',
     '#eg-ff26-navi .nv-day button{font:inherit;background:none;border:0;padding:0 2px;color:#2563a6;text-decoration:underline;cursor:pointer}',
     '#eg-ff26-navi .nv-day button[aria-pressed="true"]{color:inherit;text-decoration:none;font-weight:700;cursor:default}',
@@ -120,7 +123,7 @@
       if (live && n.min >= a && n.min < b) st = '<span class="nv-s nv-now">上演中（残り' + dur(b - n.min) + '）</span>';
       else if (live && n.min >= b) { st = '<span class="nv-s">終了</span>'; cls = ' class="nv-off"'; }
       else if (live && !nextFound) { nextFound = true; st = '<span class="nv-s">あと' + dur(a - n.min) + 'で開始</span>'; }
-      h += '<tr' + cls + '><td>' + s[0] + '<br>〜' + s[1] + '</td><td>' + esc(s[2]) + st + '</td></tr>';
+      h += '<tr' + cls + '><td>' + s[0] + '<br>〜' + s[1] + '</td><td>' + (s[3] ? '<img class="nv-ph" src="' + MAP_BASE + 'stage_' + s[3] + '.jpg" alt="' + esc(s[2]) + 'のイメージ（© SQUARE ENIX）" loading="lazy" width="640" height="360">' : '') + esc(s[2]) + st + '</td></tr>';
     });
     h += '</tbody></table>';
 
