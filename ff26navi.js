@@ -1,6 +1,6 @@
 // ファンフェス2026東京 当日ナビ
 // 記事内の <div id="eg-ff26-navi"></div> に描画する。noindex.js の (5) から読み込まれる。
-// データは 2026-10-26 時点の公式サイト（ステージ・フロア情報）と QOくんの商品一覧。
+// データは 2026-10-26 時点の公式サイト（ステージ・フロア情報）。
 (function () {
   var root = document.getElementById('eg-ff26-navi');
   if (!root || root.getAttribute('data-ready')) return;
@@ -54,62 +54,6 @@
   // エッダの鞄は2日目だけ最終受付が早い
   var SPECIAL_LAST = { 'エッダの鞄': { 2: '18:30' } };
 
-  // [名前, 価格, 分類]
-  var GOODS = [
-    ['マフラータオル', 2500, 'ライブ'],
-    ['スティックライト＜モーグリ＞', 4950, 'ライブ'],
-    ['ぬいぐるみ＜カリュクス＞', 8250, '雑貨'],
-    ['ぬいぐるみ＜黄金のアルパカ＞', 5280, '雑貨'],
-    ['セニョールウソウソ・パック', 6930, '雑貨'],
-    ['オルゴール', 2750, '雑貨'],
-    ['フェイクレザーチャーム', 1320, '雑貨'],
-    ['クリアキーホルダー＜ファダニエル＞', 1650, '雑貨'],
-    ['クリアキーホルダー＜エリディブス＞', 1650, '雑貨'],
-    ['付箋セット', 1100, '雑貨'],
-    ['NPC名鑑（カードゲーム）', 4950, '雑貨'],
-    ['ネオンライト＜モーグリ＞', 6600, '雑貨'],
-    ['ネオンパラソル', 4950, '雑貨'],
-    ['エメトセルクのイヤリング（1会計1点）', 27500, '雑貨'],
-    ['オードパルファム（各ジョブ）', 3960, '雑貨'],
-    ['ミニチュアフィギュア Vol.3（1個）', 1650, 'ランダム'],
-    ['ミニチュアフィギュア Vol.3（6個BOX）', 9900, 'ランダム'],
-    ['ミニパペット Vol.3（1個）', 1650, 'ランダム'],
-    ['ミニパペット Vol.3（6個BOX）', 9900, 'ランダム'],
-    ['ラバーマグネット Vol.3（1個）', 1100, 'ランダム'],
-    ['ラバーマグネット Vol.3（6個BOX）', 6600, 'ランダム'],
-    ['ガラスプレート Vol.1（1個）', 1650, 'ランダム'],
-    ['ガラスプレート Vol.1（8個BOX）', 13200, 'ランダム'],
-    ['Tシャツ＜ストレイバロー＞', 5500, 'アパレル'],
-    ['ボンバージャケット', 29700, 'アパレル'],
-    ['スウェット（黒／グレー）', 16500, 'アパレル'],
-    ['ネオンTシャツ', 7700, 'アパレル'],
-    ['大判ストール', 6600, 'アパレル'],
-    ['公式パンフレット', 2500, '本・CD'],
-    ['カレンダーセット2027', 4950, '本・CD'],
-    ['ポストカードブック Vol.II', 1650, '本・CD'],
-    ['エオルゼア観光案内', 1980, '本・CD'],
-    ['ピアノコレクション', 3300, '本・CD'],
-    ['Pulse Vol.3', 3960, '本・CD'],
-    ['GGグミ', 1900, '食品'],
-    ['でぶチョコボカレー', 1080, '食品'],
-    ['ショッパー大', 50, 'その他'],
-    ['ショッパー特大', 200, 'その他']
-  ];
-  var ARTBOARD = 14000;
-
-  var ITEMS = [
-    ['スマホ（アプリにログイン済み）', true],
-    ['ワンタイムパスワードの認証アプリ', true],
-    ['本人確認書類', true],
-    ['クレジットカードかスマホ決済', true],
-    ['現金（くじ・グッズ・キッチンカー用）', true],
-    ['モバイルバッテリー', false],
-    ['エコバッグ（ショッパーは有料）', false],
-    ['羽織るもの（夜の屋外は冷える）', false],
-    ['ペンライト・マフラータオル（ライブ用）', false],
-    ['QOくんのQRコードのスクショ', false]
-  ];
-
   var MAPS = [
     ['会場全体', 'map_messe_entire.jpg'],
     ['1-3ホール', 'map_messe_hall1-3.jpg'],
@@ -119,14 +63,6 @@
     ['イオンモール', 'map_aeon.jpg']
   ];
   var MAP_BASE = 'https://dualstreammedia-droid.github.io/eorzea-guide-theme/img/ff26/';
-
-  // ---------------- 保存（このスマホだけ） ----------------
-  var KEY = 'eg-ff26-navi';
-  var store = {};
-  try { store = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { store = {}; }
-  store.cart = store.cart || {};
-  store.items = store.items || {};
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
 
   // ---------------- 時刻（端末の時差に関係なく日本時間で計算） ----------------
   function jstNow() {
@@ -139,69 +75,24 @@
   }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function toMin(s) { var p = s.split(':'); return +p[0] * 60 + +p[1]; }
-  function yen(n) { return n.toLocaleString('ja-JP') + '円'; }
   function dur(m) { return m >= 60 ? Math.floor(m / 60) + '時間' + (m % 60 ? (m % 60) + '分' : '') : m + '分'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-  // ---------------- スタイル ----------------
+  // ---------------- スタイル（表は記事の表と同じ見た目を使う） ----------------
   var css = document.createElement('style');
   css.textContent = [
-    '#eg-ff26-navi{--n:#1a2f4e;--g:#b8860b;--gs:#f6ecd2;--l:#e2dccd;--m:#6b6f7c;--ok:#2f7a57;--warn:#b5651d;--off:#9a9a9a;font-size:15px;line-height:1.6;margin:16px 0 28px}',
-    '#eg-ff26-navi *{box-sizing:border-box}',
-    '#eg-ff26-navi .nv-tabs{display:flex;gap:6px;position:sticky;top:0;z-index:3;background:#fff;padding:8px 0;border-bottom:2px solid var(--n)}',
-    '#eg-ff26-navi .nv-tab{flex:1;font:inherit;font-weight:700;font-size:14px;padding:9px 4px;border:1px solid var(--l);border-radius:8px 8px 0 0;background:#f7f5ef;color:var(--n);cursor:pointer}',
-    '#eg-ff26-navi .nv-tab[aria-selected="true"]{background:var(--n);color:#fff;border-color:var(--n)}',
-    '#eg-ff26-navi .nv-panel{padding-top:14px}',
-    '#eg-ff26-navi .nv-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:4px 0 10px}',
-    '#eg-ff26-navi .nv-clock{font-size:26px;font-weight:700;color:var(--n);font-variant-numeric:tabular-nums}',
-    '#eg-ff26-navi .nv-day{display:flex;gap:6px}',
-    '#eg-ff26-navi .nv-day button{font:inherit;font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--l);background:#fff;color:var(--n);cursor:pointer}',
-    '#eg-ff26-navi .nv-day button[aria-pressed="true"]{background:var(--gs);border-color:var(--g);font-weight:700}',
-    '#eg-ff26-navi .nv-note{font-size:13px;color:var(--m);margin:0 0 10px}',
-    '#eg-ff26-navi .nv-sec{font-weight:700;color:var(--n);font-size:16px;margin:18px 0 8px;padding-left:8px;border-left:4px solid var(--g)}',
-    '#eg-ff26-navi .nv-card{border:1px solid var(--l);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff}',
-    '#eg-ff26-navi .nv-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}',
-    '#eg-ff26-navi .nv-name{font-weight:700;color:#222}',
-    '#eg-ff26-navi .nv-sub{font-size:12.5px;color:var(--m)}',
-    '#eg-ff26-navi .nv-pill{flex:none;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;border:1px solid currentColor}',
-    '#eg-ff26-navi .st-ok{color:var(--ok)}#eg-ff26-navi .st-warn{color:var(--warn)}#eg-ff26-navi .st-off{color:var(--off)}#eg-ff26-navi .st-now{color:#fff;background:#c0392b;border-color:#c0392b}#eg-ff26-navi .st-next{color:var(--n)}',
-    '#eg-ff26-navi .nv-card.off{opacity:.55}',
-    '#eg-ff26-navi .nv-maps{display:grid;grid-template-columns:1fr 1fr;gap:6px}',
-    '#eg-ff26-navi .nv-maps a{display:block;text-align:center;padding:9px 4px;border:1px solid var(--l);border-radius:8px;color:var(--n);font-weight:700;font-size:13px;text-decoration:none;background:#f7f5ef}',
-    '#eg-ff26-navi .nv-sum{position:sticky;top:52px;z-index:2;background:var(--n);color:#fff;border-radius:10px;padding:10px 14px;margin-bottom:10px}',
-    '#eg-ff26-navi .nv-sum b{font-size:22px;font-variant-numeric:tabular-nums}',
-    '#eg-ff26-navi .nv-bar{height:7px;border-radius:4px;background:rgba(255,255,255,.25);margin:6px 0 4px;overflow:hidden}',
-    '#eg-ff26-navi .nv-bar i{display:block;height:100%;background:#e8c35a;width:0}',
-    '#eg-ff26-navi .nv-g{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--l)}',
-    '#eg-ff26-navi .nv-g .nv-sub{font-variant-numeric:tabular-nums}',
-    '#eg-ff26-navi .nv-q{display:flex;align-items:center;gap:6px;flex:none}',
-    '#eg-ff26-navi .nv-q button{width:34px;height:34px;border-radius:8px;border:1px solid var(--l);background:#fff;font-size:18px;font-weight:700;color:var(--n);cursor:pointer;line-height:1}',
-    '#eg-ff26-navi .nv-q span{min-width:1.6em;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}',
-    '#eg-ff26-navi .nv-g.has{background:var(--gs)}',
-    '#eg-ff26-navi .nv-btn{font:inherit;font-size:13px;padding:7px 14px;border-radius:8px;border:1px solid var(--l);background:#fff;color:var(--n);cursor:pointer}',
-    '#eg-ff26-navi label.nv-chk{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--l);cursor:pointer}',
-    '#eg-ff26-navi label.nv-chk input{width:22px;height:22px;accent-color:var(--ok);flex:none}',
-    '#eg-ff26-navi label.nv-chk.done span{text-decoration:line-through;color:var(--off)}',
-    '#eg-ff26-navi .nv-tag{display:inline-block;font-size:11px;font-weight:700;color:#c0392b;margin-left:6px}',
-    '#eg-ff26-navi button:focus-visible,#eg-ff26-navi a:focus-visible{outline:2px solid var(--g);outline-offset:2px}'
+    '#eg-ff26-navi{margin:12px 0 24px}',
+    '#eg-ff26-navi .nv-day{margin:0 0 8px;font-size:14px}',
+    '#eg-ff26-navi .nv-day button{font:inherit;background:none;border:0;padding:0 2px;color:#2563a6;text-decoration:underline;cursor:pointer}',
+    '#eg-ff26-navi .nv-day button[aria-pressed="true"]{color:inherit;text-decoration:none;font-weight:700;cursor:default}',
+    '#eg-ff26-navi .nv-s{display:block;font-size:13px;color:#666}',
+    '#eg-ff26-navi .nv-now{color:#c0392b;font-weight:700}',
+    '#eg-ff26-navi .nv-soon{color:#b5651d;font-weight:700}',
+    '#eg-ff26-navi tr.nv-off td{color:#aaa}',
+    '#eg-ff26-navi tr.nv-off .nv-s{color:#bbb}'
   ].join('');
   document.head.appendChild(css);
 
-  // ---------------- 骨組み ----------------
-  var TABS = [['now', 'いま'], ['goods', 'グッズ計算'], ['items', '持ち物']];
-  var current = store.tab || 'now';
-  root.innerHTML =
-    '<div class="nv-tabs" role="tablist">' +
-    TABS.map(function (t) { return '<button class="nv-tab" role="tab" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join('') +
-    '</div><div class="nv-panel" id="nv-panel"></div>';
-  var panel = root.querySelector('#nv-panel');
-  root.querySelector('.nv-tabs').addEventListener('click', function (e) {
-    var b = e.target.closest('[data-tab]');
-    if (!b) return;
-    current = b.getAttribute('data-tab'); store.tab = current; save(); render();
-  });
-
-  // 表示する日：当日はその日、それ以外は選んだ日（初期はDAY1）
   var viewDay = null;
   function today() {
     var n = jstNow();
@@ -209,146 +100,67 @@
     if (n.date === DAYS[2]) return 2;
     return 0;
   }
+  function hm(m) { return Math.floor(m / 60) + ':' + pad(m % 60); }
 
-  // ---------------- 「いま」タブ ----------------
-  function renderNow() {
+  function render() {
     var n = jstNow();
     var t = today();
     var day = viewDay || t || 1;
     var live = t === day;
-    var before = n.date < DAYS[1];
-    var h = '<div class="nv-head"><div class="nv-clock">' + n.text + '<span class="nv-sub">（日本時間）</span></div>' +
-      '<div class="nv-day"><button data-day="1" aria-pressed="' + (day === 1) + '">10/31 DAY1</button>' +
-      '<button data-day="2" aria-pressed="' + (day === 2) + '">11/1 DAY2</button></div></div>';
-    if (!live) {
-      h += '<p class="nv-note">' + (before ? 'まだ開催前です。' : 'この日は表示中の日付ではありません。') +
-        '当日（10/31・11/1）に開くと、いまの時刻に合わせて「上演中」「あと何分で受付終了」などが表示されます。今は' + (day === 1 ? 'DAY1' : 'DAY2') + 'の予定を表示しています。</p>';
-    }
+    var h = '<p class="nv-day">表示する日：<button data-day="1" aria-pressed="' + (day === 1) + '">10/31（1日目）</button>／' +
+      '<button data-day="2" aria-pressed="' + (day === 2) + '">11/1（2日目）</button></p>';
+    h += live ? '<p>' + n.text + ' 時点の状況です（1分ごとに更新）。</p>'
+      : '<p>当日に開くと、いまの時刻に合わせて「上演中」「受付終了まであと何分」が出ます。今は' + (day === 1 ? '1日目' : '2日目') + 'の予定を表示しています。</p>';
 
     // ステージ
-    h += '<div class="nv-sec">ステージ（4-6ホール）</div>';
+    h += '<p><strong>ステージ（4-6ホール）</strong></p><table class="eg-num"><thead><tr><th>時間</th><th>内容</th></tr></thead><tbody>';
     var nextFound = false;
     STAGE[day].forEach(function (s) {
-      var a = toMin(s[0]), b = toMin(s[1]), st, cls = '', pill = '';
-      if (live && n.min >= a && n.min < b) { st = 'now'; pill = '<span class="nv-pill st-now">上演中 残り' + dur(b - n.min) + '</span>'; }
-      else if (live && n.min >= b) { st = 'off'; cls = ' off'; pill = '<span class="nv-pill st-off">終了</span>'; }
-      else if (live && !nextFound) { nextFound = true; pill = '<span class="nv-pill st-next">あと' + dur(a - n.min) + '</span>'; }
-      else { pill = ''; }
-      h += '<div class="nv-card' + cls + '"><div class="nv-row"><div><div class="nv-name">' + esc(s[2]) + '</div>' +
-        '<div class="nv-sub">' + s[0] + '〜' + s[1] + '</div></div>' + pill + '</div></div>';
+      var a = toMin(s[0]), b = toMin(s[1]), st = '', cls = '';
+      if (live && n.min >= a && n.min < b) st = '<span class="nv-s nv-now">上演中（残り' + dur(b - n.min) + '）</span>';
+      else if (live && n.min >= b) { st = '<span class="nv-s">終了</span>'; cls = ' class="nv-off"'; }
+      else if (live && !nextFound) { nextFound = true; st = '<span class="nv-s">あと' + dur(a - n.min) + 'で開始</span>'; }
+      h += '<tr' + cls + '><td>' + s[0] + '<br>〜' + s[1] + '</td><td>' + esc(s[2]) + st + '</td></tr>';
     });
+    h += '</tbody></table>';
 
     // アクティビティ・お店
-    h += '<div class="nv-sec">アクティビティ・お店</div>';
-    if (live) h += '<p class="nv-note">受付終了が近い順に並べています。</p>';
+    h += '<p><strong>アクティビティ・お店の受付時間</strong>' + (live ? '<br>受付終了が近い順です。' : '') + '</p>' +
+      '<table class="eg-num"><thead><tr><th>最終受付</th><th>場所</th></tr></thead><tbody>';
     var rows = SPOTS.map(function (s) {
       var open = toMin(day === 1 ? s[2] : s[4]);
       var close = toMin(day === 1 ? s[3] : s[5]);
       var last = close - s[6];
       var sp = SPECIAL_LAST[s[0]] && SPECIAL_LAST[s[0]][day];
       if (sp) last = toMin(sp);
-      var state, sort;
-      if (!live) { state = 'plan'; sort = 0; }
-      else if (n.min < open) { state = 'before'; sort = 2000 + open; }
-      else if (n.min >= last) { state = 'closed'; sort = 9000; }
-      else { state = (last - n.min <= 60) ? 'soon' : 'open'; sort = last - n.min; }
-      return { s: s, open: open, close: close, last: last, state: state, sort: sort };
+      var sort = 0;
+      if (live) sort = n.min < open ? 2000 + open : (n.min >= last ? 9000 : last - n.min);
+      return { s: s, open: open, last: last, sort: sort };
     });
     if (live) rows.sort(function (x, y) { return x.sort - y.sort; });
     rows.forEach(function (r) {
-      var s = r.s, pill = '', cls = '';
-      var hours = (day === 1 ? s[2] + '〜' + s[3] : s[4] + '〜' + s[5]);
-      var lastTxt = r.last !== r.close ? '（最終受付 ' + Math.floor(r.last / 60) + ':' + pad(r.last % 60) + '）' : '';
-      if (r.state === 'open') pill = '<span class="nv-pill st-ok">受付中 あと' + dur(r.last - n.min) + '</span>';
-      else if (r.state === 'soon') pill = '<span class="nv-pill st-warn">まもなく終了 ' + dur(r.last - n.min) + '</span>';
-      else if (r.state === 'before') pill = '<span class="nv-pill st-next">' + dur(r.open - n.min) + '後に開始</span>';
-      else if (r.state === 'closed') { pill = '<span class="nv-pill st-off">受付終了</span>'; cls = ' off'; }
-      h += '<div class="nv-card' + cls + '"><div class="nv-row"><div><div class="nv-name">' + esc(s[0]) + '</div>' +
-        '<div class="nv-sub">' + esc(s[1]) + '／' + hours + lastTxt + (s[7] ? '<br>' + esc(s[7]) : '') + '</div></div>' + pill + '</div></div>';
+      var s = r.s, st = '', cls = '';
+      if (live) {
+        if (n.min < r.open) st = '<span class="nv-s">' + hm(r.open) + 'から</span>';
+        else if (n.min >= r.last) { st = '<span class="nv-s">受付終了</span>'; cls = ' class="nv-off"'; }
+        else if (r.last - n.min <= 60) st = '<span class="nv-s nv-soon">あと' + dur(r.last - n.min) + '</span>';
+        else st = '<span class="nv-s">あと' + dur(r.last - n.min) + '</span>';
+      }
+      h += '<tr' + cls + '><td>' + hm(r.last) + '</td><td>' + esc(s[0]) + st +
+        '<span class="nv-s">' + esc(s[1]) + (s[7] ? '／' + esc(s[7]) : '') + '</span></td></tr>';
     });
+    h += '</tbody></table>';
 
     // マップ
-    h += '<div class="nv-sec">マップ（タップで拡大）</div><div class="nv-maps">' +
-      MAPS.map(function (m) { return '<a href="' + MAP_BASE + m[1] + '" target="_blank" rel="noopener">' + m[0] + '</a>'; }).join('') + '</div>';
-    h += '<p class="nv-note" style="margin-top:10px">時間は公式サイトの案内（10月26日時点）です。当日の変更は会場の掲示を優先してください。</p>';
-    panel.innerHTML = h;
-    panel.querySelector('.nv-day').addEventListener('click', function (e) {
-      var b = e.target.closest('[data-day]');
-      if (!b) return;
-      viewDay = +b.getAttribute('data-day'); renderNow();
-    });
+    h += '<p><strong>マップ</strong>（タップで大きな画像が開きます）<br>' +
+      MAPS.map(function (m) { return '<a href="' + MAP_BASE + m[1] + '" target="_blank" rel="noopener">' + m[0] + '</a>'; }).join('／') + '</p>';
+    root.innerHTML = h;
   }
-
-  // ---------------- 「グッズ計算」タブ ----------------
-  function cartTotal() {
-    var sum = 0, cnt = 0;
-    GOODS.forEach(function (g, i) { var q = store.cart[i] || 0; sum += q * g[1]; cnt += q; });
-    return { sum: sum, cnt: cnt };
-  }
-  function sumHtml() {
-    var t = cartTotal();
-    var rest = ARTBOARD - t.sum;
-    var pct = Math.min(100, t.sum / ARTBOARD * 100);
-    return '<div>合計 <b>' + yen(t.sum) + '</b>（' + t.cnt + '点）</div>' +
-      '<div class="nv-bar"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="nv-sub" style="color:#f3e6c0">' + (rest > 0 ? 'アートボード特典（14,000円以上）まで あと' + yen(rest) : 'アートボード特典（14,000円以上）の条件クリア') + '</div>';
-  }
-  function renderGoods() {
-    var h = '<div class="nv-sum" id="nv-sum">' + sumHtml() + '</div>' +
-      '<p class="nv-note">欲しいものの数を入れると合計が出ます。入れた内容はこのスマホに保存されます。注文は会場でQOくんのQRコードを見せて行います。</p>';
-    var cat = '';
-    GOODS.forEach(function (g, i) {
-      if (g[2] !== cat) { cat = g[2]; h += '<div class="nv-sec">' + esc(cat) + '</div>'; }
-      var q = store.cart[i] || 0;
-      h += '<div class="nv-g' + (q ? ' has' : '') + '" data-i="' + i + '"><div><div class="nv-name">' + esc(g[0]) + '</div><div class="nv-sub">' + yen(g[1]) + '</div></div>' +
-        '<div class="nv-q"><button data-d="-1" aria-label="' + esc(g[0]) + 'を減らす">−</button><span>' + q + '</span><button data-d="1" aria-label="' + esc(g[0]) + 'を増やす">＋</button></div></div>';
-    });
-    h += '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="nv-btn" id="nv-clear">全部0に戻す</button>' +
-      '<a class="nv-btn" href="https://qo-kun.com/fanfest-finalfantasy14" target="_blank" rel="noopener" style="text-decoration:none">QOくんを開く</a></div>' +
-      '<p class="nv-note" style="margin-top:10px">価格は税込（QOくんの商品一覧、10月26日時点）。食品は軽減税率の対象です。</p>';
-    panel.innerHTML = h;
-    panel.addEventListener('click', onGoodsClick);
-  }
-  function onGoodsClick(e) {
-    if (current !== 'goods') return;
-    if (e.target.id === 'nv-clear') { store.cart = {}; save(); panel.removeEventListener('click', onGoodsClick); renderGoods(); return; }
-    var b = e.target.closest('button[data-d]');
+  root.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-day]');
     if (!b) return;
-    var row = b.closest('.nv-g'), i = +row.getAttribute('data-i');
-    var q = Math.max(0, Math.min(99, (store.cart[i] || 0) + +b.getAttribute('data-d')));
-    if (q) store.cart[i] = q; else delete store.cart[i];
-    save();
-    row.querySelector('span').textContent = q;
-    row.classList.toggle('has', q > 0);
-    panel.querySelector('#nv-sum').innerHTML = sumHtml();
-  }
-
-  // ---------------- 「持ち物」タブ ----------------
-  function renderItems() {
-    var h = '<p class="nv-note">チェックはこのスマホに保存されます。</p>';
-    ITEMS.forEach(function (it, i) {
-      var on = !!store.items[i];
-      h += '<label class="nv-chk' + (on ? ' done' : '') + '"><input type="checkbox" data-i="' + i + '"' + (on ? ' checked' : '') + '><span>' + esc(it[0]) + (it[1] ? '<span class="nv-tag">必須</span>' : '') + '</span></label>';
-    });
-    panel.innerHTML = h;
-    panel.querySelectorAll('input[type=checkbox]').forEach(function (c) {
-      c.addEventListener('change', function () {
-        var i = c.getAttribute('data-i');
-        if (c.checked) store.items[i] = 1; else delete store.items[i];
-        save();
-        c.closest('label').classList.toggle('done', c.checked);
-      });
-    });
-  }
-
-  function render() {
-    root.querySelectorAll('.nv-tab').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === current); });
-    panel.removeEventListener('click', onGoodsClick);
-    if (current === 'goods') renderGoods();
-    else if (current === 'items') renderItems();
-    else renderNow();
-  }
+    viewDay = +b.getAttribute('data-day'); render();
+  });
   render();
-  // 「いま」タブは1分ごとに更新
-  setInterval(function () { if (current === 'now') renderNow(); }, 60000);
+  setInterval(render, 60000);
 })();
