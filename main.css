@@ -802,6 +802,10 @@ a:hover { color: var(--link-hover) !important; }
   body .entry-content table.eg-num.eg-num.eg-num {
     min-width: 0 !important;
   }
+  body .entry-content table.eg-num.eg-num td,
+  body .entry-content table.eg-num.eg-num td.eg-bx {
+    overflow-wrap: anywhere !important;
+  }
   body .entry-content table.eg-num.eg-num th:first-child,
   body .entry-content table.eg-num.eg-num td:first-child {
     width: 2.6em !important;
