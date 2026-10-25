@@ -1,8 +1,9 @@
 // エオルゼア攻略ガイド サイト共通スクリプト
-// はてなブログのヘッダHTMLから読み込まれる唯一のJS。中身は3つ。
+// はてなブログのヘッダHTMLから読み込まれる唯一のJS。中身は4つ。
 //   (1) noindex制御  … 対象記事のheadにrobotsメタを挿入
 //   (2) AdSense広告枠 … 記事下（＋任意で目次直後）に手動配置の広告ユニットを挿入
 //   (3) 日本語の改行位置の調整 … BudouXで文節の切れ目だけで改行させる
+//   (4) マップ画像をタップで拡大 … altに「マップ」を含む画像を元画像へのリンクで包む
 // 編集したら git push するだけで全記事に反映される（GitHub Pages配信）。
 
 /* ============================================================
@@ -189,6 +190,38 @@
     if (title) list.push(title);
     for (var i = 0; i < list.length; i++) {
       try { p.applyToElement(list[i]); list[i].classList.add('eg-bx'); } catch (e) {}
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+
+/* ============================================================
+   (4) マップ画像をタップで拡大
+   alt に「マップ」を含む記事内画像を、元画像へのリンクで包む。
+   新しいタブで開くので、スマホでもピンチで拡大して読める。
+   ============================================================ */
+(function () {
+  function run() {
+    var root = document.querySelector('.entry-content');
+    if (!root) return;
+    var imgs = root.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      if ((img.getAttribute('alt') || '').indexOf('マップ') === -1) continue;
+      if (img.closest('a')) continue;
+      var a = document.createElement('a');
+      a.href = img.currentSrc || img.src;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.className = 'eg-zoom';
+      a.style.cssText = 'display:block;text-decoration:none;border:none';
+      img.parentNode.insertBefore(a, img);
+      a.appendChild(img);
+      var hint = document.createElement('span');
+      hint.textContent = 'タップで拡大';
+      hint.style.cssText = 'display:block;text-align:right;font-size:0.78rem;color:#8a6d1f;margin-top:4px';
+      a.appendChild(hint);
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);

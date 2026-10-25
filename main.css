@@ -808,8 +808,9 @@ a:hover { color: var(--link-hover) !important; }
   }
   body .entry-content table.eg-num.eg-num th:first-child,
   body .entry-content table.eg-num.eg-num td:first-child {
-    width: 2.6em !important;
-    padding-left: 4px !important;
+    width: 1% !important;
+    min-width: 0 !important;
+    padding-left: 6px !important;
     padding-right: 4px !important;
     text-align: center !important;
     white-space: nowrap !important;
