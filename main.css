@@ -799,11 +799,11 @@ a:hover { color: var(--link-hover) !important; }
     min-width: 480px !important;
   }
   /* 先頭列が「番号」の表（記事生成スクリプトが class="eg-num" を付ける）は画面幅に収める */
-  .entry-content table.eg-num {
+  body .entry-content table.eg-num.eg-num.eg-num {
     min-width: 0 !important;
   }
-  .entry-content table.eg-num th:first-child,
-  .entry-content table.eg-num td:first-child {
+  body .entry-content table.eg-num.eg-num th:first-child,
+  body .entry-content table.eg-num.eg-num td:first-child {
     width: 2.6em !important;
     padding-left: 4px !important;
     padding-right: 4px !important;
