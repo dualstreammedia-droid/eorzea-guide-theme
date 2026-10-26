@@ -477,36 +477,136 @@
         return cv;
       });
   }
+  // ---------- エリアごとの詳しいマップ（公式のホールマップに、回る番号を重ねる） ----------
+  // 座標は公式マップ画像（2400×1350）上のブース番号の位置
+  var DETAIL = {
+    H13: { file: 'map_messe_hall1-3.jpg', name: '1-3ホール', pos: { 1: [728, 419], 2: [869, 397], 3: [1024, 396], 4: [941, 569], 5: [1234, 400], 6: [1459, 546], 7: [1626, 425], 8: [763, 890], 9: [950, 791], 10: [1097, 922], 11: [1272, 914], 12: [1369, 914], 13: [1477, 899], 14: [1609, 908], 15: [1352, 758] } },
+    H46: { file: 'map_messe_hall4-6.jpg', name: '4-6ホール（ステージ）', pos: { stage: [1198, 930, 120] } },
+    H7: { file: 'map_messe_hall7.jpg', name: '7ホール', pos: { 20: [1114, 390], 21: [1176, 542], 22: [1331, 497], 23: [1330, 593], 24: [1123, 625], 25: [1091, 961] } },
+    MESSE2F: { file: 'map_messe_entire.jpg', name: '2F中央モール・屋外展示場', pos: { 34: [1752, 768], 35: [1783, 995], 36: [1783, 1082] } },
+    PARK: { file: 'map_toyosuna.jpg', name: '豊砂公園', pos: { 1: [1480, 931], 2: [1711, 532], truck: [1458, 656, 190] } },
+    AEON: { file: 'map_aeon.jpg', name: 'イオンモール', pos: { 37: [608, 452], 38: [972, 456], 39: [1086, 457] } }
+  };
+  var DETAIL_ORDER = ['H13', 'H46', 'H7', 'MESSE2F', 'PARK', 'AEON'];
+  var CROP_Y = 180, CROP_H = 1032; // 上の題字を除いた部分
+  function detailOf(x) {
+    if (x.kind === 'stage') return { key: 'H46', p: 'stage' };
+    var a = areaOf(x.place), m = x.place.match(/(\d+)$/);
+    var key = a === 'OUT' || a === 'MALL' ? 'MESSE2F' : a;
+    return { key: key, p: m ? +m[1] : (key === 'PARK' ? 'truck' : null) };
+  }
+  // 行くエリアごとに、番号と位置をまとめる
+  function detailModel(rows) {
+    var by = {};
+    rows.forEach(function (x) {
+      if (!x.no) return;
+      var o = detailOf(x), D = DETAIL[o.key], xy = D && D.pos[o.p];
+      if (!xy) return;
+      (by[o.key] = by[o.key] || []).push({ no: x.no, x: xy[0], y: xy[1], r: xy[2] || 46, row: x });
+    });
+    return DETAIL_ORDER.filter(function (k) { return by[k]; }).map(function (k) {
+      var marks = by[k], seen = {};
+      marks.forEach(function (m) { var s = m.x + ',' + m.y; m.k = seen[s] = (seen[s] || 0) + 1; }); // 同じ場所に2回行くときは横にずらす
+      return { key: k, d: DETAIL[k], marks: marks };
+    });
+  }
+  function markXY(m) { var o = m.r * .7 + 24; return [m.x + o + (m.k - 1) * 84, m.y - o]; }
+  function detailMaps(rows) {
+    var list = detailModel(rows);
+    if (!list.length) return '';
+    return '<p><strong>エリアごとの詳しいマップ</strong><br>赤い丸の番号が、上の表の順番です（マップは公式サイトのもの・© SQUARE ENIX）。</p>' + list.map(function (a) {
+      var g = '<p class="nv-dt">' + a.d.name + '　' + a.marks.map(function (m) { return circled(m.no); }).join('') + '</p>' +
+        '<a href="' + MAP_BASE + a.d.file + '" target="_blank" rel="noopener"><svg viewBox="0 ' + CROP_Y + ' 2400 ' + CROP_H + '" class="nv-map" role="img" aria-label="' + a.d.name + 'のマップ">' +
+        '<image href="' + MAP_BASE + a.d.file + '" x="0" y="0" width="2400" height="1350"/>';
+      a.marks.forEach(function (m) {
+        var c = markXY(m);
+        g += '<circle cx="' + m.x + '" cy="' + m.y + '" r="' + m.r + '" fill="none" stroke="#c0392b" stroke-width="10"/>' +
+          '<line x1="' + (m.x + m.r * .7) + '" y1="' + (m.y - m.r * .7) + '" x2="' + c[0] + '" y2="' + c[1] + '" stroke="#c0392b" stroke-width="8"/>' +
+          '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="40" fill="#c0392b" stroke="#fff" stroke-width="6"/>' +
+          '<text x="' + c[0] + '" y="' + (c[1] + 16) + '" text-anchor="middle" font-size="46" font-weight="700" fill="#fff">' + m.no + '</text>';
+      });
+      return g + '</svg></a>';
+    }).join('');
+  }
+  function detailCanvas(d, a) {
+    return loadImg(MAP_BASE + a.d.file).then(function (im) {
+      var W = 1080, P = 40, sc = W / 2400, mapH = Math.round(CROP_H * sc);
+      var cv = document.createElement('canvas'), ctx = cv.getContext('2d');
+      var H = 110 + mapH + 20 + a.marks.length * 52 + 70;
+      cv.width = W; cv.height = H;
+      ctx.fillStyle = '#fbf8f1'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = DAY_COLOR[d]; ctx.fillRect(0, 0, W, 110);
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+      ctx.font = '24px ' + FONT; ctx.fillText('FF14 ファンフェス2026東京　' + DAY_LABEL[d], P, 42);
+      ctx.font = '700 40px ' + FONT; ctx.fillText(a.d.name + 'の詳しいマップ', P, 92);
+      ctx.save(); ctx.translate(0, 110); ctx.scale(sc, sc); ctx.translate(0, -CROP_Y);
+      ctx.beginPath(); ctx.rect(0, CROP_Y, 2400, CROP_H); ctx.clip();
+      if (im) ctx.drawImage(im, 0, 0, 2400, 1350);
+      a.marks.forEach(function (m) {
+        var c = markXY(m);
+        ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 10;
+        ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2); ctx.stroke();
+        ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(m.x + m.r * .7, m.y - m.r * .7); ctx.lineTo(c[0], c[1]); ctx.stroke();
+        ctx.beginPath(); ctx.arc(c[0], c[1], 40, 0, Math.PI * 2); ctx.fillStyle = '#c0392b'; ctx.fill();
+        ctx.lineWidth = 6; ctx.strokeStyle = '#fff'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = '700 46px ' + FONT; ctx.fillText(String(m.no), c[0], c[1] + 16);
+      });
+      ctx.restore();
+      var y = 110 + mapH + 20;
+      a.marks.forEach(function (m) {
+        var x = m.row;
+        numDot(ctx, P + 20, y + 22, m.no);
+        ctx.fillStyle = '#111'; ctx.font = '700 26px ' + FONT;
+        ctx.fillText(hm(x.a) + '〜' + hm(x.b) + '　' + x.name + (x.place ? '（' + x.place + '）' : ''), P + 54, y + 32);
+        y += 52;
+      });
+      ctx.fillStyle = '#888'; ctx.font = '20px ' + FONT;
+      ctx.fillText('マップ © SQUARE ENIX　エオルゼア攻略ガイド ' + PAGE_URL.replace('https://', ''), P, y + 40);
+      return cv;
+    });
+  }
+  function toBlob(cv) {
+    return new Promise(function (ok, ng) { try { cv.toBlob(function (b) { if (b) ok(b); else ng(); }, 'image/png'); } catch (e) { ng(e); } });
+  }
   function makeImage() {
     var box = document.getElementById('nv-share');
     var d = pst.day, r = simulate(d);
     box.innerHTML = '<p class="nv-s">画像を作っています…</p>';
     function fail() { box.innerHTML = '<p class="nv-s nv-now">画像を作れませんでした。時間をおいてもう一度お試しください。</p>'; }
-    planCanvas(d, r).then(function (cv) {
-      try { cv.toBlob(done, 'image/png'); } catch (e) { fail(); }
-      function done(blob) {
-        if (!blob) { fail(); return; }
-        var fname = 'ff14_fanfest2026_' + (d === 1 ? '1031' : '1101') + '.png';
-        var url = URL.createObjectURL(blob);
-        var file = null;
-        try { file = new File([blob], fname, { type: 'image/png' }); } catch (e) {}
-        var canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
-        var text = 'ファンフェス2026東京 ' + DAY_DATE[d] + 'の回る順番を作りました #FF14';
-        var h = '<img src="' + url + '" alt="' + DAY_LABEL[d] + 'の回る順番（マップと予定）">';
-        if (canShare) h += '<button type="button" class="nv-btn nv-pri" data-share>画像を送る・保存する</button>';
-        h += '<a class="nv-btn" href="' + url + '" download="' + fname + '">画像を保存</a>' +
-          '<a class="nv-btn" href="https://x.com/intent/post?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(PAGE_URL) + '" target="_blank" rel="noopener">Xにポスト</a>' +
-          '<a class="nv-btn" href="https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + PAGE_URL) + '" target="_blank" rel="noopener">LINEで送る</a>' +
-          '<p class="nv-s">' + (canShare ? '「画像を送る・保存する」を押すと、XやLINEなどのアプリを選んで画像をそのまま送れます。' : '') +
-          '「Xにポスト」「LINEで送る」はこのページのリンクを送ります。画像も付けるときは、先に画像を保存してから添付してください。スマホでは、画像を長押ししても保存できます。</p>';
-        box.innerHTML = h;
-        var sb = box.querySelector('[data-share]');
-        if (sb) sb.addEventListener('click', function () {
-          navigator.share({ files: [file], text: text + '\n' + PAGE_URL }).catch(function () {});
+    planCanvas(d, r).then(function (cv0) {
+      var areas = detailModel(r.rows);
+      return Promise.all([cv0].concat(areas.map(function (a) { return detailCanvas(d, a); }))).then(function (cvs) {
+        return Promise.all(cvs.map(toBlob)).then(function (blobs) {
+          var tag = d === 1 ? '1031' : '1101';
+          var names = ['回る順番'].concat(areas.map(function (a) { return a.d.name; }));
+          var items = blobs.map(function (b, i) {
+            var fname = 'ff14_fanfest2026_' + tag + '_' + (i ? areas[i - 1].key.toLowerCase() : 'plan') + '.png', f = null;
+            try { f = new File([b], fname, { type: 'image/png' }); } catch (e) {}
+            return { url: URL.createObjectURL(b), fname: fname, file: f, name: names[i] };
+          });
+          var files = items.map(function (x) { return x.file; }).filter(Boolean);
+          var canShare = files.length === items.length && navigator.canShare && navigator.canShare({ files: files });
+          var text = 'ファンフェス2026東京 ' + DAY_DATE[d] + 'の回る順番を作りました #FF14';
+          var h = '<p>' + items.length + '枚の画像ができました。</p>';
+          if (canShare) h += '<p><button type="button" class="nv-btn nv-pri" data-share>' + items.length + '枚まとめて送る・保存する</button></p>';
+          items.forEach(function (x, i) {
+            h += '<p class="nv-dt">' + (i + 1) + '枚目：' + esc(x.name) + '</p><img src="' + x.url + '" alt="' + esc(DAY_LABEL[d] + ' ' + x.name) + '">' +
+              '<a class="nv-btn" href="' + x.url + '" download="' + x.fname + '">この画像を保存</a>';
+          });
+          h += '<p><a class="nv-btn" href="https://x.com/intent/post?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(PAGE_URL) + '" target="_blank" rel="noopener">Xにポスト</a>' +
+            '<a class="nv-btn" href="https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + PAGE_URL) + '" target="_blank" rel="noopener">LINEで送る</a></p>' +
+            '<p class="nv-s">' + (canShare ? '「まとめて送る・保存する」を押すと、XやLINEなどのアプリを選んで画像をそのまま送れます（Xは4枚まで）。' : '') +
+            '「Xにポスト」「LINEで送る」はこのページのリンクを送ります。画像も付けるときは、先に画像を保存してから添付してください。スマホでは、画像を長押ししても保存できます。</p>';
+          box.innerHTML = h;
+          var sb = box.querySelector('[data-share]');
+          if (sb) sb.addEventListener('click', function () {
+            navigator.share({ files: files, text: text + '\n' + PAGE_URL }).catch(function () {});
+          });
         });
-      }
-    }, fail);
+      });
+    }).catch(fail);
   }
+
 
   function chk(k, label) { return '<input type="checkbox" data-k="' + esc(k) + '"' + (pst.pick[k] ? ' checked' : '') + ' aria-label="' + esc(label) + '">'; }
 
@@ -542,7 +642,7 @@
     } else {
       var no = 0;
       r.rows.forEach(function (x) { if (x.kind === 'do' || x.kind === 'stage') x.no = ++no; });
-      h += routeMap(r.rows);
+      h += routeMap(r.rows) + detailMaps(r.rows);
       h += '<table class="eg-num"><thead><tr><th>時間</th><th>予定</th></tr></thead><tbody>';
       r.rows.forEach(function (x) {
         var tm = hm(x.a) + '<br>〜' + hm(x.b);
@@ -555,7 +655,7 @@
       h += '</tbody></table>';
       if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + (x.area === 'H46' && !x.place ? '（' + hm(x.a) + '開始）' : '（最終受付 ' + hm(x.last) + '）'); }).join('、') +
         '<br>会場にいる時間を長くするか、ほかの所要時間を短くすると入ることがあります。</p>';
-      h += '<p id="nv-share-h"><strong>3. 1枚の画像にして共有する</strong><br>マップと回る順番を1枚の画像にまとめます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
+      h += '<p id="nv-share-h"><strong>3. 画像にして共有する</strong><br>全体のマップと回る順番の画像に、行くエリアごとの詳しいマップの画像が付きます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
         '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>';
     }
     h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。昼食は11時以降、キッチンカーは公式に営業時間の案内がないためカフェと同じ20:00までとして計算しています。</p>';
@@ -585,6 +685,7 @@
     '#eg-ff26-plan{margin:12px 0 24px}',
     '#eg-ff26-plan svg.nv-map{display:block;width:100%;height:auto;border:1px solid #d8cfb8;margin:4px 0}',
     '#eg-ff26-plan .nv-rg{margin:0 0 4px;font-size:14px}',
+    '#eg-ff26-plan .nv-dt{margin:12px 0 0;font-weight:700}',
     '#eg-ff26-plan .nv-s{display:block;font-size:13px;color:#666}',
     '#eg-ff26-plan .nv-now{color:#c0392b;font-weight:700}',
     '#eg-ff26-plan tr.nv-mv td{color:#666}',
