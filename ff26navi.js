@@ -83,11 +83,15 @@
   var STAGE_PHOTO = {};
   [1, 2].forEach(function (d) { STAGE[d].forEach(function (s) { if (s[3]) STAGE_PHOTO[s[2]] = s[3]; }); });
   var DAY_LABEL = { 1: '10/31（土）1日目', 2: '11/1（日）2日目' };
-  // 日にちの切り替え（ナビとシミュレーションで共通）
-  function daySwitch(day, attr) {
+  var DAY_DATE = { 1: '10/31（土）', 2: '11/1（日）' };
+  var DAY_COLOR = { 1: '#1a2f4e', 2: '#7a2e1f' };
+  // 日にちの切り替え（ナビとシミュレーションで共通）。下の帯に、いま表示している日を大きく出す
+  function daySwitch(day, attr, bar) {
     return '<div class="nv-dsw" role="group" aria-label="日にち">' + [1, 2].map(function (d) {
-      return '<button type="button" ' + attr + '="' + d + '" aria-pressed="' + (day === d) + '">' + DAY_LABEL[d] + '</button>';
-    }).join('') + '</div>';
+      return '<button type="button" ' + attr + '="' + d + '" aria-pressed="' + (day === d) + '" style="--c:' + DAY_COLOR[d] + '">' +
+        '<span class="nv-dd">' + DAY_DATE[d] + '</span>' + (d === 1 ? '1日目' : '2日目') +
+        '<span class="nv-dn">' + (day === d ? '表示中' : 'タップで切り替え') + '</span></button>';
+    }).join('') + '</div><p class="nv-dbar" style="background:' + DAY_COLOR[day] + '">' + bar + '</p>';
   }
 
   // ---------------- 時刻（端末の時差に関係なく日本時間で計算） ----------------
@@ -110,10 +114,14 @@
     '#eg-ff26-navi{margin:12px 0 24px}',
     '#eg-ff26-navi img.nv-ph{display:block;width:100%;max-width:280px;height:auto;aspect-ratio:16/9;border-radius:4px;margin:2px 0 6px}',
     '#eg-ff26-navi tr.nv-off img.nv-ph{opacity:.5}',
-    '.nv-dsw{display:flex;margin:8px 0 12px}',
-    '.nv-dsw button{flex:1;font:inherit;font-size:15px;font-weight:700;padding:10px 4px;border:2px solid #1a2f4e;background:#fff;color:#1a2f4e;cursor:pointer}',
-    '.nv-dsw button+button{border-left:0}',
-    '.nv-dsw button[aria-pressed="true"]{background:#1a2f4e;color:#fff;cursor:default}',
+    '.nv-dsw{display:flex;gap:8px;margin:8px 0 0}',
+    '.nv-dsw button{flex:1;font:inherit;font-size:14px;line-height:1.4;padding:8px 4px;border:2px solid #bbb;border-bottom:0;border-radius:6px 6px 0 0;background:#f2f2f2;color:#444;cursor:pointer}',
+    '.nv-dsw button span{color:inherit!important}',
+    '.nv-dsw .nv-dd{display:block;font-size:18px;font-weight:700}',
+    '.nv-dsw .nv-dn{display:block;font-size:12px;text-decoration:underline}',
+    '.nv-dsw button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff;cursor:default}',
+    '.nv-dsw button[aria-pressed="true"] .nv-dn{text-decoration:none}',
+    '.nv-dbar{margin:0 0 12px;padding:8px 10px;color:#fff;font-weight:700;font-size:15px;border-radius:0 0 6px 6px}',
     '.nv-it{display:flex;gap:8px;align-items:flex-start}',
     '.nv-it>div{min-width:0}',
     'img.nv-th{flex:none;width:80px;height:45px;object-fit:cover;border-radius:3px;margin:2px 0 0}',
@@ -140,9 +148,9 @@
     var t = today();
     var day = viewDay || t || 1;
     var live = t === day;
-    var h = daySwitch(day, 'data-day');
-    h += live ? '<p><strong>' + DAY_LABEL[day] + '</strong>　' + n.text + ' 時点の状況です（1分ごとに更新）。</p>'
-      : '<p><strong>' + DAY_LABEL[day] + 'の予定</strong>を表示しています。当日に開くと、いまの時刻に合わせて「上演中」「受付終了まであと何分」が出ます。</p>';
+    var h = daySwitch(day, 'data-day', DAY_LABEL[day] + (live ? '　いま ' + n.text : 'の予定'));
+    h += live ? '<p>' + n.text + ' 時点の状況です（1分ごとに更新）。</p>'
+      : '<p>当日に開くと、いまの時刻に合わせて「上演中」「受付終了まであと何分」が出ます。</p>';
 
     // ステージ
     h += '<p><strong>ステージ（4-6ホール）</strong></p><table class="eg-num"><thead><tr><th>時間</th><th>内容</th></tr></thead><tbody>';
@@ -246,13 +254,14 @@
   var LUNCH = '昼食（キッチンカー）';
   var FLEX = SPOTS.concat(EXTRA);
   var CHOICES = [15, 20, 30, 45, 60, 90, 120];
-  var STARTS = ['9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+  var STARTS = ['9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+  var ENDS = ['12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '20:30', '21:00'];
 
   // 選んだ内容はこのスマホに保存
   var PKEY = 'eg-ff26-plan';
   var pst = {};
   try { pst = JSON.parse(localStorage.getItem(PKEY) || '{}') || {}; } catch (e) { pst = {}; }
-  pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {};
+  pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {};
   function psave() { try { localStorage.setItem(PKEY, JSON.stringify(pst)); } catch (e) {} }
   function pk(d, kind, name) { return d + ':' + kind + ':' + name; }
   function hoursOf(s, d) {
@@ -263,8 +272,10 @@
 
   // 予定を組む：ステージは時間固定。それ以外は、次のステージまでに移動込みで終わるものを、すぐ始められる順（同じなら受付終了が早い順）に入れる
   function simulate(d) {
+    var endT = toMin(pst.end), late = [];
     var fixed = STAGE[d].filter(function (s) { return pst.pick[pk(d, 's', s[2])]; })
-      .map(function (s) { return { name: s[2], area: 'H46', a: toMin(s[0]), b: toMin(s[1]) }; });
+      .map(function (s) { return { name: s[2], area: 'H46', a: toMin(s[0]), b: toMin(s[1]), last: toMin(s[0]) }; })
+      .filter(function (x) { if (x.a < endT) return true; late.push(x); return false; });
     var todo = FLEX.filter(function (s) { return pst.pick[pk(d, 'f', s[0])]; })
       .map(function (s) { var h = hoursOf(s, d); return { name: s[0], place: s[1], area: areaOf(s[1]), open: h.open, last: h.last, stay: pst.stay[s[0]] || STAY[s[0]] || 30 }; });
     var t = toMin(pst.start), here = null, out = [], fi = 0;
@@ -277,7 +288,7 @@
       var best = null, bestKey = 0;
       todo.forEach(function (x) {
         var begin = Math.max(t + (here ? walk(here, x.area) : 0), x.open);
-        if (begin > x.last) return;
+        if (begin > x.last || begin + x.stay > endT) return;
         if (nf && begin + x.stay + walk(x.area, nf.area) > nf.a) return;
         var key = begin * 2000 + x.last;
         if (x.name === LUNCH && begin <= 14 * 60) key = -1; // 昼食は14時までに入れられるなら優先
@@ -294,14 +305,14 @@
       if (!nf) break;
       moveTo(nf.area);
       if (t < nf.a) out.push({ kind: 'free', a: t, b: nf.a });
-      out.push({ kind: 'stage', a: nf.a, b: nf.b, name: nf.name, late: t > nf.a ? t - nf.a : 0 });
+      out.push({ kind: 'stage', a: nf.a, b: Math.min(nf.b, endT), name: nf.name, late: t > nf.a ? t - nf.a : 0, cut: nf.b > endT });
       t = Math.max(t, nf.b); fi++;
     }
-    return { rows: out, left: todo };
+    return { rows: out, left: late.concat(todo) };
   }
 
   // ---------- ルートマップ（公式の会場全体マップに、豊砂公園・イオンモールを右に足して線を引く） ----------
-  var XY = { H7: [330, 270], H46: [540, 270], H13: [876, 270], MALL: [876, 384], OUT: [948, 528], PARK: [1445, 470], AEON: [1445, 175] };
+  var XY = { H7: [330, 270], H46: [540, 270], H13: [876, 270], MALL: [876, 384], OUT: [948, 528], PARK: [1445, 470], AEON: [1445, 205] };
   var CORR = 390; // 2F中央モールの通路の高さ
   var RANGES = [['すべて', 0, 1440], ['〜12時', 0, 720], ['12〜15時', 720, 900], ['15〜18時', 900, 1080], ['18時〜', 1080, 1440]];
   function circled(n) { return n <= 20 ? String.fromCharCode(0x245f + n) : '(' + n + ')'; }
@@ -315,31 +326,39 @@
     else { p = [B, [B[0], CORR]].concat(out); if (a === 'AEON') p.push(A); p.reverse(); }
     return p;
   }
-  function routeMap(rows) {
-    var rg = RANGES[pst.range || 0];
+  function mapModel(rows, ri) {
+    var rg = RANGES[ri];
     var stops = rows.filter(function (x) { return (x.kind === 'do' || x.kind === 'stage') && x.b > rg[1] && x.a < rg[2]; })
       .map(function (x) { return { no: x.no, area: x.kind === 'stage' ? 'H46' : areaOf(x.place) }; });
+    var legs = [], dots = [], used = {};
+    for (var i = 1; i < stops.length; i++) {
+      if (stops[i - 1].area !== stops[i].area) legs.push(legPath(stops[i - 1].area, stops[i].area));
+    }
+    stops.forEach(function (st) {
+      var k = used[st.area] = (used[st.area] || 0) + 1;
+      dots.push({ no: st.no,
+        x: XY[st.area][0] + (k - 1) % 4 * 58 - (st.area === 'PARK' || st.area === 'AEON' ? 87 : 0),
+        y: XY[st.area][1] + Math.floor((k - 1) / 4) * 58 });
+    });
+    return { legs: legs, dots: dots };
+  }
+  function routeMap(rows) {
+    var mm = mapModel(rows, pst.range || 0);
     var g = '<svg viewBox="0 0 1650 675" class="nv-map" role="img" aria-label="回る順番のルートマップ">' +
       '<image href="' + MAP_BASE + 'map_route_base.jpg" x="0" y="0" width="1200" height="675"/>' +
       '<rect x="1200" y="0" width="450" height="675" fill="#efe6cc"/>' +
       '<rect x="1270" y="80" width="350" height="190" rx="10" fill="#f8f2e0" stroke="#9b8a5e" stroke-width="3"/>' +
-      '<text x="1445" y="245" text-anchor="middle" font-size="34" font-weight="700" fill="#5b4a2a">イオンモール</text>' +
+      '<text x="1445" y="130" text-anchor="middle" font-size="34" font-weight="700" fill="#5b4a2a">イオンモール</text>' +
       '<rect x="1270" y="370" width="350" height="200" rx="10" fill="#e3ecd0" stroke="#7d9460" stroke-width="3"/>' +
       '<text x="1445" y="540" text-anchor="middle" font-size="34" font-weight="700" fill="#3d5228">豊砂公園（フード）</text>' +
       '<path d="M1030 ' + CORR + ' L1260 470" stroke="#9b8a5e" stroke-width="4" stroke-dasharray="10 8" fill="none"/>' +
       '<text x="1090" y="480" font-size="24" fill="#5b4a2a">歩道橋</text>';
-    for (var i = 1; i < stops.length; i++) {
-      if (stops[i - 1].area === stops[i].area) continue;
-      var pts = legPath(stops[i - 1].area, stops[i].area).map(function (q) { return q[0] + ',' + q[1]; }).join(' ');
-      g += '<polyline points="' + pts + '" fill="none" stroke="#c0392b" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>';
-    }
-    var used = {};
-    stops.forEach(function (st) {
-      var k = used[st.area] = (used[st.area] || 0) + 1;
-      var x = XY[st.area][0] + (k - 1) % 4 * 58 - (st.area === 'PARK' || st.area === 'AEON' ? 87 : 0);
-      var y = XY[st.area][1] + Math.floor((k - 1) / 4) * 58;
-      g += '<circle cx="' + x + '" cy="' + y + '" r="26" fill="#c0392b" stroke="#fff" stroke-width="4"/>' +
-        '<text x="' + x + '" y="' + (y + 10) + '" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">' + st.no + '</text>';
+    mm.legs.forEach(function (lg) {
+      g += '<polyline points="' + lg.map(function (q) { return q[0] + ',' + q[1]; }).join(' ') + '" fill="none" stroke="#c0392b" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>';
+    });
+    mm.dots.forEach(function (st) {
+      g += '<circle cx="' + st.x + '" cy="' + st.y + '" r="26" fill="#c0392b" stroke="#fff" stroke-width="4"/>' +
+        '<text x="' + st.x + '" y="' + (st.y + 10) + '" text-anchor="middle" font-size="28" font-weight="700" fill="#fff">' + st.no + '</text>';
     });
     g += '</svg>';
     return '<p class="nv-rg">マップに出す時間帯：<select data-range>' + RANGES.map(function (r, i) {
@@ -347,14 +366,162 @@
     }).join('') + '</select></p>' + g + '<p class="nv-s">番号は下の表の順番です。マップは公式の会場マップ（© SQUARE ENIX）の右側に、豊砂公園とイオンモールを足したものです（距離の縮尺は実際と違います）。</p>';
   }
 
+  // ---------- 1枚の画像にまとめる（マップ＋回る順番）。X・LINE などで共有できるようにする ----------
+  var PAGE_URL = 'https://www.eorzea-guide.com/entry/2026/10/26/020356';
+  var FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif';
+  function loadImg(src) {
+    return new Promise(function (ok) {
+      var im = new Image();
+      im.crossOrigin = 'anonymous';
+      im.onload = function () { ok(im); };
+      im.onerror = function () { ok(null); };
+      im.src = src + '?c=1'; // ページ内の画像と別に、CORS つきで読み込む
+    });
+  }
+  function thumbSrc(name) {
+    return PHOTO[name] ? MAP_BASE + 'spot_' + PHOTO[name] + '.jpg' : (STAGE_PHOTO[name] ? MAP_BASE + 'stage_' + STAGE_PHOTO[name] + '.jpg' : '');
+  }
+  function wrapText(ctx, text, maxW) {
+    var lines = [], cur = '';
+    for (var i = 0; i < text.length; i++) {
+      if (ctx.measureText(cur + text[i]).width > maxW && cur) { lines.push(cur); cur = ''; }
+      cur += text[i];
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function drawMap(ctx, im, mm, x0, y0, sc) {
+    ctx.save();
+    ctx.translate(x0, y0); ctx.scale(sc, sc);
+    if (im) ctx.drawImage(im, 0, 0, 1200, 675);
+    else { ctx.fillStyle = '#ddd'; ctx.fillRect(0, 0, 1200, 675); }
+    ctx.fillStyle = '#efe6cc'; ctx.fillRect(1200, 0, 450, 675);
+    ctx.lineWidth = 3;
+    ctx.fillStyle = '#f8f2e0'; ctx.strokeStyle = '#9b8a5e'; ctx.fillRect(1270, 80, 350, 190); ctx.strokeRect(1270, 80, 350, 190);
+    ctx.fillStyle = '#e3ecd0'; ctx.strokeStyle = '#7d9460'; ctx.fillRect(1270, 370, 350, 200); ctx.strokeRect(1270, 370, 350, 200);
+    ctx.textAlign = 'center'; ctx.font = '700 34px ' + FONT;
+    ctx.fillStyle = '#5b4a2a'; ctx.fillText('イオンモール', 1445, 130);
+    ctx.fillStyle = '#3d5228'; ctx.fillText('豊砂公園（フード）', 1445, 540);
+    ctx.setLineDash([10, 8]); ctx.strokeStyle = '#9b8a5e'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(1030, CORR); ctx.lineTo(1260, 470); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'left'; ctx.font = '24px ' + FONT; ctx.fillStyle = '#5b4a2a'; ctx.fillText('歩道橋', 1090, 480);
+    ctx.strokeStyle = 'rgba(192,57,43,.85)'; ctx.lineWidth = 8; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    mm.legs.forEach(function (lg) {
+      ctx.beginPath(); lg.forEach(function (q, i) { if (i) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]); }); ctx.stroke();
+    });
+    ctx.textAlign = 'center'; ctx.font = '700 28px ' + FONT;
+    mm.dots.forEach(function (st) {
+      ctx.beginPath(); ctx.arc(st.x, st.y, 26, 0, Math.PI * 2);
+      ctx.fillStyle = '#c0392b'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.fillText(String(st.no), st.x, st.y + 10);
+    });
+    ctx.restore();
+  }
+  function numDot(ctx, x, y, n) {
+    ctx.beginPath(); ctx.arc(x, y, 20, 0, Math.PI * 2); ctx.fillStyle = '#c0392b'; ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = '700 22px ' + FONT; ctx.fillText(String(n), x, y + 8); ctx.textAlign = 'left';
+  }
+  function planCanvas(d, r) {
+    var no = 0;
+    r.rows.forEach(function (x) { if (x.kind === 'do' || x.kind === 'stage') x.no = ++no; });
+    var main = r.rows.filter(function (x) { return x.kind !== 'wait'; });
+    var srcs = main.filter(function (x) { return x.no; }).map(function (x) { return thumbSrc(x.name); });
+    return Promise.all([loadImg(MAP_BASE + 'map_route_base.jpg')].concat(srcs.map(function (s) { return s ? loadImg(s) : Promise.resolve(null); })))
+      .then(function (ims) {
+        var W = 1080, P = 40, mapH = Math.round(675 * W / 1650);
+        var cv = document.createElement('canvas'), ctx = cv.getContext('2d');
+        ctx.font = '24px ' + FONT;
+        var leftLines = r.left.length ? wrapText(ctx, '入りきらなかったもの：' + r.left.map(function (x) { return x.name; }).join('、'), W - P * 2) : [];
+        var H = 170 + mapH + 30;
+        main.forEach(function (x) { H += x.no ? 96 : 44; });
+        H += leftLines.length * 34 + 150;
+        cv.width = W; cv.height = H;
+        ctx.fillStyle = '#fbf8f1'; ctx.fillRect(0, 0, W, H);
+        // 見出し
+        ctx.fillStyle = DAY_COLOR[d]; ctx.fillRect(0, 0, W, 150);
+        ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+        ctx.font = '26px ' + FONT; ctx.fillText('FF14 ファンフェス2026東京', P, 50);
+        ctx.font = '700 46px ' + FONT; ctx.fillText(DAY_LABEL[d] + '　回る順番', P, 104);
+        ctx.font = '24px ' + FONT; ctx.fillText('会場にいる時間 ' + hm(toMin(pst.start)) + '〜' + hm(toMin(pst.end)), P, 138);
+        // マップ
+        drawMap(ctx, ims[0], mapModel(r.rows, 0), 0, 150, W / 1650);
+        var y = 150 + mapH + 30, ti = 1;
+        // 順番
+        main.forEach(function (x) {
+          if (!x.no) {
+            ctx.fillStyle = '#777'; ctx.font = '22px ' + FONT;
+            var t = x.kind === 'move' ? '↓ 移動 徒歩約' + (x.b - x.a) + '分（' + AREA_NAME[x.from] + ' → ' + AREA_NAME[x.to] + '）'
+              : '↓ 空き時間 ' + hm(x.a) + '〜' + hm(x.b);
+            ctx.fillText(t, P + 52, y + 28); y += 44; return;
+          }
+          var im = ims[ti++];
+          numDot(ctx, P + 20, y + 40, x.no);
+          if (im) ctx.drawImage(im, P + 52, y + 8, 128, 72);
+          var tx = P + 52 + (im ? 144 : 0);
+          ctx.fillStyle = '#333'; ctx.font = '700 24px ' + FONT;
+          ctx.fillText(hm(x.a) + '〜' + hm(x.b) + '　' + (x.kind === 'stage' ? '4-6ホール ステージ' : x.place), tx, y + 36);
+          ctx.fillStyle = '#111'; ctx.font = '700 30px ' + FONT;
+          ctx.fillText(wrapText(ctx, x.name, W - tx - P)[0], tx, y + 76);
+          y += 96;
+        });
+        ctx.fillStyle = '#c0392b'; ctx.font = '24px ' + FONT;
+        leftLines.forEach(function (l) { ctx.fillText(l, P, y + 26); y += 34; });
+        // 出典
+        y += 20;
+        ctx.fillStyle = '#ddd5c2'; ctx.fillRect(P, y, W - P * 2, 2);
+        ctx.fillStyle = '#555'; ctx.font = '22px ' + FONT;
+        ctx.fillText('エオルゼア攻略ガイド「ファンフェス2026東京 当日ナビ」で作成', P, y + 40);
+        ctx.fillText(PAGE_URL.replace('https://', ''), P, y + 74);
+        ctx.fillStyle = '#888'; ctx.font = '20px ' + FONT;
+        ctx.fillText('画像・マップ © SQUARE ENIX　移動・所要時間は目安で、待ち時間は含みません', P, y + 106);
+        return cv;
+      });
+  }
+  function makeImage() {
+    var box = document.getElementById('nv-share');
+    var d = pst.day, r = simulate(d);
+    box.innerHTML = '<p class="nv-s">画像を作っています…</p>';
+    function fail() { box.innerHTML = '<p class="nv-s nv-now">画像を作れませんでした。時間をおいてもう一度お試しください。</p>'; }
+    planCanvas(d, r).then(function (cv) {
+      try { cv.toBlob(done, 'image/png'); } catch (e) { fail(); }
+      function done(blob) {
+        if (!blob) { fail(); return; }
+        var fname = 'ff14_fanfest2026_' + (d === 1 ? '1031' : '1101') + '.png';
+        var url = URL.createObjectURL(blob);
+        var file = null;
+        try { file = new File([blob], fname, { type: 'image/png' }); } catch (e) {}
+        var canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
+        var text = 'ファンフェス2026東京 ' + DAY_DATE[d] + 'の回る順番を作りました #FF14';
+        var h = '<img src="' + url + '" alt="' + DAY_LABEL[d] + 'の回る順番（マップと予定）">';
+        if (canShare) h += '<button type="button" class="nv-btn nv-pri" data-share>画像を送る・保存する</button>';
+        h += '<a class="nv-btn" href="' + url + '" download="' + fname + '">画像を保存</a>' +
+          '<a class="nv-btn" href="https://x.com/intent/post?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(PAGE_URL) + '" target="_blank" rel="noopener">Xにポスト</a>' +
+          '<a class="nv-btn" href="https://line.me/R/share?text=' + encodeURIComponent(text + '\n' + PAGE_URL) + '" target="_blank" rel="noopener">LINEで送る</a>' +
+          '<p class="nv-s">' + (canShare ? '「画像を送る・保存する」を押すと、XやLINEなどのアプリを選んで画像をそのまま送れます。' : '') +
+          '「Xにポスト」「LINEで送る」はこのページのリンクを送ります。画像も付けるときは、先に画像を保存してから添付してください。スマホでは、画像を長押ししても保存できます。</p>';
+        box.innerHTML = h;
+        var sb = box.querySelector('[data-share]');
+        if (sb) sb.addEventListener('click', function () {
+          navigator.share({ files: [file], text: text + '\n' + PAGE_URL }).catch(function () {});
+        });
+      }
+    }, fail);
+  }
+
   function chk(k, label) { return '<input type="checkbox" data-k="' + esc(k) + '"' + (pst.pick[k] ? ' checked' : '') + ' aria-label="' + esc(label) + '">'; }
 
   function prender() {
     var d = pst.day;
-    var h = daySwitch(d, 'data-pday') + '<p><strong>' + DAY_LABEL[d] + '</strong>のプランを作ります。<br>会場に着く時刻：<select data-start>' + STARTS.map(function (v) {
+    function opts(list, cur, lastLabel) {
+      return list.map(function (v, i) {
         var vv = pad(toMin(v) / 60 | 0) + ':' + pad(toMin(v) % 60);
-        return '<option value="' + vv + '"' + (vv === pst.start ? ' selected' : '') + '>' + v + '</option>';
-      }).join('') + '</select></p>';
+        return '<option value="' + vv + '"' + (vv === cur ? ' selected' : '') + '>' + v + (lastLabel && i === list.length - 1 ? lastLabel : '') + '</option>';
+      }).join('');
+    }
+    var h = daySwitch(d, 'data-pday', DAY_LABEL[d] + 'のプラン') +
+      '<p class="nv-tm"><strong>会場にいる時間</strong><br><select data-start>' + opts(STARTS, pst.start) + '</select> に着く<br>' +
+      '<select data-end>' + opts(ENDS, pst.end, '（最後まで）') + '</select> に帰る</p>';
+    if (toMin(pst.end) <= toMin(pst.start)) h += '<p class="nv-s nv-now">帰る時刻を、着く時刻より後にしてください。</p>';
 
     h += '<p><strong>1. 行きたいものにチェック</strong></p><table class="eg-num"><thead><tr><th>選ぶ</th><th>内容・所要時間の目安</th></tr></thead><tbody>';
     STAGE[d].forEach(function (s) {
@@ -382,12 +549,14 @@
         if (x.kind === 'move') h += '<tr class="nv-mv"><td>' + tm + '</td><td>移動：' + AREA_NAME[x.from] + ' → ' + AREA_NAME[x.to] + '（徒歩約' + (x.b - x.a) + '分）<span class="nv-s">' + routeText(x.from, x.to) + '</span></td></tr>';
         else if (x.kind === 'wait') h += '<tr class="nv-mv"><td>' + tm + '</td><td>開くまで待つ</td></tr>';
         else if (x.kind === 'free') h += '<tr class="nv-mv"><td>' + tm + '</td><td>空き時間<span class="nv-s">ステージの列に早めに並ぶ・休憩など</span></td></tr>';
-        else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">4-6ホール ステージ</span>' + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '')) + '</td></tr>';
+        else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">4-6ホール ステージ</span>' + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
         else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(x.place) + '</span>') + '</td></tr>';
       });
       h += '</tbody></table>';
-      if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + '（最終受付 ' + hm(x.last) + '）'; }).join('、') +
-        '<br>会場に着く時刻を早めるか、ほかの所要時間を短くすると入ることがあります。</p>';
+      if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + (x.area === 'H46' && !x.place ? '（' + hm(x.a) + '開始）' : '（最終受付 ' + hm(x.last) + '）'); }).join('、') +
+        '<br>会場にいる時間を長くするか、ほかの所要時間を短くすると入ることがあります。</p>';
+      h += '<p id="nv-share-h"><strong>3. 1枚の画像にして共有する</strong><br>マップと回る順番を1枚の画像にまとめます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
+        '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>';
     }
     h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。昼食は11時以降、キッチンカーは公式に営業時間の案内がないためカフェと同じ20:00までとして計算しています。</p>';
     proot.innerHTML = h;
@@ -398,12 +567,14 @@
     if (el.hasAttribute('data-k')) { if (el.checked) pst.pick[el.getAttribute('data-k')] = 1; else delete pst.pick[el.getAttribute('data-k')]; }
     else if (el.hasAttribute('data-stay')) pst.stay[el.getAttribute('data-stay')] = +el.value;
     else if (el.hasAttribute('data-start')) pst.start = el.value;
+    else if (el.hasAttribute('data-end')) pst.end = el.value;
     else if (el.hasAttribute('data-range')) pst.range = +el.value;
     else return;
     psave();
     var y = window.scrollY; prender(); window.scrollTo(0, y);
   });
   proot.addEventListener('click', function (e) {
+    if (e.target.closest('[data-mkimg]')) { makeImage(); return; }
     var b = e.target.closest('[data-pday]');
     if (!b) return;
     pst.day = +b.getAttribute('data-pday'); psave(); prender();
@@ -418,7 +589,11 @@
     '#eg-ff26-plan .nv-now{color:#c0392b;font-weight:700}',
     '#eg-ff26-plan tr.nv-mv td{color:#666}',
     '#eg-ff26-plan input[type=checkbox]{width:22px;height:22px;margin:0}',
-    '#eg-ff26-plan select{font:inherit;font-size:13px;padding:2px 4px}'
+    '#eg-ff26-plan select{font:inherit;font-size:13px;padding:2px 4px}',
+    '#eg-ff26-plan .nv-tm select{font-size:16px;padding:4px 6px}',
+    '#eg-ff26-plan .nv-btn{font:inherit;font-size:15px;font-weight:700;padding:10px 16px;border:2px solid #1a2f4e;border-radius:6px;background:#fff;color:#1a2f4e;cursor:pointer;margin:0 6px 6px 0}',
+    '#eg-ff26-plan .nv-btn.nv-pri{background:#1a2f4e;color:#fff}',
+    '#eg-ff26-plan #nv-share img{display:block;width:100%;max-width:540px;height:auto;border:1px solid #ccc;margin:6px 0}'
   ].join('');
   prender();
 })();
