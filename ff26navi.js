@@ -264,7 +264,7 @@
   var PKEY = 'eg-ff26-plan';
   var pst = {};
   try { pst = JSON.parse(localStorage.getItem(PKEY) || '{}') || {}; } catch (e) { pst = {}; }
-  pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {};
+  pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {}; pst.at = pst.at || {};
   function psave() { try { localStorage.setItem(PKEY, JSON.stringify(pst)); } catch (e) {} }
   function pk(d, kind, name) { return d + ':' + kind + ':' + name; }
   function hoursOf(s, d) {
@@ -273,14 +273,19 @@
     return { open: toMin(d === 1 ? s[2] : s[4]), last: sp ? toMin(sp) : last };
   }
 
-  // 予定を組む：ステージは時間固定。それ以外は、次のステージまでに移動込みで終わるものを、すぐ始められる順（同じなら受付終了が早い順）に入れる
+  // 予定を組む：ステージと、行く時間を決めたものは時間固定。それ以外は、次の固定の予定までに移動込みで終わるものを、すぐ始められる順（同じなら受付終了が早い順）に入れる
   function simulate(d) {
     var endT = toMin(pst.end), late = [];
     var fixed = STAGE[d].filter(function (s) { return pst.pick[pk(d, 's', s[2])]; })
-      .map(function (s) { return { name: s[2], area: 'H46', a: toMin(s[0]), b: toMin(s[1]), last: toMin(s[0]) }; })
+      .map(function (s) { return { kind: 'stage', name: s[2], area: 'H46', a: toMin(s[0]), b: toMin(s[1]), last: toMin(s[0]) }; });
+    var todo = [];
+    FLEX.filter(function (s) { return pst.pick[pk(d, 'f', s[0])]; }).forEach(function (s) {
+      var h = hoursOf(s, d), at = pst.at[pk(d, 'f', s[0])];
+      var x = { name: s[0], place: s[1], area: areaOf(s[1]), open: h.open, last: h.last, stay: pst.stay[s[0]] || STAY[s[0]] || 30 };
+      if (at) { x.kind = 'do'; x.a = toMin(at); x.b = x.a + x.stay; fixed.push(x); } else todo.push(x);
+    });
+    fixed = fixed.sort(function (p, q) { return p.a - q.a; })
       .filter(function (x) { if (x.a < endT) return true; late.push(x); return false; });
-    var todo = FLEX.filter(function (s) { return pst.pick[pk(d, 'f', s[0])]; })
-      .map(function (s) { var h = hoursOf(s, d); return { name: s[0], place: s[1], area: areaOf(s[1]), open: h.open, last: h.last, stay: pst.stay[s[0]] || STAY[s[0]] || 30 }; });
     var t = toMin(pst.start), here = null, out = [], fi = 0;
     function moveTo(area) {
       if (here && here !== area) { var w = walk(here, area); out.push({ kind: 'move', a: t, b: t + w, from: here, to: area }); t += w; }
@@ -306,10 +311,19 @@
         continue;
       }
       if (!nf) break;
+      var w0 = here && here !== nf.area ? walk(here, nf.area) : 0;
+      if (t + w0 < nf.a) { out.push({ kind: 'free', a: t, b: nf.a - w0 }); t = nf.a - w0; } // 空き時間はいまの場所で過ごし、間に合うように移動する
       moveTo(nf.area);
-      if (t < nf.a) out.push({ kind: 'free', a: t, b: nf.a });
-      out.push({ kind: 'stage', a: nf.a, b: Math.min(nf.b, endT), name: nf.name, late: t > nf.a ? t - nf.a : 0, cut: nf.b > endT });
-      t = Math.max(t, nf.b); fi++;
+      var lt = t > nf.a ? t - nf.a : 0;
+      if (nf.kind === 'stage') {
+        out.push({ kind: 'stage', a: nf.a, b: Math.min(nf.b, endT), name: nf.name, late: lt, cut: nf.b > endT });
+        t = Math.max(t, nf.b);
+      } else { // 行く時間を決めたもの。前の予定が押したら、その分あとにずれる
+        var a = Math.max(t, nf.a);
+        out.push({ kind: 'do', a: a, b: Math.min(a + nf.stay, endT), name: nf.name, place: nf.place, at: nf.a, late: lt, cut: a + nf.stay > endT });
+        t = a + nf.stay;
+      }
+      fi++;
     }
     return { rows: out, left: late.concat(todo) };
   }
@@ -626,15 +640,21 @@
       '<select data-end>' + opts(ENDS, pst.end, '（最後まで）') + '</select> に帰る</p>';
     if (toMin(pst.end) <= toMin(pst.start)) h += '<p class="nv-s nv-now">帰る時刻を、着く時刻より後にしてください。</p>';
 
-    h += '<p><strong>1. 行きたいものにチェック</strong></p><table class="eg-num"><thead><tr><th>選ぶ</th><th>内容・所要時間の目安</th></tr></thead><tbody>';
+    h += '<p><strong>1. 行きたいものにチェック</strong><br>行く時間を決めたいもの（予約の時間など）は「行く時間」を選んでください。「おまかせ」のものは、空いている時間に入れます。</p><table class="eg-num"><thead><tr><th>選ぶ</th><th>内容・所要時間の目安</th></tr></thead><tbody>';
     STAGE[d].forEach(function (s) {
       h += '<tr><td>' + chk(pk(d, 's', s[2]), s[2]) + '</td><td>' + withThumb(s[2], esc(s[2]) + '<span class="nv-s">ステージ ' + s[0] + '〜' + s[1] + '</span>') + '</td></tr>';
     });
     FLEX.forEach(function (s) {
-      var hr = hoursOf(s, d), st = pst.stay[s[0]] || STAY[s[0]] || 30;
-      h += '<tr><td>' + chk(pk(d, 'f', s[0]), s[0]) + '</td><td>' + withThumb(s[0], esc(s[0]) +
+      var hr = hoursOf(s, d), st = pst.stay[s[0]] || STAY[s[0]] || 30, k = pk(d, 'f', s[0]), at = pst.at[k] || '';
+      var ats = '<option value="">おまかせ</option>';
+      for (var m = Math.ceil(hr.open / 10) * 10; m <= hr.last; m += 10) {
+        var v = pad(m / 60 | 0) + ':' + pad(m % 60);
+        ats += '<option value="' + v + '"' + (v === at ? ' selected' : '') + '>' + hm(m) + '</option>';
+      }
+      h += '<tr><td>' + chk(k, s[0]) + '</td><td>' + withThumb(s[0], esc(s[0]) +
         '<span class="nv-s">' + esc(s[1]) + '／最終受付 ' + hm(hr.last) + '<br>所要 <select data-stay="' + esc(s[0]) + '">' +
-        CHOICES.map(function (c) { return '<option value="' + c + '"' + (c === st ? ' selected' : '') + '>' + c + '分</option>'; }).join('') + '</select></span>') + '</td></tr>';
+        CHOICES.map(function (c) { return '<option value="' + c + '"' + (c === st ? ' selected' : '') + '>' + c + '分</option>'; }).join('') + '</select>' +
+        '<br>行く時間 <select data-at="' + esc(k) + '">' + ats + '</select></span>') + '</td></tr>';
     });
     h += '</tbody></table>';
 
@@ -651,12 +671,12 @@
         var tm = hm(x.a) + '<br>〜' + hm(x.b);
         if (x.kind === 'move') h += '<tr class="nv-mv"><td>' + tm + '</td><td>移動：' + AREA_NAME[x.from] + ' → ' + AREA_NAME[x.to] + '（徒歩約' + (x.b - x.a) + '分）<span class="nv-s">' + routeText(x.from, x.to) + '</span></td></tr>';
         else if (x.kind === 'wait') h += '<tr class="nv-mv"><td>' + tm + '</td><td>開くまで待つ</td></tr>';
-        else if (x.kind === 'free') h += '<tr class="nv-mv"><td>' + tm + '</td><td>空き時間<span class="nv-s">ステージの列に早めに並ぶ・休憩など</span></td></tr>';
+        else if (x.kind === 'free') h += '<tr class="nv-mv"><td>' + tm + '</td><td>空き時間<span class="nv-s">次の列に早めに並ぶ・休憩など</span></td></tr>';
         else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">4-6ホール ステージ</span>' + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
-        else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(x.place) + '</span>') + '</td></tr>';
+        else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(x.place) + (x.at != null ? '／' + hm(x.at) + 'に行く予定' : '') + '</span>' + (x.late ? '<span class="nv-s nv-now">前の予定のため約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
       });
       h += '</tbody></table>';
-      if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + (x.area === 'H46' && !x.place ? '（' + hm(x.a) + '開始）' : '（最終受付 ' + hm(x.last) + '）'); }).join('、') +
+      if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + (x.area === 'H46' && !x.place ? '（' + hm(x.a) + '開始）' : x.kind === 'do' ? '（' + hm(x.a) + 'に行く予定）' : '（最終受付 ' + hm(x.last) + '）'); }).join('、') +
         '<br>会場にいる時間を長くするか、ほかの所要時間を短くすると入ることがあります。</p>';
       h += '<p id="nv-share-h"><strong>3. 画像にして共有する</strong><br>全体のマップと回る順番の画像に、行くエリアごとの詳しいマップの画像が付きます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
         '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>';
@@ -669,6 +689,10 @@
     var el = e.target;
     if (el.hasAttribute('data-k')) { if (el.checked) pst.pick[el.getAttribute('data-k')] = 1; else delete pst.pick[el.getAttribute('data-k')]; }
     else if (el.hasAttribute('data-stay')) pst.stay[el.getAttribute('data-stay')] = +el.value;
+    else if (el.hasAttribute('data-at')) {
+      var ak = el.getAttribute('data-at');
+      if (el.value) { pst.at[ak] = el.value; pst.pick[ak] = 1; } else delete pst.at[ak];
+    }
     else if (el.hasAttribute('data-start')) pst.start = el.value;
     else if (el.hasAttribute('data-end')) pst.end = el.value;
     else if (el.hasAttribute('data-range')) pst.range = +el.value;
