@@ -91,7 +91,7 @@
       return '<button type="button" ' + attr + '="' + d + '" aria-pressed="' + (day === d) + '" style="--c:' + DAY_COLOR[d] + '">' +
         '<span class="nv-dd">' + DAY_DATE[d] + '</span>' + (d === 1 ? '1日目' : '2日目') +
         '<span class="nv-dn">' + (day === d ? '表示中' : 'タップで切り替え') + '</span></button>';
-    }).join('') + '</div><p class="nv-dbar" style="background:' + DAY_COLOR[day] + '">' + bar + '</p>';
+    }).join('') + '</div><p class="nv-dbar" style="background:' + DAY_COLOR[day] + ';color:#fff!important;margin:0 0 12px!important">' + bar + '</p>';
   }
 
   // ---------------- 時刻（端末の時差に関係なく日本時間で計算） ----------------
@@ -121,7 +121,8 @@
     '.nv-dsw .nv-dn{display:block;font-size:12px;text-decoration:underline}',
     '.nv-dsw button[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff;cursor:default}',
     '.nv-dsw button[aria-pressed="true"] .nv-dn{text-decoration:none}',
-    '.nv-dbar{margin:0 0 12px;padding:8px 10px;color:#fff;font-weight:700;font-size:15px;border-radius:0 0 6px 6px}',
+    '.nv-dbar,.nv-dbar *{color:#fff!important}',
+    '.nv-dbar{margin:0 0 12px;padding:8px 10px;font-weight:700;font-size:15px;border-radius:0 0 6px 6px}',
     '.nv-it{display:flex;gap:8px;align-items:flex-start}',
     '.nv-it>div{min-width:0}',
     'img.nv-th{flex:none;width:80px;height:45px;object-fit:cover;border-radius:3px;margin:2px 0 0}',
