@@ -91,7 +91,7 @@
       return '<button type="button" ' + attr + '="' + d + '" aria-pressed="' + (day === d) + '" style="--c:' + DAY_COLOR[d] + '">' +
         '<span class="nv-dd">' + DAY_DATE[d] + '</span>' + (d === 1 ? '1日目' : '2日目') +
         '<span class="nv-dn">' + (day === d ? '表示中' : 'タップで切り替え') + '</span></button>';
-    }).join('') + '</div><p class="nv-dbar" style="background:' + DAY_COLOR[day] + ';color:#fff!important;margin:0 0 12px!important">' + bar + '</p>';
+    }).join('') + '</div><div class="nv-dbar" style="background:' + DAY_COLOR[day] + ';color:#fff!important;margin:0 0 12px!important">' + bar + '</div>';
   }
 
   // ---------------- 時刻（端末の時差に関係なく日本時間で計算） ----------------
