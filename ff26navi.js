@@ -759,43 +759,6 @@
     });
     return h + '</div><p class="nv-s">左がステージ（色が濃いものが見に行くもの）、右が自分の予定です。</p>';
   }
-  // カレンダーに入れる。iPhoneは.icsファイル（開くと「すべて追加」）、Androidなどは予定ごとのGoogleカレンダーのリンク
-  // （Androidのブラウザは.icsを開かずに保存だけするため）
-  function makeIcs() {
-    var d = pst.day, r = simulate(d), no = 0, msg = document.getElementById('nv-icsmsg');
-    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    var ymd = d === 1 ? [2026, 9, 31] : [2026, 10, 1];
-    function t(m) { var x = new Date(Date.UTC(ymd[0], ymd[1], ymd[2], 0, m - 540)); return x.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z'; }
-    function tx(v) { return String(v).replace(/([\\,;])/g, '\\$1').replace(/\n/g, '\\n'); }
-    var NL = '\r\n';
-    var list = r.rows.filter(function (x) { return x.kind === 'do' || x.kind === 'stage'; });
-    if (!list.length) { msg.innerHTML = '<p class="nv-s nv-now">先に行きたいものを選んでください。</p>'; return; }
-    if (!ios) {
-      msg.innerHTML = '<p class="nv-s">1件ずつ押すと、Googleカレンダーに入れる画面が開きます。「保存」を押したら、この画面に戻って次の予定へ進んでください。</p>' +
-        '<table class="eg-num"><tbody>' + list.map(function (x, i) {
-          var memo = pst.memo[rowKey(d, x)];
-          var q = 'action=TEMPLATE&text=' + encodeURIComponent(circled(i + 1) + ' ' + x.name + (rowRsv(d, x) ? '（予約）' : '')) +
-            '&dates=' + t(x.a) + '/' + t(x.b) + '&ctz=Asia/Tokyo&location=' + encodeURIComponent(placeLabel(x) + '・幕張メッセ周辺') +
-            '&details=' + encodeURIComponent((memo ? 'メモ：' + memo + '\n' : '') + 'FF14ファンフェス マイプラン\n' + PAGE_URL);
-          return '<tr><td>' + hm(x.a) + '</td><td><a href="https://calendar.google.com/calendar/render?' + q + '" target="_blank" rel="noopener">' + esc(circled(i + 1) + ' ' + x.name) + ' をカレンダーに入れる</a></td></tr>';
-        }).join('') + '</tbody></table>';
-      return;
-    }
-    var ev = list.map(function (x) {
-      no++;
-      var memo = pst.memo[rowKey(d, x)];
-      return ['BEGIN:VEVENT', 'UID:ff26-' + d + '-' + no + '-' + x.a + '@eorzea-guide.com', 'DTSTAMP:' + t(0), 'DTSTART:' + t(x.a), 'DTEND:' + t(x.b),
-        'SUMMARY:' + tx(circled(no) + ' ' + x.name + (rowRsv(d, x) ? '（予約）' : '')), 'LOCATION:' + tx(placeLabel(x) + '・幕張メッセ周辺'),
-        'DESCRIPTION:' + tx((memo ? 'メモ：' + memo + '\n' : '') + 'FF14ファンフェス マイプラン\n' + PAGE_URL), 'URL:' + PAGE_URL,
-        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + tx(x.name), 'TRIGGER:-PT10M', 'END:VALARM', 'END:VEVENT'].join(NL);
-    });
-    var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//eorzea-guide//ff26navi//JA', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'].concat(ev, ['END:VCALENDAR']).join(NL) + NL;
-    var url = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
-    var a = document.createElement('a');
-    a.href = url; a.download = 'ff14_fanfest2026_' + (d === 1 ? '1031' : '1101') + '.ics';
-    document.body.appendChild(a); a.click(); a.remove();
-    msg.innerHTML = '<p class="nv-s">' + ev.length + '件の予定を入れるファイルを作りました。出てきた画面で「すべて追加」を押してください。予定を直したときは、もう一度入れ直してください（前の予定は自動では消えません）。</p>';
-  }
   function makeUrl() {
     var box = document.getElementById('nv-url'), c = planCode(pst.day);
     if (!c) { box.innerHTML = '<p class="nv-s nv-now">URLを作れませんでした。</p>'; return; }
@@ -881,9 +844,7 @@
       h += '<p id="nv-share-h"><strong>3. 画像にして共有する</strong><br>全体のマップと回る順番の画像に、行くエリアごとの詳しいマップの画像が付きます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
         '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>' +
         '<p><strong>4. 予定をURLで送る</strong><br>同行する人にURLを送ると、相手のスマホで同じ予定（メモも）を開けます。相手が直したあと、送り返してもらうこともできます。</p>' +
-        '<p><button type="button" class="nv-btn" data-url>予定のURLを作る</button></p><div id="nv-url"></div>' +
-        '<p><strong>5. スマホのカレンダーに入れる</strong><br>回る予定を、iPhoneやAndroidのカレンダーに入れます。iPhoneはまとめて入り、始まる10分前に通知が出ます。AndroidはGoogleカレンダーに1件ずつ入れます。</p>' +
-        '<p><button type="button" class="nv-btn" data-ics>カレンダーに入れる</button></p><div id="nv-icsmsg"></div>';
+        '<p><button type="button" class="nv-btn" data-url>予定のURLを作る</button></p><div id="nv-url"></div>';
     }
     h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。昼食は11時以降、キッチンカーは公式に営業時間の案内がないためカフェと同じ20:00までとして計算しています。</p>';
     proot.innerHTML = h;
@@ -909,7 +870,6 @@
   proot.addEventListener('click', function (e) {
     if (e.target.closest('[data-mkimg]')) { makeImage(); return; }
     if (e.target.closest('[data-url]')) { makeUrl(); return; }
-    if (e.target.closest('[data-ics]')) { makeIcs(); return; }
     var vw = e.target.closest('[data-view]');
     if (vw) { pst.view = vw.getAttribute('data-view'); psave(); var yy = window.scrollY; prender(); window.scrollTo(0, yy); return; }
     var sh = e.target.closest('[data-shared]');
