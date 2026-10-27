@@ -260,7 +260,7 @@
   function run() {
     if (!document.getElementById('eg-ff26-navi')) return;
     var s = document.createElement('script');
-    s.src = 'https://dualstreammedia-droid.github.io/eorzea-guide-theme/ff26navi.js?v=14';
+    s.src = 'https://dualstreammedia-droid.github.io/eorzea-guide-theme/ff26navi.js?v=15';
     s.async = true;
     document.body.appendChild(s);
   }
