@@ -32,5 +32,22 @@
     });
   }
 
+  // お知らせ（基調講演の速報記事など）。news.json を書きかえると、開いている人にも1分以内に出る
+  var news = document.getElementById('ap-news');
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function loadNews() {
+    if (!news || !window.fetch) return;
+    fetch('news.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (o) {
+      var now = Date.now();
+      var hit = (o.items || []).filter(function (x) { return Date.parse(x.from) <= now && now < Date.parse(x.to); });
+      news.innerHTML = hit.map(function (x) {
+        return '<p>' + (x.url ? '<a href="' + esc(x.url) + '"><strong>' + esc(x.text) + '</strong></a>' : esc(x.text)) + '</p>';
+      }).join('');
+      news.hidden = !hit.length;
+    }).catch(function () {});
+  }
+  loadNews();
+  setInterval(loadNews, 60000);
+
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
 })();
