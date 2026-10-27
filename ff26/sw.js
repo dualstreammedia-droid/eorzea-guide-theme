@@ -1,5 +1,5 @@
 // 当日ナビ アプリ版のオフライン対応。画面とJSは「ネット優先・だめなら保存済み」、画像は「保存済み優先」
-var CACHE = 'ff26-v2';
+var CACHE = 'ff26-v3';
 var FILES = [
   './',
   'index.html',

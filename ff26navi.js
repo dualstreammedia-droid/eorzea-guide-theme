@@ -572,7 +572,7 @@
           var tx = P + 52 + (im ? 144 : 0);
           ctx.fillStyle = '#333'; ctx.font = '700 24px ' + FONT;
           var memo = pst.memo[rowKey(d, x)];
-          ctx.fillText(hm(x.a) + '〜' + hm(x.b) + '　' + (x.kind === 'stage' ? '4-6ホール ステージ' : x.place) + (rowRsv(d, x) ? '（予約）' : '') + (memo ? '　' + memo : ''), tx, y + 36);
+          ctx.fillText(hm(x.a) + '〜' + hm(x.b) + '　' + placeLabel(x) + (rowRsv(d, x) ? '（予約）' : '') + (memo ? '　' + memo : ''), tx, y + 36);
           ctx.fillStyle = '#111'; ctx.font = '700 30px ' + FONT;
           ctx.fillText(wrapText(ctx, x.name, W - tx - P)[0], tx, y + 76);
           y += 96;
@@ -607,6 +607,21 @@
     var a = areaOf(x.place), m = x.place.match(/(\d+)$/);
     var key = a === 'OUT' || a === 'MALL' ? 'MESSE2F' : a;
     return { key: key, p: m ? +m[1] : (key === 'PARK' ? 'truck' : null) };
+  }
+  // 何番ホールに向かうか。1-3ホールはブースの位置（公式マップ上のx座標）で分け、ステージは5ホール
+  function hallNo(x) {
+    if (x.kind === 'stage') return 5;
+    var a = areaOf(x.place), m = x.place.match(/(\d+)$/);
+    if (a === 'H7') return 7;
+    if (a !== 'H13' || !m || !DETAIL.H13.pos[+m[1]]) return 0;
+    var px = DETAIL.H13.pos[+m[1]][0];
+    return px < 1000 ? 3 : px < 1390 ? 2 : 1;
+  }
+  // 表に出す場所（ホールの番号つき）
+  function placeLabel(x) {
+    if (x.kind === 'stage') return '5ホール ステージ（4-6ホール）';
+    var n = hallNo(x);
+    return n && n !== 7 ? n + 'ホール ' + x.place.replace(/^1-3ホール\s*/, '') + '（1-3ホール）' : x.place;
   }
   // 行くエリアごとに、番号と位置をまとめる
   function detailModel(rows) {
@@ -744,6 +759,29 @@
     });
     return h + '</div><p class="nv-s">左がステージ（色が濃いものが見に行くもの）、右が自分の予定です。</p>';
   }
+  // カレンダー用のファイル（.ics）。iPhoneは開くと「すべて追加」、Androidはカレンダーのアプリで開く
+  function makeIcs() {
+    var d = pst.day, r = simulate(d), no = 0, msg = document.getElementById('nv-icsmsg');
+    var ymd = d === 1 ? [2026, 9, 31] : [2026, 10, 1];
+    function t(m) { var x = new Date(Date.UTC(ymd[0], ymd[1], ymd[2], 0, m - 540)); return x.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z'; }
+    function tx(v) { return String(v).replace(/([\\,;])/g, '\\$1').replace(/\n/g, '\\n'); }
+    var NL = '\r\n';
+    var ev = r.rows.filter(function (x) { return x.kind === 'do' || x.kind === 'stage'; }).map(function (x) {
+      no++;
+      var memo = pst.memo[rowKey(d, x)];
+      return ['BEGIN:VEVENT', 'UID:ff26-' + d + '-' + no + '-' + x.a + '@eorzea-guide.com', 'DTSTAMP:' + t(0), 'DTSTART:' + t(x.a), 'DTEND:' + t(x.b),
+        'SUMMARY:' + tx(circled(no) + ' ' + x.name + (rowRsv(d, x) ? '（予約）' : '')), 'LOCATION:' + tx(placeLabel(x) + '・幕張メッセ周辺'),
+        'DESCRIPTION:' + tx((memo ? 'メモ：' + memo + '\n' : '') + 'ファンフェス2026東京 当日ナビ\n' + PAGE_URL), 'URL:' + PAGE_URL,
+        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + tx(x.name), 'TRIGGER:-PT10M', 'END:VALARM', 'END:VEVENT'].join(NL);
+    });
+    if (!ev.length) { msg.textContent = '先に行きたいものを選んでください。'; return; }
+    var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//eorzea-guide//ff26navi//JA', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'].concat(ev, ['END:VCALENDAR']).join(NL) + NL;
+    var url = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+    var a = document.createElement('a');
+    a.href = url; a.download = 'ff14_fanfest2026_' + (d === 1 ? '1031' : '1101') + '.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+    msg.textContent = ev.length + '件の予定を入れるファイルを作りました。iPhoneは「すべて追加」、Androidはカレンダーのアプリを選んでください。予定を直したときは、もう一度入れ直してください（前の予定は自動では消えません）。';
+  }
   function makeUrl() {
     var box = document.getElementById('nv-url'), c = planCode(pst.day);
     if (!c) { box.innerHTML = '<p class="nv-s nv-now">URLを作れませんでした。</p>'; return; }
@@ -814,13 +852,14 @@
       h += '<p class="nv-vw">見かた：<button type="button" data-view="table" aria-pressed="' + (pst.view !== 'time') + '">順番の表</button><button type="button" data-view="time" aria-pressed="' + (pst.view === 'time') + '">時間の流れ</button></p>';
       if (pst.view === 'time') h += timeline(d, r.rows);
       else h += '<table class="eg-num"><thead><tr><th>時間</th><th>予定</th></tr></thead><tbody>';
-      if (pst.view !== 'time') r.rows.forEach(function (x) {
+      if (pst.view !== 'time') r.rows.forEach(function (x, i) {
         var tm = hm(x.a) + '<br>〜' + hm(x.b);
-        if (x.kind === 'move') h += '<tr class="nv-mv"><td>' + tm + '</td><td>移動：' + AREA_NAME[x.from] + ' → ' + AREA_NAME[x.to] + '（徒歩約' + (x.b - x.a) + '分）<span class="nv-s">' + routeText(x.from, x.to) + '</span></td></tr>';
+        var nx = x.kind === 'move' ? r.rows.slice(i + 1).filter(function (y) { return y.kind === 'do' || y.kind === 'stage'; })[0] : null, hn = nx ? hallNo(nx) : 0;
+        if (x.kind === 'move') h += '<tr class="nv-mv"><td>' + tm + '</td><td>移動：' + AREA_NAME[x.from] + ' → ' + AREA_NAME[x.to] + '（徒歩約' + (x.b - x.a) + '分）' + (hn ? '<br><strong>' + hn + 'ホールへ向かう</strong>' : '') + '<span class="nv-s">' + routeText(x.from, x.to) + '</span></td></tr>';
         else if (x.kind === 'wait') h += '<tr class="nv-mv"><td>' + tm + '</td><td>開くまで待つ</td></tr>';
         else if (x.kind === 'free') h += '<tr class="nv-mv"><td>' + tm + '</td><td>空き時間<span class="nv-s">次の列に早めに並ぶ・休憩など</span></td></tr>';
-        else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">4-6ホール ステージ</span>' + memoOf(d, x) + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
-        else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(x.place) + (x.at != null ? '／' + hm(x.at) + (rowRsv(d, x) ? '（予約）' : 'に行く予定') : '') + '</span>' + memoOf(d, x) + (x.late ? '<span class="nv-s nv-now">前の予定のため約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
+        else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + placeLabel(x) + '</span>' + memoOf(d, x) + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
+        else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(placeLabel(x)) + (x.at != null ? '／' + hm(x.at) + (rowRsv(d, x) ? '（予約）' : 'に行く予定') : '') + '</span>' + memoOf(d, x) + (x.late ? '<span class="nv-s nv-now">前の予定のため約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
       });
       if (pst.view !== 'time') h += '</tbody></table>';
       if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + (x.area === 'H46' && !x.place ? '（' + hm(x.a) + '開始）' : x.kind === 'do' ? '（' + hm(x.a) + 'に行く予定）' : '（最終受付 ' + hm(x.last) + '）'); }).join('、') +
@@ -828,7 +867,9 @@
       h += '<p id="nv-share-h"><strong>3. 画像にして共有する</strong><br>全体のマップと回る順番の画像に、行くエリアごとの詳しいマップの画像が付きます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
         '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>' +
         '<p><strong>4. 予定をURLで送る</strong><br>同行する人にURLを送ると、相手のスマホで同じ予定（メモも）を開けます。相手が直したあと、送り返してもらうこともできます。</p>' +
-        '<p><button type="button" class="nv-btn" data-url>予定のURLを作る</button></p><div id="nv-url"></div>';
+        '<p><button type="button" class="nv-btn" data-url>予定のURLを作る</button></p><div id="nv-url"></div>' +
+        '<p><strong>5. スマホのカレンダーに入れる</strong><br>回る予定を、iPhoneやAndroidのカレンダーにまとめて入れます。始まる10分前に通知が出ます。</p>' +
+        '<p><button type="button" class="nv-btn" data-ics>カレンダーに入れる</button></p><p class="nv-s" id="nv-icsmsg"></p>';
     }
     h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。昼食は11時以降、キッチンカーは公式に営業時間の案内がないためカフェと同じ20:00までとして計算しています。</p>';
     proot.innerHTML = h;
@@ -854,6 +895,7 @@
   proot.addEventListener('click', function (e) {
     if (e.target.closest('[data-mkimg]')) { makeImage(); return; }
     if (e.target.closest('[data-url]')) { makeUrl(); return; }
+    if (e.target.closest('[data-ics]')) { makeIcs(); return; }
     var vw = e.target.closest('[data-view]');
     if (vw) { pst.view = vw.getAttribute('data-view'); psave(); var yy = window.scrollY; prender(); window.scrollTo(0, yy); return; }
     var sh = e.target.closest('[data-shared]');
