@@ -115,6 +115,11 @@
   var css = document.createElement('style');
   css.textContent = [
     '#eg-ff26-navi{margin:12px 0 24px}',
+    '.nv-bus{margin:6px 0 10px;border:1px solid #e3dccb;border-radius:6px;background:#fff}',
+    '.nv-bus>summary{cursor:pointer;padding:10px 12px;font-weight:700;line-height:1.5}',
+    '.nv-bus>summary .nv-s{display:block;font-weight:400}',
+    '.nv-bus[open]>summary{border-bottom:1px solid #e3dccb}',
+    '.nv-bus>table,.nv-bus>p{margin:8px 10px!important;width:calc(100% - 20px)!important}',
     '#eg-ff26-navi img.nv-ph{display:block;width:100%;max-width:280px;height:auto;aspect-ratio:16/9;border-radius:4px;margin:2px 0 6px}',
     '#eg-ff26-navi tr.nv-off img.nv-ph{opacity:.5}',
     '.nv-dsw{display:flex;gap:8px;margin:8px 0 0}',
@@ -222,17 +227,19 @@
       ['クロス・ウェーブ幕張 発 → 幕張メッセ', { 8: [30, 45], 9: [0, 15, 30, 45], 10: [0, 15, 30], 20: [40, 55], 21: [10] }, '11/1（日）の9:45・10:00・10:15の便は、ミラプリコレクションに出る人が優先です。']
     ], '更衣室・クロークを予約した人だけが乗れる便です。朝と夜だけ走ります。']
   ];
+  var busOpen = {};
   function busHtml(live, now) {
     var h = '<p><strong>シャトルバス</strong><br>バスは本数と定員に限りがあります。</p>';
-    BUS.forEach(function (g) {
+    BUS.forEach(function (g, gi) {
       h += '<p class="nv-dt"><strong>' + g[0] + '</strong><br><span class="nv-s">' + g[2] + '</span></p>';
-      g[1].forEach(function (b) {
-        var next = null;
+      g[1].forEach(function (b, bi) {
+        var next = null, k = gi + '-' + bi;
         Object.keys(b[1]).forEach(function (hr) { b[1][hr].forEach(function (mi) { var t = hr * 60 + mi; if (live && t >= now && next === null) next = t; }); });
-        h += '<p class="nv-dt">' + b[0] + (next !== null ? '<span class="nv-s nv-now">次は ' + hm(next) + '（あと' + dur(next - now) + '）</span>' : '') + '</p>' +
+        // 時刻表は折りたたむ（1分ごとに描き直しても、開いたものは開いたまま）
+        h += '<details class="nv-bus" data-bus="' + k + '"' + (busOpen[k] ? ' open' : '') + '><summary>' + b[0] + (next !== null ? '<span class="nv-s nv-now">次は ' + hm(next) + '（あと' + dur(next - now) + '）</span>' : '') + '<span class="nv-s">時刻表を見る</span></summary>' +
           '<table class="eg-num"><thead><tr><th>時</th><th>分</th></tr></thead><tbody>' +
           Object.keys(b[1]).map(function (hr) { return '<tr><td>' + hr + '時</td><td>' + b[1][hr].map(pad).join('、') + '</td></tr>'; }).join('') + '</tbody></table>' +
-          (b[2] ? '<p class="nv-s">' + b[2] + '</p>' : '');
+          (b[2] ? '<p class="nv-s">' + b[2] + '</p>' : '') + '</details>';
       });
     });
     return h + '<p class="nv-s">両日とも同じ時刻です。時刻表は変わることがあるので、<a href="https://fanfest.finalfantasyxiv.com/2026/jp/about/" target="_blank" rel="noopener">公式の運行案内</a>も確認してください。</p>';
@@ -272,6 +279,7 @@
     renderExtra();
     extra.querySelector('.nv-mbox').scrollLeft = sx;
   });
+  root.addEventListener('toggle', function (e) { var k = e.target.getAttribute && e.target.getAttribute('data-bus'); if (k) busOpen[k] = e.target.open; }, true);
   var onDay = null; // シミュレーション側の日にちも合わせる
   root.addEventListener('click', function (e) {
     var b = e.target.closest('[data-day]');
