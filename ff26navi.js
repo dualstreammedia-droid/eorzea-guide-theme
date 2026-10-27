@@ -236,7 +236,7 @@
         var next = null, k = gi + '-' + bi;
         Object.keys(b[1]).forEach(function (hr) { b[1][hr].forEach(function (mi) { var t = hr * 60 + mi; if (live && t >= now && next === null) next = t; }); });
         // 時刻表は折りたたむ（1分ごとに描き直しても、開いたものは開いたまま）
-        h += '<details class="nv-bus" data-bus="' + k + '"' + (busOpen[k] ? ' open' : '') + '><summary>' + b[0] + (next !== null ? '<span class="nv-s nv-now">次は ' + hm(next) + '（あと' + dur(next - now) + '）</span>' : '') + '<span class="nv-s">時刻表を見る</span></summary>' +
+        h += '<details class="nv-bus" data-bus="' + k + '"' + (busOpen[k] ? ' open' : '') + '><summary>' + b[0] + (next !== null ? '<span class="nv-s nv-now">次は ' + hm(next) + '（' + (next > now ? 'あと' + dur(next - now) : 'まもなく発車') + '）</span>' : '') + '<span class="nv-s">時刻表を見る</span></summary>' +
           '<table class="eg-num"><thead><tr><th>時</th><th>分</th></tr></thead><tbody>' +
           Object.keys(b[1]).map(function (hr) { return '<tr><td>' + hr + '時</td><td>' + b[1][hr].map(pad).join('、') + '</td></tr>'; }).join('') + '</tbody></table>' +
           (b[2] ? '<p class="nv-s">' + b[2] + '</p>' : '') + '</details>';
