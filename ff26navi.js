@@ -2,9 +2,12 @@
 // 記事内の <div id="eg-ff26-navi"></div> に描画する。noindex.js の (5) から読み込まれる。
 // データは 2026-10-26 時点の公式サイト（ステージ・フロア情報）。
 (function () {
-  var root = document.getElementById('eg-ff26-navi');
-  if (!root || root.getAttribute('data-ready')) return;
-  root.setAttribute('data-ready', '1');
+  var navi = document.getElementById('eg-ff26-navi');
+  if (!navi || navi.getAttribute('data-ready')) return;
+  navi.setAttribute('data-ready', '1');
+  // root は1分ごとに描き直す部分。マップ・バス・公式リンクは extra に1回だけ描く（拡大やピンが消えないように）
+  var root = document.createElement('div'), extra = document.createElement('div');
+  navi.appendChild(root); navi.appendChild(extra);
 
   // ---------------- データ ----------------
   var DAYS = { 1: '2026-10-31', 2: '2026-11-01' };
@@ -131,7 +134,18 @@
     '#eg-ff26-navi .nv-now{color:#c0392b;font-weight:700}',
     '#eg-ff26-navi .nv-soon{color:#b5651d;font-weight:700}',
     '#eg-ff26-navi tr.nv-off td{color:#aaa}',
-    '#eg-ff26-navi tr.nv-off .nv-s{color:#bbb}'
+    '#eg-ff26-navi tr.nv-off .nv-s{color:#bbb}',
+    '#eg-ff26-navi .nv-dt{margin:12px 0 0;font-weight:700}',
+    '.nv-mtab{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}',
+    '.nv-mtab button,.nv-zm button{font:inherit;font-size:14px;padding:6px 10px;border:1px solid #9b8a5e;border-radius:4px;background:#fff;color:#333;cursor:pointer}',
+    '.nv-mtab button[aria-pressed="true"]{background:#1a2f4e;border-color:#1a2f4e;color:#fff}',
+    '.nv-zm{margin:6px 0}.nv-zm button{min-width:44px;margin:0 6px 0 0}',
+    '.nv-mbox{overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid #d8cfb8;max-height:70vh}',
+    '.nv-min{position:relative}.nv-min img{display:block;width:100%;height:auto;margin:0;cursor:crosshair}',
+    '.nv-pin{position:absolute;transform:translate(-50%,calc(-100% + 8px));pointer-events:none;text-align:center;line-height:1.2}',
+    '.nv-pin b{display:block;background:#c0392b;color:#fff;font-size:13px;padding:3px 8px;border-radius:12px;white-space:nowrap}',
+    '.nv-pin:after{content:"";display:block;width:12px;height:12px;margin:3px auto 0;border-radius:50%;background:#c0392b;border:2px solid #fff;box-shadow:0 0 0 1px #c0392b}',
+    '.nv-pin .nv-pt{display:none}'
   ].join('');
   document.head.appendChild(css);
 
@@ -192,11 +206,61 @@
     });
     h += '</tbody></table>';
 
-    // マップ
-    h += '<p><strong>マップ</strong>（タップで大きな画像が開きます）<br>' +
-      MAPS.map(function (m) { return '<a href="' + MAP_BASE + m[1] + '" target="_blank" rel="noopener">' + m[0] + '</a>'; }).join('／') + '</p>';
+    h += busHtml(live, n.min);
     root.innerHTML = h;
   }
+
+  // ---------------- 会場間シャトルバス（公式サイトの時刻表・2026-10-27確認） ----------------
+  var BUS = [
+    ['幕張メッセ 中央ロータリー（1番乗り場）発 → イオンモール幕張新都心', { 10: [35, 55], 11: [15, 35, 55], 12: [15, 35, 55], 13: [15, 35, 55], 14: [15, 35, 55], 15: [15, 35, 55], 16: [15, 35, 55], 17: [15, 35, 55], 18: [15, 35, 55] }],
+    ['イオンモール幕張新都心 グランドモール前 発 → 幕張メッセ', { 10: [50], 11: [10, 30, 50], 12: [10, 30, 50], 13: [10, 30, 50], 14: [10, 30, 50], 15: [10, 30, 50], 16: [10, 30, 50], 17: [10, 30, 50], 18: [10, 30, 50], 19: [10] }]
+  ];
+  function busHtml(live, now) {
+    var h = '<p><strong>会場間シャトルバス</strong><br>歩道橋でも歩いて行けます（メッセ1-3ホール側からイオンモールまで徒歩約10〜15分）。バスは本数と定員に限りがあります。</p>';
+    BUS.forEach(function (b) {
+      var next = null;
+      Object.keys(b[1]).forEach(function (hr) { b[1][hr].forEach(function (mi) { var t = hr * 60 + mi; if (live && t >= now && next === null) next = t; }); });
+      h += '<p class="nv-dt">' + b[0] + (next !== null ? '<span class="nv-s nv-now">次は ' + hm(next) + '（あと' + dur(next - now) + '）</span>' : '') + '</p>' +
+        '<table class="eg-num"><thead><tr><th>時</th><th>分</th></tr></thead><tbody>' +
+        Object.keys(b[1]).map(function (hr) { return '<tr><td>' + hr + '時</td><td>' + b[1][hr].map(pad).join('、') + '</td></tr>'; }).join('') + '</tbody></table>';
+    });
+    return h + '<p class="nv-s">両日とも同じ時刻です。時刻表は変わることがあるので、<a href="https://fanfest.finalfantasyxiv.com/2026/jp/about/" target="_blank" rel="noopener">公式の運行案内</a>も確認してください。</p>';
+  }
+
+  // ---------------- ホールのマップ（切り替え・拡大・「今ここ」のピン） ----------------
+  var ZOOMS = [1, 1.5, 2, 3];
+  var nst = { map: 1, zoom: 0, pin: null };
+  try { nst.pin = JSON.parse(localStorage.getItem('eg-ff26-pin') || 'null'); } catch (e) {}
+  var OFFICIAL = [
+    ['会場マップ', 'maps/'], ['ステージ・タイムテーブル', 'stages/'], ['アクティビティ・フロア', 'floors/'],
+    ['アクティビティ事前予約', 'floors/activity-reservation/'], ['お知らせ', 'news/'], ['アクセス・シャトルバス', 'about/']
+  ];
+  function renderExtra() {
+    var pin = nst.pin && nst.pin.m === nst.map ? nst.pin : null;
+    var h = '<p><strong>ホールのマップ</strong><br>マップをタップすると「今ここ」の印を置けます。待ち合わせのときに、スクショして送るのにも使えます。</p>' +
+      '<div class="nv-mtab">' + MAPS.map(function (m, i) { return '<button type="button" data-map="' + i + '" aria-pressed="' + (i === nst.map) + '">' + m[0] + '</button>'; }).join('') + '</div>' +
+      '<p class="nv-zm"><button type="button" data-zoom="-1" aria-label="縮小">−</button><button type="button" data-zoom="1" aria-label="拡大">＋</button>' +
+      (pin ? '<button type="button" data-unpin>印を消す</button>' : '') + '</p>' +
+      '<div class="nv-mbox"><div class="nv-min" style="width:' + ZOOMS[nst.zoom] * 100 + '%"><img src="' + MAP_BASE + MAPS[nst.map][1] + '" alt="' + MAPS[nst.map][0] + 'のマップ（© SQUARE ENIX）" data-pinmap>' +
+      (pin ? '<span class="nv-pin" style="left:' + pin.x + '%;top:' + pin.y + '%"><b>今ここ</b><span class="nv-pt">' + esc(pin.t) + '</span></span>' : '') + '</div></div>' +
+      '<p class="nv-s">マップは公式サイトのもの（© SQUARE ENIX）。印はこのスマホにだけ保存され、ほかの人には見えません。</p>' +
+      '<p><strong>公式サイト</strong><br>' + OFFICIAL.map(function (o) { return '<a href="https://fanfest.finalfantasyxiv.com/2026/jp/' + o[1] + '" target="_blank" rel="noopener">' + o[0] + '</a>'; }).join('／') + '</p>';
+    extra.innerHTML = h;
+  }
+  extra.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-map],[data-zoom],[data-unpin]');
+    if (b && b.hasAttribute('data-map')) { nst.map = +b.getAttribute('data-map'); nst.zoom = 0; }
+    else if (b && b.hasAttribute('data-zoom')) nst.zoom = Math.max(0, Math.min(ZOOMS.length - 1, nst.zoom + +b.getAttribute('data-zoom')));
+    else if (b) { nst.pin = null; try { localStorage.removeItem('eg-ff26-pin'); } catch (x) {} }
+    else if (e.target.hasAttribute('data-pinmap')) {
+      var r = e.target.getBoundingClientRect(), n = jstNow();
+      nst.pin = { m: nst.map, x: +((e.clientX - r.left) / r.width * 100).toFixed(1), y: +((e.clientY - r.top) / r.height * 100).toFixed(1), t: n.text + ' に置いた印' };
+      try { localStorage.setItem('eg-ff26-pin', JSON.stringify(nst.pin)); } catch (x) {}
+    } else return;
+    var box = extra.querySelector('.nv-mbox'), sx = box ? box.scrollLeft : 0;
+    renderExtra();
+    extra.querySelector('.nv-mbox').scrollLeft = sx;
+  });
   var onDay = null; // シミュレーション側の日にちも合わせる
   root.addEventListener('click', function (e) {
     var b = e.target.closest('[data-day]');
@@ -205,6 +269,7 @@
     if (onDay) onDay(viewDay);
   });
   render();
+  renderExtra();
   setInterval(render, 60000);
 
   // ================= 回る順番のシミュレーション =================
@@ -264,7 +329,37 @@
   var PKEY = 'eg-ff26-plan';
   var pst = {};
   try { pst = JSON.parse(localStorage.getItem(PKEY) || '{}') || {}; } catch (e) { pst = {}; }
-  pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {}; pst.at = pst.at || {};
+  pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {}; pst.at = pst.at || {}; pst.memo = pst.memo || {}; pst.rsv = pst.rsv || {};
+  // 予定をURLにして送る（#ff26=...）。受け取った人は、その日の選択を読み込める
+  function planCode(d) {
+    var o = { v: 1, d: d, s: pst.start, e: pst.end, p: [], st: {}, at: {}, m: {}, r: [] };
+    Object.keys(pst.pick).forEach(function (k) {
+      if (k.indexOf(d + ':') !== 0) return;
+      var name = k.split(':').slice(2).join(':');
+      o.p.push(k.slice(2));
+      if (pst.stay[name]) o.st[name] = pst.stay[name];
+      if (pst.at[k]) o.at[k.slice(2)] = pst.at[k];
+      if (pst.memo[k]) o.m[k.slice(2)] = pst.memo[k];
+      if (pst.rsv[k]) o.r.push(k.slice(2));
+    });
+    try { return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/=+$/, ''); } catch (e) { return ''; }
+  }
+  function readShared() {
+    var m = location.hash.match(/ff26=([A-Za-z0-9+\/]+)/);
+    if (!m) return null;
+    try { var o = JSON.parse(decodeURIComponent(escape(atob(m[1])))); return o && o.v === 1 && (o.d === 1 || o.d === 2) && o.p ? o : null; } catch (e) { return null; }
+  }
+  function loadShared(o) {
+    var d = o.d, pre = d + ':';
+    [pst.pick, pst.at, pst.memo, pst.rsv].forEach(function (t) { Object.keys(t).forEach(function (k) { if (k.indexOf(pre) === 0) delete t[k]; }); });
+    o.p.forEach(function (k) { pst.pick[pre + k] = 1; });
+    Object.keys(o.st || {}).forEach(function (n) { pst.stay[n] = +o.st[n]; });
+    Object.keys(o.at || {}).forEach(function (k) { pst.at[pre + k] = o.at[k]; });
+    Object.keys(o.m || {}).forEach(function (k) { pst.memo[pre + k] = String(o.m[k]).slice(0, 40); });
+    (o.r || []).forEach(function (k) { pst.rsv[pre + k] = 1; });
+    pst.day = d; pst.start = o.s || pst.start; pst.end = o.e || pst.end;
+  }
+  var shared = readShared();
   function psave() { try { localStorage.setItem(PKEY, JSON.stringify(pst)); } catch (e) {} }
   function pk(d, kind, name) { return d + ':' + kind + ':' + name; }
   function hoursOf(s, d) {
@@ -476,7 +571,8 @@
           if (im) ctx.drawImage(im, P + 52, y + 8, 128, 72);
           var tx = P + 52 + (im ? 144 : 0);
           ctx.fillStyle = '#333'; ctx.font = '700 24px ' + FONT;
-          ctx.fillText(hm(x.a) + '〜' + hm(x.b) + '　' + (x.kind === 'stage' ? '4-6ホール ステージ' : x.place), tx, y + 36);
+          var memo = pst.memo[rowKey(d, x)];
+          ctx.fillText(hm(x.a) + '〜' + hm(x.b) + '　' + (x.kind === 'stage' ? '4-6ホール ステージ' : x.place) + (rowRsv(d, x) ? '（予約）' : '') + (memo ? '　' + memo : ''), tx, y + 36);
           ctx.fillStyle = '#111'; ctx.font = '700 30px ' + FONT;
           ctx.fillText(wrapText(ctx, x.name, W - tx - P)[0], tx, y + 76);
           y += 96;
@@ -625,6 +721,45 @@
   }
 
 
+  function rowKey(d, x) { return pk(d, x.kind === 'stage' ? 's' : 'f', x.name); }
+  function rowRsv(d, x) { return !!pst.rsv[rowKey(d, x)]; }
+  function memoOf(d, x) { var m = pst.memo[rowKey(d, x)]; return m ? '<span class="nv-s">メモ：' + esc(m) + '</span>' : ''; }
+  // 時間の流れ（左にステージ、右に自分の予定。1分＝1.5px）
+  function timeline(d, rows) {
+    var PX = 1.5, t0 = Math.floor(toMin(pst.start) / 60) * 60, t1 = Math.ceil(toMin(pst.end) / 60) * 60;
+    function y(m) { return Math.round((m - t0) * PX); }
+    var h = '<div class="nv-tl" style="height:' + (y(t1) + 2) + 'px">';
+    for (var m = t0; m <= t1; m += 60) h += '<span class="nv-tl-h" style="top:' + y(m) + 'px">' + (m / 60) + ':00</span>';
+    STAGE[d].forEach(function (s) {
+      var a = Math.max(toMin(s[0]), t0), b = Math.min(toMin(s[1]), t1);
+      if (b <= a) return;
+      h += '<div class="nv-tl-b nv-tl-st' + (pst.pick[pk(d, 's', s[2])] ? ' nv-on' : '') + '" style="top:' + y(a) + 'px;height:' + (y(b) - y(a)) + 'px"><b>' + s[0] + '</b> ' + esc(s[2]) + '</div>';
+    });
+    rows.forEach(function (x) {
+      var hgt = y(x.b) - y(x.a), cls = x.kind === 'move' ? 'nv-tl-mv' : x.kind === 'free' || x.kind === 'wait' ? 'nv-tl-fr' : 'nv-tl-do';
+      if (hgt < 4) return;
+      var txt = x.kind === 'move' ? (hgt >= 14 ? '移動 ' + (x.b - x.a) + '分' : '') : x.kind === 'free' ? '空き ' + dur(x.b - x.a) : x.kind === 'wait' ? '開くまで待つ' :
+        '<b>' + hm(x.a) + ' ' + circled(x.no) + '</b> ' + esc(x.name) + (rowRsv(d, x) ? '（予約）' : '') + (pst.memo[rowKey(d, x)] ? '<br>' + esc(pst.memo[rowKey(d, x)]) : '');
+      h += '<div class="nv-tl-b ' + cls + '" style="top:' + y(x.a) + 'px;height:' + hgt + 'px">' + txt + '</div>';
+    });
+    return h + '</div><p class="nv-s">左がステージ（色が濃いものが見に行くもの）、右が自分の予定です。</p>';
+  }
+  function makeUrl() {
+    var box = document.getElementById('nv-url'), c = planCode(pst.day);
+    if (!c) { box.innerHTML = '<p class="nv-s nv-now">URLを作れませんでした。</p>'; return; }
+    var url = PAGE_URL + '#ff26=' + c, text = 'ファンフェス2026東京 ' + DAY_DATE[pst.day] + 'の予定です';
+    box.innerHTML = '<p><input type="text" readonly class="nv-urlin" value="' + esc(url) + '"></p><p>' +
+      (navigator.share ? '<button type="button" class="nv-btn nv-pri" data-urlshare>LINEなどで送る</button>' : '') +
+      '<button type="button" class="nv-btn" data-urlcopy>URLをコピー</button></p><p class="nv-s" id="nv-urlmsg"></p>';
+    var sb = box.querySelector('[data-urlshare]');
+    if (sb) sb.addEventListener('click', function () { navigator.share({ text: text, url: url }).catch(function () {}); });
+    box.querySelector('[data-urlcopy]').addEventListener('click', function () {
+      var inp = box.querySelector('input'), msg = document.getElementById('nv-urlmsg');
+      function ok() { msg.textContent = 'コピーしました。'; }
+      if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, function () { inp.select(); });
+      else { inp.select(); try { document.execCommand('copy'); ok(); } catch (e) {} }
+    });
+  }
   function chk(k, label) { return '<input type="checkbox" data-k="' + esc(k) + '"' + (pst.pick[k] ? ' checked' : '') + ' aria-label="' + esc(label) + '">'; }
 
   function prender() {
@@ -635,14 +770,24 @@
         return '<option value="' + vv + '"' + (vv === cur ? ' selected' : '') + '>' + v + (lastLabel && i === list.length - 1 ? lastLabel : '') + '</option>';
       }).join('');
     }
-    var h = daySwitch(d, 'data-pday', DAY_LABEL[d] + 'のプラン') +
+    var h = '';
+    if (shared) h += '<div class="nv-shared"><p><strong>送られてきた予定があります（' + DAY_LABEL[shared.d] + '）</strong><br>開くと、このスマホの' + DAY_DATE[shared.d] + 'の選択は、送られてきた予定に置きかわります。</p>' +
+      '<p><button type="button" class="nv-btn nv-pri" data-shared="1">この予定を開く</button><button type="button" class="nv-btn" data-shared="0">自分の予定のままにする</button></p></div>';
+    h += daySwitch(d, 'data-pday', DAY_LABEL[d] + 'のプラン') +
       '<p class="nv-tm"><strong>会場にいる時間</strong><br><select data-start>' + opts(STARTS, pst.start) + '</select> に着く<br>' +
       '<select data-end>' + opts(ENDS, pst.end, '（最後まで）') + '</select> に帰る</p>';
     if (toMin(pst.end) <= toMin(pst.start)) h += '<p class="nv-s nv-now">帰る時刻を、着く時刻より後にしてください。</p>';
 
     h += '<p><strong>1. 行きたいものにチェック</strong><br>行く時間を決めたいもの（予約の時間など）は「行く時間」を選んでください。「おまかせ」のものは、空いている時間に入れます。</p><table class="eg-num"><thead><tr><th>選ぶ</th><th>内容・所要時間の目安</th></tr></thead><tbody>';
+    // チェックを入れたものだけ、メモ（と予約）の欄を出す
+    function extraInputs(k, canRsv) {
+      if (!pst.pick[k]) return '';
+      return '<span class="nv-s nv-memo">メモ <input type="text" data-memo="' + esc(k) + '" value="' + esc(pst.memo[k] || '') + '" maxlength="40" placeholder="例：集合場所・だれと行くか"></span>' +
+        (canRsv ? '<label class="nv-s"><input type="checkbox" data-rsv="' + esc(k) + '"' + (pst.rsv[k] ? ' checked' : '') + '> 予約が当たった（行く時間に予約の時刻を入れてください）</label>' : '');
+    }
     STAGE[d].forEach(function (s) {
-      h += '<tr><td>' + chk(pk(d, 's', s[2]), s[2]) + '</td><td>' + withThumb(s[2], esc(s[2]) + '<span class="nv-s">ステージ ' + s[0] + '〜' + s[1] + '</span>') + '</td></tr>';
+      var k = pk(d, 's', s[2]);
+      h += '<tr><td>' + chk(k, s[2]) + '</td><td>' + withThumb(s[2], esc(s[2]) + '<span class="nv-s">ステージ ' + s[0] + '〜' + s[1] + '</span>' + extraInputs(k, false)) + '</td></tr>';
     });
     FLEX.forEach(function (s) {
       var hr = hoursOf(s, d), st = pst.stay[s[0]] || STAY[s[0]] || 30, k = pk(d, 'f', s[0]), at = pst.at[k] || '';
@@ -654,7 +799,7 @@
       h += '<tr><td>' + chk(k, s[0]) + '</td><td>' + withThumb(s[0], esc(s[0]) +
         '<span class="nv-s">' + esc(s[1]) + '／最終受付 ' + hm(hr.last) + '<br>所要 <select data-stay="' + esc(s[0]) + '">' +
         CHOICES.map(function (c) { return '<option value="' + c + '"' + (c === st ? ' selected' : '') + '>' + c + '分</option>'; }).join('') + '</select>' +
-        '<br>行く時間 <select data-at="' + esc(k) + '">' + ats + '</select></span>') + '</td></tr>';
+        '<br>行く時間 <select data-at="' + esc(k) + '">' + ats + '</select></span>' + extraInputs(k, true)) + '</td></tr>';
     });
     h += '</tbody></table>';
 
@@ -666,20 +811,24 @@
       var no = 0;
       r.rows.forEach(function (x) { if (x.kind === 'do' || x.kind === 'stage') x.no = ++no; });
       h += routeMap(r.rows) + detailMaps(r.rows);
-      h += '<table class="eg-num"><thead><tr><th>時間</th><th>予定</th></tr></thead><tbody>';
-      r.rows.forEach(function (x) {
+      h += '<p class="nv-vw">見かた：<button type="button" data-view="table" aria-pressed="' + (pst.view !== 'time') + '">順番の表</button><button type="button" data-view="time" aria-pressed="' + (pst.view === 'time') + '">時間の流れ</button></p>';
+      if (pst.view === 'time') h += timeline(d, r.rows);
+      else h += '<table class="eg-num"><thead><tr><th>時間</th><th>予定</th></tr></thead><tbody>';
+      if (pst.view !== 'time') r.rows.forEach(function (x) {
         var tm = hm(x.a) + '<br>〜' + hm(x.b);
         if (x.kind === 'move') h += '<tr class="nv-mv"><td>' + tm + '</td><td>移動：' + AREA_NAME[x.from] + ' → ' + AREA_NAME[x.to] + '（徒歩約' + (x.b - x.a) + '分）<span class="nv-s">' + routeText(x.from, x.to) + '</span></td></tr>';
         else if (x.kind === 'wait') h += '<tr class="nv-mv"><td>' + tm + '</td><td>開くまで待つ</td></tr>';
         else if (x.kind === 'free') h += '<tr class="nv-mv"><td>' + tm + '</td><td>空き時間<span class="nv-s">次の列に早めに並ぶ・休憩など</span></td></tr>';
-        else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">4-6ホール ステージ</span>' + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
-        else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(x.place) + (x.at != null ? '／' + hm(x.at) + 'に行く予定' : '') + '</span>' + (x.late ? '<span class="nv-s nv-now">前の予定のため約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
+        else if (x.kind === 'stage') h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">4-6ホール ステージ</span>' + memoOf(d, x) + (x.late ? '<span class="nv-s nv-now">開始に約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
+        else h += '<tr><td>' + tm + '</td><td>' + withThumb(x.name, '<strong>' + circled(x.no) + ' ' + esc(x.name) + '</strong><span class="nv-s">' + esc(x.place) + (x.at != null ? '／' + hm(x.at) + (rowRsv(d, x) ? '（予約）' : 'に行く予定') : '') + '</span>' + memoOf(d, x) + (x.late ? '<span class="nv-s nv-now">前の予定のため約' + x.late + '分遅れます</span>' : '') + (x.cut ? '<span class="nv-s nv-now">帰る時刻のため途中まで</span>' : '')) + '</td></tr>';
       });
-      h += '</tbody></table>';
+      if (pst.view !== 'time') h += '</tbody></table>';
       if (r.left.length) h += '<p>入りきらなかったもの：' + r.left.map(function (x) { return esc(x.name) + (x.area === 'H46' && !x.place ? '（' + hm(x.a) + '開始）' : x.kind === 'do' ? '（' + hm(x.a) + 'に行く予定）' : '（最終受付 ' + hm(x.last) + '）'); }).join('、') +
         '<br>会場にいる時間を長くするか、ほかの所要時間を短くすると入ることがあります。</p>';
       h += '<p id="nv-share-h"><strong>3. 画像にして共有する</strong><br>全体のマップと回る順番の画像に、行くエリアごとの詳しいマップの画像が付きます。XやLINEで友だちに送ったり、当日の待ち受けにしたりできます。</p>' +
-        '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>';
+        '<p><button type="button" class="nv-btn" data-mkimg>画像を作る</button></p><div id="nv-share"></div>' +
+        '<p><strong>4. 予定をURLで送る</strong><br>同行する人にURLを送ると、相手のスマホで同じ予定（メモも）を開けます。相手が直したあと、送り返してもらうこともできます。</p>' +
+        '<p><button type="button" class="nv-btn" data-url>予定のURLを作る</button></p><div id="nv-url"></div>';
     }
     h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。昼食は11時以降、キッチンカーは公式に営業時間の案内がないためカフェと同じ20:00までとして計算しています。</p>';
     proot.innerHTML = h;
@@ -693,6 +842,8 @@
       var ak = el.getAttribute('data-at');
       if (el.value) { pst.at[ak] = el.value; pst.pick[ak] = 1; } else delete pst.at[ak];
     }
+    else if (el.hasAttribute('data-memo')) { var mk = el.getAttribute('data-memo'); if (el.value.trim()) pst.memo[mk] = el.value.trim().slice(0, 40); else delete pst.memo[mk]; }
+    else if (el.hasAttribute('data-rsv')) { if (el.checked) pst.rsv[el.getAttribute('data-rsv')] = 1; else delete pst.rsv[el.getAttribute('data-rsv')]; }
     else if (el.hasAttribute('data-start')) pst.start = el.value;
     else if (el.hasAttribute('data-end')) pst.end = el.value;
     else if (el.hasAttribute('data-range')) pst.range = +el.value;
@@ -702,6 +853,16 @@
   });
   proot.addEventListener('click', function (e) {
     if (e.target.closest('[data-mkimg]')) { makeImage(); return; }
+    if (e.target.closest('[data-url]')) { makeUrl(); return; }
+    var vw = e.target.closest('[data-view]');
+    if (vw) { pst.view = vw.getAttribute('data-view'); psave(); var yy = window.scrollY; prender(); window.scrollTo(0, yy); return; }
+    var sh = e.target.closest('[data-shared]');
+    if (sh) {
+      if (sh.getAttribute('data-shared') === '1') loadShared(shared);
+      shared = null; psave();
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (x) {}
+      prender(); viewDay = pst.day; render(); return;
+    }
     var b = e.target.closest('[data-pday]');
     if (!b) return;
     pst.day = +b.getAttribute('data-pday'); psave(); prender();
@@ -721,6 +882,22 @@
     '#eg-ff26-plan .nv-tm select{font-size:16px;padding:4px 6px}',
     '#eg-ff26-plan .nv-btn{font:inherit;font-size:15px;font-weight:700;padding:10px 16px;border:2px solid #1a2f4e;border-radius:6px;background:#fff;color:#1a2f4e;cursor:pointer;margin:0 6px 6px 0}',
     '#eg-ff26-plan .nv-btn.nv-pri{background:#1a2f4e;color:#fff}',
+    '#eg-ff26-plan .nv-memo input{font:inherit;font-size:14px;width:100%;max-width:280px;padding:4px 6px;margin:2px 0;box-sizing:border-box}',
+    '#eg-ff26-plan label.nv-s{margin:2px 0}',
+    '#eg-ff26-plan label.nv-s input{width:18px;height:18px;vertical-align:-3px}',
+    '#eg-ff26-plan .nv-shared{border:2px solid #c0392b;border-radius:6px;padding:4px 12px;margin:0 0 12px;background:#fff8f6}',
+    '#eg-ff26-plan .nv-vw button{font:inherit;font-size:14px;padding:6px 10px;margin:0 6px 0 0;border:1px solid #1a2f4e;border-radius:4px;background:#fff;color:#1a2f4e;cursor:pointer}',
+    '#eg-ff26-plan .nv-vw button[aria-pressed="true"]{background:#1a2f4e;color:#fff}',
+    '#eg-ff26-plan .nv-tl{position:relative;margin:8px 0;border-top:1px solid #ddd}',
+    '#eg-ff26-plan .nv-tl-h{position:absolute;left:0;width:100%;border-top:1px solid #e3dccb;font-size:12px;color:#888;line-height:1;padding-top:2px}',
+    '#eg-ff26-plan .nv-tl-b{position:absolute;box-sizing:border-box;overflow:hidden;font-size:12px;line-height:1.35;padding:2px 5px;border-radius:4px}',
+    '#eg-ff26-plan .nv-tl-st{left:40px;width:calc(38% - 40px);background:#f1efe9;color:#999;border:1px dashed #ccc}',
+    '#eg-ff26-plan .nv-tl-st.nv-on{background:#e6e9f0;color:#1a2f4e;border:1px solid #1a2f4e}',
+    '#eg-ff26-plan .nv-tl-do,#eg-ff26-plan .nv-tl-mv,#eg-ff26-plan .nv-tl-fr{left:calc(38% + 4px);right:0}',
+    '#eg-ff26-plan .nv-tl-do{background:#fbecd9;border:1px solid #d9a55b;color:#333}',
+    '#eg-ff26-plan .nv-tl-mv{background:#e8f1e1;color:#3d5228;border:1px solid #9bb784}',
+    '#eg-ff26-plan .nv-tl-fr{background:#f7f7f4;color:#999;border:1px dashed #d5d5cc}',
+    '#eg-ff26-plan .nv-urlin{font:inherit;font-size:13px;width:100%;padding:6px;box-sizing:border-box}',
     '#eg-ff26-plan #nv-share img{display:block;width:100%;max-width:540px;height:auto;border:1px solid #ccc;margin:6px 0}'
   ].join('');
   prender();
