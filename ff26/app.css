@@ -1,0 +1,79 @@
+/* 当日ナビ アプリ版。ナビ本体（ff26navi.js）のスタイルはそちらで入るので、ここは画面の枠と表だけ */
+:root {
+  --navy: #1a2f4e;
+  --gold: #c9a227;
+  --bg: #f6f3ec;
+  --line: #e3dccb;
+  --text: #2a2a2a;
+  --tab-h: 64px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom));
+}
+a { color: #1f5f99; }
+
+.ap-hd {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--navy);
+  color: #fff;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  border-bottom: 3px solid var(--gold);
+}
+.ap-hd h1 { margin: 0; font-size: 20px; line-height: 1.3; letter-spacing: .04em; }
+.ap-sub { margin: 0 0 2px; font-size: 11px; color: #d8c88f; letter-spacing: .06em; }
+
+main { max-width: 640px; margin: 0 auto; padding: 8px 16px 24px; }
+main p { margin: 10px 0; }
+
+/* 表（ブログの表に近い見た目） */
+table.eg-num { width: 100%; border-collapse: collapse; margin: 8px 0 16px; background: #fff; font-size: 14px; }
+table.eg-num th { background: #efe6cc; color: #3b3220; text-align: left; font-weight: 700; padding: 6px 8px; border: 1px solid var(--line); }
+table.eg-num td { padding: 8px; border: 1px solid var(--line); vertical-align: top; word-break: break-word; }
+table.eg-num td:first-child { width: 4.8em; white-space: nowrap; }
+table.eg-num tr:nth-child(even) td { background: #fcfaf5; }
+
+.ap-note, .ap-about { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--gold); border-radius: 6px; padding: 2px 12px; margin: 8px 0 12px; font-size: 14px; }
+.ap-note button { font: inherit; font-size: 14px; padding: 6px 14px; border: 1px solid var(--navy); border-radius: 4px; background: #fff; color: var(--navy); }
+.ap-about { border-left-color: var(--navy); margin-top: 20px; }
+.ap-c { font-size: 12px; color: #777; }
+
+/* 下のタブ */
+.ap-tab {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 20;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid #d9d2c0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.ap-tab button {
+  flex: 1;
+  height: var(--tab-h);
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+}
+.ap-tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ap-tab button[aria-current="page"] { color: var(--navy); font-weight: 700; }
+.ap-tab button[aria-current="page"] svg { stroke-width: 2.4; }
+.ap-tab button[aria-current="page"]::before { content: ""; position: absolute; top: 0; width: 48px; height: 3px; background: var(--gold); border-radius: 0 0 3px 3px; }
+.ap-tab button { position: relative; }

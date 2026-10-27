@@ -7,7 +7,7 @@
   navi.setAttribute('data-ready', '1');
   // root は1分ごとに描き直す部分。マップ・バス・公式リンクは extra に1回だけ描く（拡大やピンが消えないように）
   var root = document.createElement('div'), extra = document.createElement('div');
-  navi.appendChild(root); navi.appendChild(extra);
+  navi.appendChild(root); (document.getElementById('eg-ff26-extra') || navi).appendChild(extra); // アプリ版ではマップを別のタブに出す
 
   // ---------------- データ ----------------
   var DAYS = { 1: '2026-10-31', 2: '2026-11-01' };

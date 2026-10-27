@@ -1,0 +1,15 @@
+{
+  "name": "ファンフェス2026東京 当日ナビ（非公式）",
+  "short_name": "当日ナビ",
+  "description": "FF14ファンフェス2026東京の当日ナビ。上演中のステージ、受付終了まであと何分か、回る順番、ホールのマップ。ファンが作った非公式のツールです。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ec",
+  "theme_color": "#1a2f4e",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
