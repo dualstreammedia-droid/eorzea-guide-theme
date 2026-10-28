@@ -66,6 +66,16 @@
       ['15:00', '祖堅正慶＆マイケル・クリストファー・コージ・フォックス', 2], ['16:00', 'Keiko', 3]]
   };
   function meetName(m) { return 'フォトセッション ' + m[1] + ' ' + String.fromCharCode(0x245f + m[2]); }
+  // 豊砂公園のキッチンカー（公式・2026-10-28）。[番号, 店名, 売っているもの]
+  var TRUCKS = [
+    [3, 'BBQ Freely', '骨付き肉BBQ＆ホットドッグ'], [4, 'ローストチキンコオロギ', '国産ハーブ鶏のローストチキン'], [5, 'M cafe', 'カレーなどのカフェメニュー'],
+    [6, 'わがしとべっか', 'わらび餅入りドリンク、創作和スイーツ'], [7, 'puelto pua', '山形いも煮、オムライス、ポテト'], [8, 'Gabu!!', 'ポテトフライ'],
+    [9, 'ASLAN KEBAB', 'ケバブ、ロングポテト'], [10, '福篭', '京風たこ焼き'], [11, '笑う門には福来る', 'ご飯もの、サンド、ドリンク'],
+    [12, 'R.Harbor', 'ブラジリアンチュロス'], [13, '焼肉八そら', '和牛焼肉丼'], [14, 'j-j-KITCHEN', '本格ケバブ'], [15, 'CUCCO', 'プルドチキン料理'],
+    [16, '百合店', '軽食'], [17, 'ciaobella rosso', 'ピザコーン'], [18, 'Tacos Guild 駒沢', '沖縄タコス'], [19, 'Kero', '体が温まる料理'],
+    [20, '堂の浦 鳴門本店', '鳴門鯛の塩らぁ麺'], [21, 'la kasseria', '本格ケバブ'], [22, 'kitchencar iroha', 'ホットドッグ、塩タン串など'],
+    [23, 'BEER TRUCK LIQUID TANK', 'クラフトビールなどのドリンク、おつまみ、ご飯もの'], [24, 'フードトラック祠', '猟師が作るタコスやドリンク']
+  ];
 
   var MAPS = [
     ['会場全体', 'map_messe_entire.jpg'],
@@ -84,7 +94,7 @@
     'オードパルファム テスター': 'fragrance', 'トートバッグ作り': 'workshop', 'ナインズ・キャッチャー': 'moogle_catcher', 'スペースインベーダー': 'outrunner',
     'エオルゼア検定': 'eorzea_quiz', 'NPC名鑑 体験': 'npc_directory', 'FFトレカ体験': 'ff_tcg', 'ドマ式麻雀 修練場': 'mahjong', 'エッダの鞄': 'eddas_bag',
     '出張エオルゼアカフェ': 'eorzea_cafe', 'アニメイトカフェ出張版': 'animate_cafe', 'POP UP STORE': 'popup_store', 'リアル謎解き': 'real_mystery',
-    'ヤマト運輸 宅配': 'shipping', '昼食（キッチンカー）': 'food_truck', 'でぶチョコボ フォトスポット': 'fat_chocobo',
+    'ヤマト運輸 宅配': 'shipping', 'キッチンカー': 'food_truck', 'でぶチョコボ フォトスポット': 'fat_chocobo',
     'クイックフォトセッション': 'meet_and_greet', 'ポップコーン・ドリンク販売': 'popcorn_bucket'
   };
   [1, 2].forEach(function (d) { MEET[d].forEach(function (m) { PHOTO[meetName(m)] = 'meet_and_greet'; }); });
@@ -235,6 +245,14 @@
     });
     h += '</tbody></table>';
 
+    // キッチンカー一覧（折りたたみ）
+    var tOpen = live && n.min >= 600 && n.min < 1200;
+    h += '<p><strong>キッチンカー（豊砂公園）</strong><br><span class="nv-s">10:00〜20:00' + (live ? (tOpen ? '　あと' + dur(1200 - n.min) + 'で終了' : n.min < 600 ? '　10:00から' : '　営業終了') : '') + '。決済方法はお店ごとに違うので、現地で確認してください。</span></p>' +
+      '<details class="nv-bus" data-bus="truck"' + (busOpen.truck ? ' open' : '') + '><summary>' + TRUCKS.length + '台の一覧<span class="nv-s">お店と売っているものを見る</span></summary>' +
+      '<table class="eg-num"><thead><tr><th>番号</th><th>お店・売っているもの</th></tr></thead><tbody>' +
+      TRUCKS.map(function (t) { return '<tr><td>' + t[0] + '</td><td>' + esc(t[1]) + '<span class="nv-s">' + esc(t[2]) + '</span></td></tr>'; }).join('') +
+      '</tbody></table></details>';
+
     h += busHtml(live, n.min);
     root.innerHTML = h;
   }
@@ -354,13 +372,13 @@
     'ナイスヘッド・ガーデン': 20, 'ダンシング・グリーン': 20, 'チェキ撮影・プリント': 15, 'オードパルファム テスター': 15,
     'トートバッグ作り': 45, 'ナインズ・キャッチャー': 20, 'スペースインベーダー': 20, 'エオルゼア検定': 20, 'NPC名鑑 体験': 30,
     'FFトレカ体験': 45, 'ドマ式麻雀 修練場': 30, 'エッダの鞄': 60, '出張エオルゼアカフェ': 60, 'アニメイトカフェ出張版': 60,
-    'POP UP STORE': 30, 'リアル謎解き': 60, 'ポップコーン・ドリンク販売': 15, 'ヤマト運輸 宅配': 15, '昼食（キッチンカー）': 45, 'でぶチョコボ フォトスポット': 15
+    'POP UP STORE': 30, 'リアル謎解き': 60, 'ポップコーン・ドリンク販売': 15, 'ヤマト運輸 宅配': 15, 'キッチンカー': 45, 'でぶチョコボ フォトスポット': 15
   };
   var EXTRA = [
-    ['昼食（キッチンカー）', '豊砂公園', '11:00', '20:00', '11:00', '20:00', 0, '11時以降で計算'],
+    ['キッチンカー', '豊砂公園', '10:00', '20:00', '10:00', '20:00', 0, '22台。お店は「いま」のキッチンカー一覧に'],
     ['でぶチョコボ フォトスポット', 'イオンモール 38', '10:00', '21:00', '10:00', '21:00', 0, '']
   ];
-  var LUNCH = '昼食（キッチンカー）';
+  var OLD_TRUCK = '昼食（キッチンカー）'; // v22までの名前。保存済みの選択を引き継ぐ
   var FLEX = SPOTS.concat(EXTRA);
   var CHOICES = [15, 20, 30, 45, 60, 90, 120];
   // 着く・帰る時刻は10分きざみで選べる
@@ -373,6 +391,13 @@
   var pst = {};
   try { pst = JSON.parse(localStorage.getItem(PKEY) || '{}') || {}; } catch (e) { pst = {}; }
   pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {}; pst.at = pst.at || {}; pst.memo = pst.memo || {}; pst.rsv = pst.rsv || {};
+  function renameTruck(o) {
+    [o.pick, o.at, o.memo, o.rsv].forEach(function (t) {
+      Object.keys(t).forEach(function (k) { if (k.indexOf(OLD_TRUCK) >= 0) { t[k.replace(OLD_TRUCK, 'キッチンカー')] = t[k]; delete t[k]; } });
+    });
+    if (o.stay && o.stay[OLD_TRUCK]) { o.stay['キッチンカー'] = o.stay[OLD_TRUCK]; delete o.stay[OLD_TRUCK]; }
+  }
+  renameTruck(pst);
   // 予定をURLにして送る（#ff26=...）。受け取った人は、その日の選択を読み込める
   function planCode(d) {
     var o = { v: 1, d: d, s: pst.start, e: pst.end, p: [], st: {}, at: {}, m: {}, r: [] };
@@ -401,6 +426,7 @@
     Object.keys(o.m || {}).forEach(function (k) { pst.memo[pre + k] = String(o.m[k]).slice(0, 40); });
     (o.r || []).forEach(function (k) { pst.rsv[pre + k] = 1; });
     pst.day = d; pst.start = o.s || pst.start; pst.end = o.e || pst.end;
+    renameTruck(pst);
   }
   var shared = readShared();
   function psave() { try { localStorage.setItem(PKEY, JSON.stringify(pst)); } catch (e) {} }
@@ -443,7 +469,6 @@
         if (begin > x.last || begin + x.stay > endT) return;
         if (nf && begin + x.stay + walk(x.area, nf.area) > nf.a) return;
         var key = begin * 2000 + x.last;
-        if (x.name === LUNCH && begin <= 14 * 60) key = -1; // 昼食は14時までに入れられるなら優先
         if (!best || key < bestKey) { best = x; bestKey = key; }
       });
       if (best) {
@@ -901,7 +926,7 @@
         '<p><strong>4. 予定をURLで送る</strong><br>同行する人にURLを送ると、相手のスマホで同じ予定（メモも）を開けます。相手が直したあと、送り返してもらうこともできます。</p>' +
         '<p><button type="button" class="nv-btn" data-url>予定のURLを作る</button></p><div id="nv-url"></div>';
     }
-    h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。昼食は11時以降、キッチンカーは公式に営業時間の案内がないためカフェと同じ20:00までとして計算しています。</p>';
+    h += '<p class="nv-s">所要時間に待ち列の時間は入っていません。混みそうな所は長めに選んでください。移動時間は地図上の距離から計算した目安で、混雑時はもっとかかります。予約が必要な体験は予約時間を優先してください。キッチンカーは10:00〜20:00の営業（公式）です。食べたい時間があれば「行く時間」を選んでください。</p>';
     proot.innerHTML = h;
   }
 
