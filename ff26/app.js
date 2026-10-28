@@ -24,7 +24,9 @@
     var ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
     box.innerHTML = '<p><strong>ホーム画面に追加すると、アプリのように使えます</strong><br>' +
       (ios ? 'Safariの下の共有ボタン（□に↑）→「ホーム画面に追加」' : 'ブラウザのメニュー（︙）→「ホーム画面に追加」または「アプリをインストール」') +
-      '。一度開いておくと、会場で電波が弱くても使えます。</p><p><button type="button" data-close>とじる</button></p>';
+      '。一度開いておくと、会場で電波が弱くても使えます。' +
+      (ios ? '<br>iPhoneでは、Safariで作った予定と、ホーム画面のアイコンから作った予定は別々に保存されます。先にホーム画面に追加してから、アイコンから開いて予定を作るのがおすすめです。' : '') +
+      '</p><p><button type="button" data-close>とじる</button></p>';
     box.hidden = false;
     box.querySelector('[data-close]').addEventListener('click', function () {
       box.hidden = true;
