@@ -57,6 +57,14 @@
   ];
   // エッダの鞄は2日目だけ最終受付が早い
   var SPECIAL_LAST = { 'エッダの鞄': { 2: '18:30' } };
+  // クイックフォトセッション（4-6ホール 17・事前予約した人だけ）。[開始, 出演, 回]。開始から30分以内に集合
+  var MEET_PLACE = '4-6ホール 17', MEET_STAY = 30;
+  var MEET = {
+    1: [['14:00', 'THE PRIMALS', 1], ['16:15', 'THE PRIMALS', 2]],
+    2: [['12:00', 'Keiko', 1], ['13:00', '祖堅正慶＆マイケル・クリストファー・コージ・フォックス', 1], ['14:00', 'Keiko', 2],
+      ['15:00', '祖堅正慶＆マイケル・クリストファー・コージ・フォックス', 2], ['16:00', 'Keiko', 3]]
+  };
+  function meetName(m) { return 'フォトセッション ' + m[1] + ' ' + String.fromCharCode(0x245f + m[2]); }
 
   var MAPS = [
     ['会場全体', 'map_messe_entire.jpg'],
@@ -75,8 +83,10 @@
     'オードパルファム テスター': 'fragrance', 'トートバッグ作り': 'workshop', 'ナインズ・キャッチャー': 'moogle_catcher', 'スペースインベーダー': 'outrunner',
     'エオルゼア検定': 'eorzea_quiz', 'NPC名鑑 体験': 'npc_directory', 'FFトレカ体験': 'ff_tcg', 'ドマ式麻雀 修練場': 'mahjong', 'エッダの鞄': 'eddas_bag',
     '出張エオルゼアカフェ': 'eorzea_cafe', 'アニメイトカフェ出張版': 'animate_cafe', 'POP UP STORE': 'popup_store', 'リアル謎解き': 'real_mystery',
-    'ヤマト運輸 宅配': 'shipping', '昼食（キッチンカー）': 'food_truck', 'でぶチョコボ フォトスポット': 'fat_chocobo'
+    'ヤマト運輸 宅配': 'shipping', '昼食（キッチンカー）': 'food_truck', 'でぶチョコボ フォトスポット': 'fat_chocobo',
+    'クイックフォトセッション': 'meet_and_greet'
   };
+  [1, 2].forEach(function (d) { MEET[d].forEach(function (m) { PHOTO[meetName(m)] = 'meet_and_greet'; }); });
   // 小さい写真＋文字を横に並べる
   function withThumb(name, inner) {
     var src = PHOTO[name] ? 'spot_' + PHOTO[name] : (STAGE_PHOTO[name] ? 'stage_' + STAGE_PHOTO[name] : '');
@@ -181,6 +191,19 @@
       else if (live && n.min >= b) { st = '<span class="nv-s">終了</span>'; cls = ' class="nv-off"'; }
       else if (live && !nextFound) { nextFound = true; st = '<span class="nv-s">あと' + dur(a - n.min) + 'で開始</span>'; }
       h += '<tr' + cls + '><td>' + s[0] + '<br>〜' + s[1] + '</td><td>' + (s[3] ? '<img class="nv-ph" src="' + MAP_BASE + 'stage_' + s[3] + '.jpg" alt="' + esc(s[2]) + 'のイメージ（© SQUARE ENIX）" loading="lazy" width="640" height="360">' : '') + esc(s[2]) + st + '</td></tr>';
+    });
+    h += '</tbody></table>';
+
+    // クイックフォトセッション
+    h += '<p><strong>クイックフォトセッション（4-6ホール 17）</strong><br><span class="nv-s">事前予約した人だけ参加できます。開始時刻から30分以内に集合してください。</span></p>' +
+      '<table class="eg-num"><thead><tr><th>開始</th><th>出演</th></tr></thead><tbody>';
+    var meetNext = false;
+    MEET[day].forEach(function (m) {
+      var a = toMin(m[0]), st = '', cls = '';
+      if (live && n.min >= a && n.min < a + 30) st = '<span class="nv-s nv-now">集合受付中（あと' + dur(a + 30 - n.min) + '）</span>';
+      else if (live && n.min >= a + 30) { st = '<span class="nv-s">集合終了</span>'; cls = ' class="nv-off"'; }
+      else if (live && !meetNext) { meetNext = true; st = '<span class="nv-s">あと' + dur(a - n.min) + 'で開始</span>'; }
+      h += '<tr' + cls + '><td>' + m[0] + '</td><td>' + withThumb('クイックフォトセッション', esc(m[1]) + ' ' + String.fromCharCode(0x245f + m[2]) + st) + '</td></tr>';
     });
     h += '</tbody></table>';
 
@@ -392,6 +415,12 @@
     var endT = toMin(pst.end), late = [];
     var fixed = STAGE[d].filter(function (s) { return pst.pick[pk(d, 's', s[2])]; })
       .map(function (s) { return { kind: 'stage', name: s[2], area: 'H46', a: toMin(s[0]), b: toMin(s[1]), last: toMin(s[0]) }; });
+    MEET[d].forEach(function (m) {
+      var name = meetName(m);
+      if (!pst.pick[pk(d, 'm', name)]) return;
+      var a = toMin(m[0]);
+      fixed.push({ kind: 'do', meet: true, name: name, place: MEET_PLACE, area: 'H46', a: a, b: a + MEET_STAY, at: a, stay: MEET_STAY });
+    });
     var todo = [];
     FLEX.filter(function (s) { return pst.pick[pk(d, 'f', s[0])]; }).forEach(function (s) {
       var h = hoursOf(s, d), at = pst.at[pk(d, 'f', s[0])];
@@ -434,7 +463,7 @@
         t = Math.max(t, nf.b);
       } else { // 行く時間を決めたもの。前の予定が押したら、その分あとにずれる
         var a = Math.max(t, nf.a);
-        out.push({ kind: 'do', a: a, b: Math.min(a + nf.stay, endT), name: nf.name, place: nf.place, at: nf.a, late: lt, cut: a + nf.stay > endT });
+        out.push({ kind: 'do', meet: nf.meet, a: a, b: Math.min(a + nf.stay, endT), name: nf.name, place: nf.place, at: nf.a, late: lt, cut: a + nf.stay > endT });
         t = a + nf.stay;
       }
       fi++;
@@ -613,7 +642,7 @@
   // 座標は公式マップ画像（2400×1350）上のブース番号の位置
   var DETAIL = {
     H13: { file: 'map_messe_hall1-3.jpg', name: '1-3ホール', pos: { 1: [728, 419], 2: [869, 397], 3: [1024, 396], 4: [941, 569], 5: [1234, 400], 6: [1459, 546], 7: [1626, 425], 8: [763, 890], 9: [950, 791], 10: [1097, 922], 11: [1272, 914], 12: [1369, 914], 13: [1477, 899], 14: [1609, 908], 15: [1352, 758] } },
-    H46: { file: 'map_messe_hall4-6.jpg', name: '4-6ホール（ステージ）', pos: { stage: [1198, 930, 120] } },
+    H46: { file: 'map_messe_hall4-6.jpg', name: '4-6ホール（ステージ）', pos: { stage: [1198, 930, 120], 17: [986, 552] } },
     H7: { file: 'map_messe_hall7.jpg', name: '7ホール', pos: { 20: [1114, 390], 21: [1176, 542], 22: [1331, 497], 23: [1330, 593], 24: [1123, 625], 25: [1091, 961] } },
     MESSE2F: { file: 'map_messe_entire.jpg', name: '2F中央モール・屋外展示場', pos: { 34: [1752, 768], 35: [1783, 995], 36: [1783, 1082] } },
     PARK: { file: 'map_toyosuna.jpg', name: '豊砂公園', pos: { 1: [1480, 931], 2: [1711, 532], truck: [1458, 656, 190] } },
@@ -632,6 +661,7 @@
     if (x.kind === 'stage') return 5;
     var a = areaOf(x.place), m = x.place.match(/(\d+)$/);
     if (a === 'H7') return 7;
+    if (a === 'H46') return 6; // 17（クイックフォトセッション）は6ホール
     if (a !== 'H13' || !m || !DETAIL.H13.pos[+m[1]]) return 0;
     var px = DETAIL.H13.pos[+m[1]][0];
     return px < 1000 ? 3 : px < 1390 ? 2 : 1;
@@ -640,6 +670,7 @@
   function placeLabel(x) {
     if (x.kind === 'stage') return '5ホール ステージ（4-6ホール）';
     var n = hallNo(x);
+    if (n === 6) return '6ホール ' + x.place.replace(/^4-6ホール\s*/, '') + '（4-6ホール）';
     return n && n !== 7 ? n + 'ホール ' + x.place.replace(/^1-3ホール\s*/, '') + '（1-3ホール）' : x.place;
   }
   // 行くエリアごとに、番号と位置をまとめる
@@ -755,8 +786,8 @@
   }
 
 
-  function rowKey(d, x) { return pk(d, x.kind === 'stage' ? 's' : 'f', x.name); }
-  function rowRsv(d, x) { return !!pst.rsv[rowKey(d, x)]; }
+  function rowKey(d, x) { return pk(d, x.kind === 'stage' ? 's' : x.meet ? 'm' : 'f', x.name); }
+  function rowRsv(d, x) { return !!x.meet || !!pst.rsv[rowKey(d, x)]; }
   function memoOf(d, x) { var m = pst.memo[rowKey(d, x)]; return m ? '<span class="nv-s">メモ：' + esc(m) + '</span>' : ''; }
   // 時間の流れ（左にステージ、右に自分の予定。1分＝1.5px）
   function timeline(d, rows) {
@@ -822,6 +853,10 @@
     STAGE[d].forEach(function (s) {
       var k = pk(d, 's', s[2]);
       h += '<tr><td>' + chk(k, s[2]) + '</td><td>' + withThumb(s[2], esc(s[2]) + '<span class="nv-s">ステージ ' + s[0] + '〜' + s[1] + '</span>' + extraInputs(k, false)) + '</td></tr>';
+    });
+    MEET[d].forEach(function (m) {
+      var name = meetName(m), k = pk(d, 'm', name);
+      h += '<tr><td>' + chk(k, name) + '</td><td>' + withThumb(name, esc(name) + '<span class="nv-s">' + MEET_PLACE + '／' + m[0] + '開始・予約した人だけ<br>開始から30分以内に集合（予定は30分で計算）</span>' + extraInputs(k, false)) + '</td></tr>';
     });
     FLEX.forEach(function (s) {
       var hr = hoursOf(s, d), st = pst.stay[s[0]] || STAY[s[0]] || 30, k = pk(d, 'f', s[0]), at = pst.at[k] || '';
