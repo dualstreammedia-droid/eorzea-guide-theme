@@ -1,5 +1,5 @@
 // FF14ファンフェス マイプラン（当日ナビのアプリ版）のオフライン対応。画面とJSは「ネット優先・だめなら保存済み」、画像は「保存済み優先」
-var CACHE = 'ff26-v11';
+var CACHE = 'ff26-v12';
 var FILES = [
   './',
   'index.html',
@@ -34,6 +34,7 @@ var FILES = [
   '../img/ff26/spot_moogle_catcher.jpg',
   '../img/ff26/spot_nice_head.jpg',
   '../img/ff26/spot_npc_directory.jpg',
+  '../img/ff26/spot_popcorn_bucket.jpg',
   '../img/ff26/spot_outrunner.jpg',
   '../img/ff26/spot_popup_store.jpg',
   '../img/ff26/spot_real_mystery.jpg',
