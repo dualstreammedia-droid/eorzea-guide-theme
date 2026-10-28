@@ -391,6 +391,11 @@
   var pst = {};
   try { pst = JSON.parse(localStorage.getItem(PKEY) || '{}') || {}; } catch (e) { pst = {}; }
   pst.day = today() || pst.day || 1; pst.start = pst.start || '10:00'; pst.end = pst.end || '21:00'; pst.pick = pst.pick || {}; pst.stay = pst.stay || {}; pst.at = pst.at || {}; pst.memo = pst.memo || {}; pst.rsv = pst.rsv || {};
+  // 会場にいる時間は日ごとに持つ（v23までは両日共通だった値を、両日の初期値にする）。pst.start/end はいま表示している日の値
+  pst.tm = pst.tm || {};
+  [1, 2].forEach(function (d) { pst.tm[d] = pst.tm[d] || { s: pst.start, e: pst.end }; });
+  function syncTime() { pst.start = pst.tm[pst.day].s; pst.end = pst.tm[pst.day].e; }
+  syncTime();
   function renameTruck(o) {
     [o.pick, o.at, o.memo, o.rsv].forEach(function (t) {
       Object.keys(t).forEach(function (k) { if (k.indexOf(OLD_TRUCK) >= 0) { t[k.replace(OLD_TRUCK, 'キッチンカー')] = t[k]; delete t[k]; } });
@@ -425,7 +430,8 @@
     Object.keys(o.at || {}).forEach(function (k) { pst.at[pre + k] = o.at[k]; });
     Object.keys(o.m || {}).forEach(function (k) { pst.memo[pre + k] = String(o.m[k]).slice(0, 40); });
     (o.r || []).forEach(function (k) { pst.rsv[pre + k] = 1; });
-    pst.day = d; pst.start = o.s || pst.start; pst.end = o.e || pst.end;
+    pst.tm[d] = { s: o.s || pst.tm[d].s, e: o.e || pst.tm[d].e };
+    pst.day = d; syncTime();
     renameTruck(pst);
   }
   var shared = readShared();
@@ -948,8 +954,8 @@
     }
     else if (el.hasAttribute('data-memo')) { var mk = el.getAttribute('data-memo'); if (el.value.trim()) pst.memo[mk] = el.value.trim().slice(0, 40); else delete pst.memo[mk]; }
     else if (el.hasAttribute('data-rsv')) { if (el.checked) pst.rsv[el.getAttribute('data-rsv')] = 1; else delete pst.rsv[el.getAttribute('data-rsv')]; }
-    else if (el.hasAttribute('data-start')) pst.start = el.value;
-    else if (el.hasAttribute('data-end')) pst.end = el.value;
+    else if (el.hasAttribute('data-start')) pst.start = pst.tm[pst.day].s = el.value;
+    else if (el.hasAttribute('data-end')) pst.end = pst.tm[pst.day].e = el.value;
     else if (el.hasAttribute('data-range')) pst.range = +el.value;
     else return;
     psave();
@@ -969,10 +975,10 @@
     }
     var b = e.target.closest('[data-pday]');
     if (!b) return;
-    pst.day = +b.getAttribute('data-pday'); psave(); prender();
+    pst.day = +b.getAttribute('data-pday'); syncTime(); psave(); prender();
     viewDay = pst.day; render();
   });
-  onDay = function (d) { pst.day = d; psave(); prender(); };
+  onDay = function (d) { pst.day = d; syncTime(); psave(); prender(); };
   css.textContent += [
     '#eg-ff26-plan{margin:12px 0 24px}',
     '#eg-ff26-plan svg.nv-map{display:block;width:100%;height:auto;border:1px solid #d8cfb8;margin:4px 0}',
