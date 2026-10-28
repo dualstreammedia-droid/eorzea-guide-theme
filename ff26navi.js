@@ -904,6 +904,14 @@
     proot.innerHTML = h;
   }
 
+  // メモは打つたびに保存する（欄の外をタップする前にアプリを閉じても残るように）。描き直しは change のときだけ
+  proot.addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el.hasAttribute('data-memo')) return;
+    var mk = el.getAttribute('data-memo');
+    if (el.value.trim()) pst.memo[mk] = el.value.trim().slice(0, 40); else delete pst.memo[mk];
+    psave();
+  });
   proot.addEventListener('change', function (e) {
     var el = e.target;
     if (el.hasAttribute('data-k')) { if (el.checked) pst.pick[el.getAttribute('data-k')] = 1; else delete pst.pick[el.getAttribute('data-k')]; }
