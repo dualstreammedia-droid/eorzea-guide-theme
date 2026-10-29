@@ -560,6 +560,8 @@
 
   // ---------- 1枚の画像にまとめる（マップ＋回る順番）。X・LINE などで共有できるようにする ----------
   var PAGE_URL = 'https://www.eorzea-guide.com/entry/2026/10/26/020356';
+  // 予定のURLは、作った側と同じ版（アプリ版で作ったらアプリ版）で開くようにする
+  var PLAN_URL = /\/ff26\//.test(location.pathname) ? 'https://dualstreammedia-droid.github.io/eorzea-guide-theme/ff26/' : PAGE_URL;
   var FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif';
   function loadImg(src) {
     return new Promise(function (ok) {
@@ -844,7 +846,7 @@
   function makeUrl() {
     var box = document.getElementById('nv-url'), c = planCode(pst.day);
     if (!c) { box.innerHTML = '<p class="nv-s nv-now">URLを作れませんでした。</p>'; return; }
-    var url = PAGE_URL + '#ff26=' + c, text = 'ファンフェス2026東京 ' + DAY_DATE[pst.day] + 'の予定です';
+    var url = PLAN_URL + '#ff26=' + c, text = 'ファンフェス2026東京 ' + DAY_DATE[pst.day] + 'の予定です';
     box.innerHTML = '<p><input type="text" readonly class="nv-urlin" value="' + esc(url) + '"></p><p>' +
       (navigator.share ? '<button type="button" class="nv-btn nv-pri" data-urlshare>LINEなどで送る</button>' : '') +
       '<button type="button" class="nv-btn" data-urlcopy>URLをコピー</button></p><p class="nv-s" id="nv-urlmsg"></p>';
