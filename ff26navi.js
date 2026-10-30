@@ -1014,4 +1014,85 @@
     '#eg-ff26-plan #nv-share img{display:block;width:100%;max-width:540px;height:auto;border:1px solid #ccc;margin:6px 0}'
   ].join('');
   prender();
+
+  // ---------- 一覧（アプリ版のみ）：種類ごとに並べ、押すとマップで場所を示す ----------
+  var lroot = document.getElementById('eg-ff26-list');
+  if (lroot) renderList();
+  function renderList() {
+    var CAT = [
+      ['アクティビティ', ['チョコボレースVR', 'YOKERO', 'ナイスヘッド・ガーデン', 'MTG カード体験＆展示', 'ダンシング・グリーン', 'チェキ撮影・プリント',
+        'スペースインベーダー', 'エオルゼア検定', 'NPC名鑑 体験', 'FFトレカ体験', 'ドマ式麻雀 修練場', 'エッダの鞄', 'リアル謎解き', 'でぶチョコボ フォトスポット']],
+      ['グッズ・お店', ['グッズ売り場', 'アルカディアくじ', 'リアルトレジャーハント', 'トートバッグ作り', 'オードパルファム テスター', 'ナインズ・キャッチャー',
+        'POP UP STORE', 'ヤマト運輸 宅配']],
+      ['フード', ['出張エオルゼアカフェ', 'アニメイトカフェ出張版', 'ポップコーン・ドリンク販売', 'キッチンカー']]
+    ];
+    var byName = {};
+    FLEX.forEach(function (s) { byName[s[0]] = s; });
+    function hours(s) {
+      var t = [1, 2].map(function (d) {
+        var o = d === 1 ? s[2] : s[4], c = d === 1 ? s[3] : s[5];
+        var sp = SPECIAL_LAST[s[0]] && SPECIAL_LAST[s[0]][d];
+        var last = sp || (s[6] ? hm(toMin(c) - s[6]) : '');
+        return DAY_DATE[d] + ' ' + o + '〜' + c + (last ? '（最終受付 ' + last + '）' : '');
+      });
+      return t[0] + '<br>' + t[1];
+    }
+    function mapBox(x) {
+      var d = detailOf(x), info = DETAIL[d.key];
+      if (!info) return '';
+      var p = info.pos[d.p], dot = '';
+      if (p) {
+        var r = p[2] || 40;
+        dot = '<span class="ls-dot" style="left:' + (p[0] / 24) + '%;top:' + (p[1] / 13.5) + '%;width:' + (r * 2 / 24) + '%"></span>';
+      }
+      return '<div class="ls-map"><img src="' + MAP_BASE + info.file + '" alt="' + esc(info.name) + 'のマップ（© SQUARE ENIX）" loading="lazy" width="2400" height="1350">' + dot + '</div>' +
+        '<p class="nv-s">' + esc(info.name) + 'のマップ。赤い丸が場所です（© SQUARE ENIX）</p>';
+    }
+    function item(name, place, sub, x) {
+      return '<details class="ls-it"><summary>' + withThumb(name, '<strong>' + esc(name) + '</strong><span class="nv-s">' + esc(place) + '</span>') + '</summary>' +
+        '<div class="ls-body"><p class="nv-s">' + sub + '</p><div data-ls="' + esc(JSON.stringify(x)) + '"></div></div></details>';
+    }
+    var h = '<p><strong>コンテンツ一覧</strong><br>押すと、時間とマップ上の場所が出ます。</p>';
+    h += '<h3 class="ls-h">ステージ（5ホール）</h3>';
+    [1, 2].forEach(function (d) {
+      STAGE[d].forEach(function (s) {
+        h += item(s[2], DAY_DATE[d] + ' ' + s[0] + '〜' + s[1] + '・5ホール', DAY_DATE[d] + ' ' + s[0] + '〜' + s[1], { kind: 'stage', place: '' });
+      });
+    });
+    h += '<h3 class="ls-h">クイックフォトセッション（事前予約した人だけ）</h3>';
+    [1, 2].forEach(function (d) {
+      MEET[d].forEach(function (m) {
+        h += item(meetName(m), DAY_DATE[d] + ' ' + m[0] + '〜・6ホール 17', DAY_DATE[d] + ' ' + m[0] + '〜（開始から' + MEET_STAY + '分以内に集合）', { place: MEET_PLACE });
+      });
+    });
+    CAT.forEach(function (c) {
+      h += '<h3 class="ls-h">' + esc(c[0]) + '</h3>';
+      c[1].forEach(function (n) {
+        var s = byName[n];
+        if (!s) return;
+        var x = { place: s[1] };
+        h += item(n, placeLabel(x), hours(s) + (s[7] ? '<br>' + esc(s[7]) : ''), x);
+      });
+    });
+    lroot.innerHTML = h;
+    // マップの画像は、開いたときに読み込む
+    lroot.addEventListener('toggle', function (e) {
+      var el = e.target.querySelector && e.target.querySelector('[data-ls]');
+      if (!e.target.open || !el || el.innerHTML) return;
+      el.innerHTML = mapBox(JSON.parse(el.getAttribute('data-ls')));
+    }, true);
+  }
+  css.textContent += [
+    '#eg-ff26-list .nv-s{display:block;font-size:13px;color:#666;font-weight:400}',
+    '#eg-ff26-list .ls-h{font-size:16px;margin:20px 0 6px;padding:4px 8px;border-left:4px solid #c9a227;background:#f7f2e6}',
+    '#eg-ff26-list .ls-it{border-bottom:1px solid #e3dccb}',
+    '#eg-ff26-list .ls-it summary{cursor:pointer;padding:8px 2px;list-style:none}',
+    '#eg-ff26-list .ls-it summary::-webkit-details-marker{display:none}',
+    '#eg-ff26-list .ls-it[open] summary{background:#fbf8f0}',
+    '#eg-ff26-list .ls-body{padding:0 2px 12px}',
+    '#eg-ff26-list .ls-map{position:relative;margin:6px 0 2px}',
+    '#eg-ff26-list .ls-map img{display:block;width:100%;height:auto;border:1px solid #ccc}',
+    '#eg-ff26-list .ls-dot{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border:3px solid #e0301e;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.8);animation:lsp 1.2s ease-in-out infinite}',
+    '@keyframes lsp{50%{transform:translate(-50%,-50%) scale(1.25)}}'
+  ].join('');
 })();
