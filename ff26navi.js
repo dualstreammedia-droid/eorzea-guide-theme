@@ -1052,39 +1052,52 @@
       return '<details class="ls-it"><summary>' + withThumb(name, '<strong>' + esc(name) + '</strong><span class="nv-s">' + esc(place) + '</span>') + '</summary>' +
         '<div class="ls-body"><p class="nv-s">' + sub + '</p><div data-ls="' + esc(JSON.stringify(x)) + '"></div></div></details>';
     }
-    var h = '<p><strong>コンテンツ一覧</strong><br>押すと、時間とマップ上の場所が出ます。</p>';
-    h += '<h3 class="ls-h">ステージ（5ホール）</h3>';
+    // 種類ごとに折りたたむ。[見出し, 中身, 件数]
+    var groups = [], g;
+    function start(t) { g = [t, '', 0]; groups.push(g); }
+    function add(html) { g[1] += html; g[2]++; }
+    start('ステージ（5ホール）');
     [1, 2].forEach(function (d) {
       STAGE[d].forEach(function (s) {
-        h += item(s[2], DAY_DATE[d] + ' ' + s[0] + '〜' + s[1] + '・5ホール', DAY_DATE[d] + ' ' + s[0] + '〜' + s[1], { kind: 'stage', place: '' });
+        add(item(s[2], DAY_DATE[d] + ' ' + s[0] + '〜' + s[1] + '・5ホール', DAY_DATE[d] + ' ' + s[0] + '〜' + s[1], { kind: 'stage', place: '' }));
       });
     });
-    h += '<h3 class="ls-h">クイックフォトセッション（事前予約した人だけ）</h3>';
+    start('クイックフォトセッション（予約した人だけ）');
     [1, 2].forEach(function (d) {
       MEET[d].forEach(function (m) {
-        h += item(meetName(m), DAY_DATE[d] + ' ' + m[0] + '〜・6ホール 17', DAY_DATE[d] + ' ' + m[0] + '〜（開始から' + MEET_STAY + '分以内に集合）', { place: MEET_PLACE });
+        add(item(meetName(m), DAY_DATE[d] + ' ' + m[0] + '〜・6ホール 17', DAY_DATE[d] + ' ' + m[0] + '〜（開始から' + MEET_STAY + '分以内に集合）', { place: MEET_PLACE }));
       });
     });
     CAT.forEach(function (c) {
-      h += '<h3 class="ls-h">' + esc(c[0]) + '</h3>';
+      start(c[0]);
       c[1].forEach(function (n) {
         var s = byName[n];
         if (!s) return;
         var x = { place: s[1] };
-        h += item(n, placeLabel(x), hours(s) + (s[7] ? '<br>' + esc(s[7]) : ''), x);
+        add(item(n, placeLabel(x), hours(s) + (s[7] ? '<br>' + esc(s[7]) : ''), x));
       });
+    });
+    var h = '<p><strong>コンテンツ一覧</strong><br>種類を押すと開きます。それぞれを押すと、時間とマップ上の場所が出ます。</p>';
+    groups.forEach(function (x) {
+      h += '<details class="ls-cat"><summary class="ls-h">' + esc(x[0]) + '<span class="ls-n">' + x[2] + '件</span></summary>' + x[1] + '</details>';
     });
     lroot.innerHTML = h;
     // マップの画像は、開いたときに読み込む
     lroot.addEventListener('toggle', function (e) {
-      var el = e.target.querySelector && e.target.querySelector('[data-ls]');
+      if (!e.target.classList || !e.target.classList.contains('ls-it')) return;
+      var el = e.target.querySelector('[data-ls]');
       if (!e.target.open || !el || el.innerHTML) return;
       el.innerHTML = mapBox(JSON.parse(el.getAttribute('data-ls')));
     }, true);
   }
   css.textContent += [
     '#eg-ff26-list .nv-s{display:block;font-size:13px;color:#666;font-weight:400}',
-    '#eg-ff26-list .ls-h{font-size:16px;margin:20px 0 6px;padding:4px 8px;border-left:4px solid #c9a227;background:#f7f2e6}',
+    '#eg-ff26-list .ls-cat{margin:0 0 8px}',
+    '#eg-ff26-list .ls-h{display:flex;align-items:center;font-size:16px;font-weight:700;margin:0;padding:12px 10px;border-left:4px solid #c9a227;background:#f7f2e6;cursor:pointer;list-style:none}',
+    '#eg-ff26-list .ls-h::-webkit-details-marker{display:none}',
+    '#eg-ff26-list .ls-n{margin-left:auto;padding-left:8px;white-space:nowrap;font-size:13px;font-weight:400;color:#666}',
+    '#eg-ff26-list .ls-h::after{content:"";width:8px;height:8px;margin-left:10px;border-right:2px solid #1a2f4e;border-bottom:2px solid #1a2f4e;transform:rotate(45deg) translateY(-3px)}',
+    '#eg-ff26-list .ls-cat[open]>.ls-h::after{transform:rotate(-135deg) translateY(-3px)}',
     '#eg-ff26-list .ls-it{border-bottom:1px solid #e3dccb}',
     '#eg-ff26-list .ls-it summary{cursor:pointer;padding:8px 2px;list-style:none}',
     '#eg-ff26-list .ls-it summary::-webkit-details-marker{display:none}',
