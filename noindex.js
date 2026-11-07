@@ -159,6 +159,7 @@
     }
 
     // --- 長い記事の「まとめ」直前 ---
+    var matome = -1;
     if (SLOT_IN && !isAffiliate) {
       var h2s = content.querySelectorAll('h2');
       if (h2s.length >= LONG_ARTICLE_H2) {
@@ -167,9 +168,21 @@
           if (h2s[k].textContent.indexOf('まとめ') !== -1) {
             h2s[k].parentNode.insertBefore(makeUnit(SLOT_IN, true), h2s[k]);
             push();
+            matome = k;
             break;
           }
         }
+      }
+    }
+
+    // --- 長い記事の本文の中ほど（2026-11-07 試験追加・2週間で収益と離脱を比較）---
+    // 「まとめ」前の広告が入った記事だけ。最初のh2とまとめのh2から2見出し以上離れた
+    // 真ん中のh2の直前に置く（目次直後・まとめ前の広告と続けて見えないように）
+    if (SLOT_IN && matome >= 4) {
+      var mid = Math.floor(matome / 2);
+      if (mid >= 2 && matome - mid >= 2) {
+        h2s[mid].parentNode.insertBefore(makeUnit(SLOT_IN, true), h2s[mid]);
+        push();
       }
     }
   });
